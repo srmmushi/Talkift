@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -15,6 +16,8 @@ namespace Talkift.Client.Services
         private string? _url;
         private int _reconnectDelay = 1000;
         private const int MaxReconnectDelay = 30000;
+        private const int MaxReconnectAttempts = 5;
+        private int _reconnectAttempts;
         private Timer? _heartbeatTimer;
         private bool _shouldReconnect;
         private string? _userId;
@@ -47,6 +50,7 @@ namespace Talkift.Client.Services
 
                 await _webSocket.ConnectAsync(new Uri(url), _cts.Token);
                 _reconnectDelay = 1000;
+                _reconnectAttempts = 0;
                 Connected?.Invoke();
 
                 StartHeartbeat();
@@ -146,9 +150,11 @@ namespace Talkift.Client.Services
             }
             catch (OperationCanceledException)
             {
+                Debug.WriteLine("WebSocketService.ReceiveLoopAsync canceled.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine($"WebSocketService.ReceiveLoopAsync error: {ex.Message}");
                 OnDisconnected();
             }
         }
@@ -218,8 +224,9 @@ namespace Talkift.Client.Services
                         break;
                 }
             }
-            catch (JsonException)
+            catch (JsonException ex)
             {
+                Debug.WriteLine($"WebSocketService.HandleMessage JSON parse failed: {ex.Message}");
             }
         }
 
@@ -234,8 +241,9 @@ namespace Talkift.Client.Services
                     {
                         await SendAsync(new { type = "ping" });
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Debug.WriteLine($"WebSocketService heartbeat send failed: {ex.Message}");
                     }
                 }
             }, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
@@ -248,6 +256,15 @@ namespace Talkift.Client.Services
 
             if (_shouldReconnect && _url != null)
             {
+                _reconnectAttempts++;
+                if (_reconnectAttempts > MaxReconnectAttempts)
+                {
+                    _shouldReconnect = false;
+                    ErrorOccurred?.Invoke($"Connection lost. Gave up after {MaxReconnectAttempts} reconnect attempts.");
+                    return;
+                }
+
+                ErrorOccurred?.Invoke($"Connection lost. Reconnecting ({_reconnectAttempts}/{MaxReconnectAttempts})...");
                 await Task.Delay(_reconnectDelay);
                 _reconnectDelay = Math.Min(_reconnectDelay * 2, MaxReconnectDelay);
 
@@ -257,8 +274,9 @@ namespace Talkift.Client.Services
                     {
                         await ConnectAsync(_url, userId: _userId);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        ErrorOccurred?.Invoke($"Reconnect failed: {ex.Message}");
                     }
                 }
             }

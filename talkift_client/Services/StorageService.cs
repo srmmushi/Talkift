@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -36,8 +37,9 @@ namespace Talkift.Client.Services
                 var json = await File.ReadAllTextAsync(filePath);
                 return JsonSerializer.Deserialize<T>(json, JsonOptions);
             }
-            catch
+            catch (Exception ex)
             {
+                Debug.WriteLine($"StorageService.LoadAsync<{typeof(T).Name}> failed for key '{key}': {ex.Message}");
                 return null;
             }
         }

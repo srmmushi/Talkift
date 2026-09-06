@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <UseXamlCompilerExecutable>false</UseXamlCompilerExecutable>
+  </PropertyGroup>
+</Project>

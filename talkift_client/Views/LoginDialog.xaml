@@ -26,24 +26,11 @@
                  PlaceholderText="Enter your username"
                  MaxLength="32"/>
 
-        <Grid>
-            <PasswordBox x:Name="PasswordBox"
-                         Header="Password"
-                         PlaceholderText="Enter your password"
-                         MaxLength="64"/>
-
-            <Button x:Name="TogglePasswordBtn"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom"
-                    Margin="0,0,4,8"
-                    Padding="6,2"
-                    Click="TogglePassword_Click"
-                    ToolTip="Show/Hide password"
-                    Background="Transparent"
-                    BorderThickness="0">
-                <FontIcon x:Name="TogglePasswordIcon" Glyph="&#xE890;" FontSize="14"/>
-            </Button>
-        </Grid>
+        <PasswordBox x:Name="PasswordBox"
+                     Header="Password"
+                     PlaceholderText="Enter your password"
+                     MaxLength="64"
+                     PasswordRevealMode="Peek"/>
 
         <CheckBox x:Name="RememberPasswordCheckBox"
                   Content="Remember password"

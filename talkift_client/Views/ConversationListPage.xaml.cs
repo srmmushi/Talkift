@@ -56,37 +56,31 @@ namespace Talkift.Client.Views
             });
         }
 
-        private async void OnJoinRequest(string fromUser, string groupName)
+        private void OnJoinRequest(string fromUser, string groupName)
         {
-            await DispatcherQueue.TryEnqueue(async () =>
+            DispatcherQueue.TryEnqueue(() =>
             {
-                var dialog = new ContentDialog
-                {
-                    Title = "Join Request",
-                    Content = $"{fromUser} wants to join {groupName}",
-                    PrimaryButtonText = "Accept",
-                    SecondaryButtonText = "Reject",
-                    DefaultButton = ContentDialogButton.Primary,
-                    XamlRoot = this.XamlRoot
-                };
+                _ = HandleJoinRequestAsync(fromUser, groupName);
+            });
+        }
 
-                var result = await dialog.ShowAsync();
-                if (result == ContentDialogResult.Primary)
-                {
-                    await ViewModel.WsService.SendAsync(new
-                    {
-                        type = "join_response",
-                        payload = new { group_name = groupName, from_user = fromUser, accepted = true }
-                    });
-                }
-                else
-                {
-                    await ViewModel.WsService.SendAsync(new
-                    {
-                        type = "join_response",
-                        payload = new { group_name = groupName, from_user = fromUser, accepted = false }
-                    });
-                }
+        private async Task HandleJoinRequestAsync(string fromUser, string groupName)
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "Join Request",
+                Content = $"{fromUser} wants to join {groupName}",
+                PrimaryButtonText = "Accept",
+                SecondaryButtonText = "Reject",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot
+            };
+
+            var result = await dialog.ShowAsync();
+            await ViewModel.WsService.SendAsync(new
+            {
+                type = "join_response",
+                payload = new { group_name = groupName, from_user = fromUser, accepted = result == ContentDialogResult.Primary }
             });
         }
 

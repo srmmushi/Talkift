@@ -59,13 +59,13 @@ namespace Talkift.Client.ViewModels
         }
 
         [RelayCommand]
-        private void SelectServer(Server server)
+        public void SelectServer(Server server)
         {
             SelectedServer = server;
         }
 
         [RelayCommand]
-        private void Logout()
+        public void Logout()
         {
             _authService.Logout();
             IsLoggedIn = false;

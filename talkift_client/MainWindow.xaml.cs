@@ -23,16 +23,10 @@ namespace Talkift.Client
             NavView.Loaded += NavView_Loaded;
             ContentFrame.Navigated += ContentFrame_Navigated;
 
-            TitleBar = GetTitleBar();
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(TitleBar);
 
             ContentFrame.Navigate(typeof(ServerListView));
-        }
-
-        private UIElement GetTitleBar()
-        {
-            return (UIElement)FindName("TitleBar");
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
@@ -74,7 +68,7 @@ namespace Talkift.Client
             {
                 foreach (var item in NavView.MenuItems)
                 {
-                    if (item is NavViewItem navItem && navItem.Tag?.ToString() == "Servers")
+                    if (item is NavigationViewItem navItem && navItem.Tag?.ToString() == "Servers")
                     {
                         NavView.SelectedItem = item;
                         break;
@@ -85,7 +79,7 @@ namespace Talkift.Client
             {
                 foreach (var item in NavView.MenuItems)
                 {
-                    if (item is NavViewItem navItem && navItem.Tag?.ToString() == "Conversations")
+                    if (item is NavigationViewItem navItem && navItem.Tag?.ToString() == "Conversations")
                     {
                         NavView.SelectedItem = item;
                         break;

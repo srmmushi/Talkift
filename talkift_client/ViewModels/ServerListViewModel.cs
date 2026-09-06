@@ -30,8 +30,7 @@ namespace Talkift.Client.ViewModels
 
         public event Func<Server, Task>? ServerClicked;
 
-        [RelayCommand]
-        private async Task LoadServersAsync()
+        public async Task LoadServersAsync()
         {
             IsLoading = true;
             try
@@ -52,23 +51,20 @@ namespace Talkift.Client.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task AddServerAsync(Server server)
+        public async Task AddServerAsync(Server server)
         {
             Servers.Add(server);
             await SaveServersAsync();
         }
 
-        [RelayCommand]
-        private async Task RemoveServerAsync(Server server)
+        public async Task RemoveServerAsync(Server server)
         {
             Servers.Remove(server);
             await SaveServersAsync();
             await _credentialService.DeleteCredentialAsync(server.Id);
         }
 
-        [RelayCommand]
-        private async Task EditServerAsync(Server server)
+        public async Task EditServerAsync(Server server)
         {
             await SaveServersAsync();
         }
@@ -78,10 +74,16 @@ namespace Talkift.Client.ViewModels
             await _storage.SaveAsync("servers", Servers);
         }
 
-        [RelayCommand]
-        private async Task CheckServerStatusAsync(Server server)
+        public async Task CheckServerStatusAsync(Server server)
         {
             server.IsOnline = await _serverService.TestConnectionAsync(server.Address, server.Port);
+        }
+
+        public void ShowInfoBar(InfoBarSeverity severity, string message)
+        {
+            InfoBarSeverity = severity;
+            InfoBarMessage = message;
+            IsInfoBarOpen = true;
         }
 
         public async Task<StoredCredential?> TryGetCredentialAsync(Server server)
@@ -114,13 +116,6 @@ namespace Talkift.Client.ViewModels
             }
 
             mainViewModel.SelectServer(server);
-        }
-
-        private void ShowInfoBar(InfoBarSeverity severity, string message)
-        {
-            InfoBarSeverity = severity;
-            InfoBarMessage = message;
-            IsInfoBarOpen = true;
         }
     }
 }

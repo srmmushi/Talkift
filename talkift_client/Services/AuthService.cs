@@ -15,6 +15,8 @@ namespace Talkift.Client.Services
             PropertyNameCaseInsensitive = true
         };
 
+        private static readonly HttpClient Client = new() { Timeout = TimeSpan.FromSeconds(10) };
+
         private string _token = string.Empty;
         private string _currentUserId = string.Empty;
         private string _currentUsername = string.Empty;
@@ -30,7 +32,7 @@ namespace Talkift.Client.Services
         {
             try
             {
-                using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+                var client = Client;
                 var url = $"http://{address}:{port}/api/login";
                 var request = new AuthRequest { Username = username, Password = password };
                 var response = await client.PostAsJsonAsync(url, request);
@@ -66,7 +68,7 @@ namespace Talkift.Client.Services
         {
             try
             {
-                using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+                var client = Client;
                 var url = $"http://{address}:{port}/api/login/offline";
                 var request = new AuthRequest { Username = username, Password = "" };
                 var response = await client.PostAsJsonAsync(url, request);
@@ -102,7 +104,7 @@ namespace Talkift.Client.Services
         {
             try
             {
-                using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+                var client = Client;
                 var method = mode switch
                 {
                     RegisterMode.Official => "official",

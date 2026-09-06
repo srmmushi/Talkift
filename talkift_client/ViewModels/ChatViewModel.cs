@@ -38,6 +38,7 @@ namespace Talkift.Client.ViewModels
         public ObservableCollection<ChatMessage> Messages { get; } = new();
 
         public event Action<ChatMessage>? MessageReceived;
+        public event Action<ChatMessage>? NewMessageReceived;
         public event Action<string>? ErrorOccurred;
         public event Action<string>? UserJoined;
 
@@ -52,6 +53,7 @@ namespace Talkift.Client.ViewModels
             MemberCountText = conversation.IsGroup ? $"{conversation.Members.Count} members" : "";
 
             _wsService.MessageReceived += OnRawMessage;
+            _wsService.NewMessageReceived += OnIncomingMessage;
             _wsService.Connected += () => IsConnected = true;
             _wsService.Disconnected += () => IsConnected = false;
             _wsService.ErrorOccurred += msg => ErrorOccurred?.Invoke(msg);
@@ -59,7 +61,7 @@ namespace Talkift.Client.ViewModels
 
             if (!_wsService.IsConnected)
             {
-                var url = $"ws://{server.Address}:{server.Port}/ws";
+                var url = ServerService.BuildWebSocketUrl(server.Address, server.Port);
                 await _wsService.ConnectAsync(url, userId: userId);
             }
 
@@ -70,8 +72,16 @@ namespace Talkift.Client.ViewModels
         {
         }
 
-        [RelayCommand]
-        private async Task LoadHistoryAsync()
+        private void OnIncomingMessage(string conversationId, ChatMessage message)
+        {
+            if (conversationId == CurrentConversation?.Id)
+            {
+                AddMessage(message);
+                NewMessageReceived?.Invoke(message);
+            }
+        }
+
+        public async Task LoadHistoryAsync()
         {
             if (CurrentConversation == null || CurrentServer == null)
                 return;
@@ -87,8 +97,7 @@ namespace Talkift.Client.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task SendMessageAsync()
+        public async Task SendMessageAsync()
         {
             if (string.IsNullOrWhiteSpace(MessageText) || CurrentConversation == null)
                 return;
@@ -144,6 +153,7 @@ namespace Talkift.Client.ViewModels
         public async Task DisconnectAsync()
         {
             _wsService.MessageReceived -= OnRawMessage;
+            _wsService.NewMessageReceived -= OnIncomingMessage;
             _wsService.Connected -= () => IsConnected = true;
             _wsService.Disconnected -= () => IsConnected = false;
             _wsService.ErrorOccurred -= msg => ErrorOccurred?.Invoke(msg);

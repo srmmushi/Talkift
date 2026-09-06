@@ -54,7 +54,7 @@ namespace Talkift.Client.ViewModels
 
             if (!_wsService.IsConnected)
             {
-                var url = $"ws://{server.Address}:{server.Port}/ws";
+                var url = ServerService.BuildWebSocketUrl(server.Address, server.Port);
                 await _wsService.ConnectAsync(url, userId: userId);
             }
 
@@ -123,8 +123,7 @@ namespace Talkift.Client.ViewModels
             MarkAsRead(conversationId);
         }
 
-        [RelayCommand]
-        private async Task LoadConversationsAsync()
+        public async Task LoadConversationsAsync()
         {
             if (CurrentServer == null)
                 return;
@@ -140,22 +139,19 @@ namespace Talkift.Client.ViewModels
             }
         }
 
-        [RelayCommand]
-        private void SelectConversation(Conversation conversation)
+        public void SelectConversation(Conversation conversation)
         {
             ConversationSelected?.Invoke(conversation);
         }
 
-        [RelayCommand]
-        private async Task CreateGroupAsync(string name, List<string> members)
+        public async Task CreateGroupAsync(string name, List<string> members)
         {
             if (CurrentServer == null)
                 return;
             await _wsService.SendCreateGroupAsync(name, members);
         }
 
-        [RelayCommand]
-        private async Task CreateConversationAsync(string name, string targetUsername)
+        public async Task CreateConversationAsync(string name, string targetUsername)
         {
             if (CurrentServer == null)
                 return;

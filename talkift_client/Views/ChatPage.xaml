@@ -43,7 +43,7 @@
             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
                 <Button x:Name="SettingsButton"
                         Style="{StaticResource IconButtonStyle}"
-                        ToolTip="Settings"
+                        ToolTipService.ToolTip="Settings"
                         Click="SettingsButton_Click">
                     <FontIcon Glyph="&#xE713;" FontSize="16"/>
                 </Button>

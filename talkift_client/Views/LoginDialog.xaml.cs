@@ -11,7 +11,6 @@ namespace Talkift.Client.Views
         private readonly AuthService _authService;
         private readonly CredentialService _credentialService;
         private readonly Server _server;
-        private bool _passwordVisible;
 
         public AuthResponse? LastResult { get; private set; }
         public bool RememberPassword => RememberPasswordCheckBox.IsChecked == true;
@@ -124,25 +123,6 @@ namespace Talkift.Client.Views
             PasswordBox.Visibility = Visibility.Visible;
             LoginButton.Visibility = Visibility.Visible;
             OfflineLoginButton.Visibility = Visibility.Collapsed;
-        }
-
-        private void TogglePassword_Click(object sender, RoutedEventArgs e)
-        {
-            _passwordVisible = !_passwordVisible;
-            if (_passwordVisible)
-            {
-                PasswordBoxReveal.Visibility = Visibility.Visible;
-                PasswordBox.Visibility = Visibility.Collapsed;
-                PasswordBoxReveal.Password = PasswordBox.Password;
-                TogglePasswordIcon.Glyph = "\uE891";
-            }
-            else
-            {
-                PasswordBox.Visibility = Visibility.Visible;
-                PasswordBoxReveal.Visibility = Visibility.Collapsed;
-                PasswordBox.Password = PasswordBoxReveal.Password;
-                TogglePasswordIcon.Glyph = "\uE890";
-            }
         }
 
         public event EventHandler? RegisterRequested;

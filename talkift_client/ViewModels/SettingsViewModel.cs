@@ -20,8 +20,7 @@ namespace Talkift.Client.ViewModels
 
         public ObservableCollection<LoginServer> LoginServers { get; } = new();
 
-        [RelayCommand]
-        private async Task LoadSettingsAsync()
+        public async Task LoadSettingsAsync()
         {
             LoginServers.Clear();
             var servers = await _storage.LoadAsync<List<LoginServer>>("login_servers");
@@ -34,15 +33,13 @@ namespace Talkift.Client.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task AddLoginServerAsync(LoginServer server)
+        public async Task AddLoginServerAsync(LoginServer server)
         {
             LoginServers.Add(server);
             await SaveLoginServersAsync();
         }
 
-        [RelayCommand]
-        private async Task RemoveLoginServerAsync(LoginServer server)
+        public async Task RemoveLoginServerAsync(LoginServer server)
         {
             LoginServers.Remove(server);
             await SaveLoginServersAsync();
