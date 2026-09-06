@@ -44,3 +44,6 @@ logs/
 # Environment
 .env
 .env.local
+
+# Misc leftovers
+/talkift_client/full.xml

@@ -1,4 +1,5 @@
 using Microsoft.UI;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -26,6 +27,12 @@ namespace Talkift.Client
 
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(TitleBar);
+
+            if (AppWindow.Presenter is OverlappedPresenter presenter)
+            {
+                presenter.PreferredMinimumWidth = 480;
+                presenter.PreferredMinimumHeight = 360;
+            }
 
             ApplyLocalization();
             _ = InitBackdropAsync();

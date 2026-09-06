@@ -39,9 +39,6 @@ namespace Talkift.Client.Views
         {
             HeaderText.Text = LanguageService.GetString("Servers");
             EmptyStateText.Text = LanguageService.GetString("NoServersAdded");
-            EditMenuItem.Text = LanguageService.GetString("EditServer");
-            DeleteMenuItem.Text = LanguageService.GetString("Delete");
-            StatusText.Text = LanguageService.GetString("Offline");
         }
 
         public void UpdateEmptyState()
@@ -205,14 +202,27 @@ namespace Talkift.Client.Views
             }
         }
 
+        private static readonly Brush OnlineBrush = new SolidColorBrush(Colors.Green);
+        private static readonly Brush OfflineBrush = new SolidColorBrush(Colors.Gray);
+
+        public static string Localized(string key)
+        {
+            return LanguageService.GetString(key);
+        }
+
         public static Windows.UI.Color GetStatusColor(bool isOnline)
         {
             return isOnline ? Colors.Green : Colors.Gray;
         }
 
+        public static Brush GetStatusBrush(bool isOnline)
+        {
+            return isOnline ? OnlineBrush : OfflineBrush;
+        }
+
         public static string GetStatusText(bool isOnline)
         {
-            return isOnline ? "Online" : "Offline";
+            return isOnline ? LanguageService.GetString("Online") : LanguageService.GetString("Offline");
         }
     }
 }

@@ -26,13 +26,13 @@ namespace Talkift.Client.Services
 
         public string DataDir => _dataDir;
 
-        public async Task<T?> LoadAsync<T>(string key) where T : class
+        public async Task<T?> LoadAsync<T>(string key)
         {
             try
             {
                 var filePath = Path.Combine(_dataDir, $"{key}.json");
                 if (!File.Exists(filePath))
-                    return null;
+                    return default;
 
                 var json = await File.ReadAllTextAsync(filePath);
                 return JsonSerializer.Deserialize<T>(json, JsonOptions);
@@ -40,11 +40,11 @@ namespace Talkift.Client.Services
             catch (Exception ex)
             {
                 Debug.WriteLine($"StorageService.LoadAsync<{typeof(T).Name}> failed for key '{key}': {ex.Message}");
-                return null;
+                return default;
             }
         }
 
-        public async Task SaveAsync<T>(string key, T data) where T : class
+        public async Task SaveAsync<T>(string key, T data)
         {
             var filePath = Path.Combine(_dataDir, $"{key}.json");
             var json = JsonSerializer.Serialize(data, JsonOptions);

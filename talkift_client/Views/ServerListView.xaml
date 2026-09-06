@@ -76,25 +76,23 @@
 
                             <StackPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Horizontal" Spacing="6">
                                 <Ellipse Grid.Column="2" Width="10" Height="10"
-                                         x:Name="StatusDot"
                                          VerticalAlignment="Center"
-                                         Fill="Gray"/>
-                                <TextBlock x:Name="StatusText"
-                                           FontSize="12"
+                                         Fill="{x:Bind local:ServerListView.GetStatusBrush(IsOnline)}"/>
+                                <TextBlock FontSize="12"
                                            Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                                           Text="Offline"
+                                           Text="{x:Bind local:ServerListView.GetStatusText(IsOnline)}"
                                            VerticalAlignment="Center"/>
                             </StackPanel>
 
                             <Grid.ContextFlyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem x:Name="EditMenuItem" Text="Edit" Click="EditServer_Click">
+                                    <MenuFlyoutItem Text="{x:Bind local:ServerListView.Localized('EditServer')}" Click="EditServer_Click">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE70F;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutSeparator/>
-                                    <MenuFlyoutItem x:Name="DeleteMenuItem" Text="Delete" Click="DeleteServer_Click"
+                                    <MenuFlyoutItem Text="{x:Bind local:ServerListView.Localized('Delete')}" Click="DeleteServer_Click"
                                                      Foreground="Red">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE74D;" Foreground="Red"/>
