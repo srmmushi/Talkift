@@ -14,10 +14,17 @@ namespace Talkift.Client.Services
 
         public static async Task LoadBackdropAsync()
         {
-            var saved = await _storage.LoadAsync<string>("backdrop");
-            if (!string.IsNullOrEmpty(saved) && Enum.TryParse<BackdropType>(saved, out var type))
+            try
             {
-                CurrentBackdrop = type;
+                var saved = await _storage.LoadAsync<string>("backdrop");
+                if (!string.IsNullOrEmpty(saved) && Enum.TryParse<BackdropType>(saved, out var type))
+                {
+                    CurrentBackdrop = type;
+                }
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("BackdropService.LoadBackdropAsync", ex);
             }
         }
 
@@ -47,8 +54,9 @@ namespace Talkift.Client.Services
                         break;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                CrashLogger.LogException("BackdropService.ApplyBackdrop", ex);
                 window.SystemBackdrop = null;
             }
         }

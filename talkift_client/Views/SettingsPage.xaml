@@ -9,77 +9,130 @@
     mc:Ignorable="d"
     Background="Transparent">
 
-    <Grid Padding="24,16" x:Name="RootGrid">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Grid Padding="0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <TextBlock x:Name="TitleText"
-                   Text="Settings"
-                   Style="{StaticResource TitleLargeTextBlockStyle}"
-                   Margin="0,0,0,24"/>
+        <Grid Grid.Column="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+              BorderThickness="0,0,1,0">
+            <StackPanel Padding="16,24" Spacing="4">
+                <TextBlock x:Name="TitleText"
+                           Text="Settings"
+                           FontSize="24" FontWeight="SemiBold"
+                           Margin="0,0,0,24"/>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <StackPanel Spacing="0" MaxWidth="700" HorizontalAlignment="Left">
+                <Button x:Name="NavAppearance" Click="NavAppearance_Click"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                        Padding="12,10" CornerRadius="8" Background="Transparent"
+                        BorderThickness="0" Tag="Appearance">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon Glyph="&#xE790;" FontSize="18"/>
+                        <TextBlock x:Name="NavAppearanceText" Text="Appearance" VerticalAlignment="Center" FontSize="14"/>
+                    </StackPanel>
+                </Button>
 
-                <Border Style="{StaticResource SettingsSectionCard}">
-                    <StackPanel Spacing="16">
-                        <TextBlock x:Name="AppearanceHeader"
-                                   Text="Appearance"
-                                   Style="{StaticResource SettingsSectionHeader}"/>
+                <Button x:Name="NavLoginServers" Click="NavLoginServers_Click"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                        Padding="12,10" CornerRadius="8" Background="Transparent"
+                        BorderThickness="0" Tag="LoginServers">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon Glyph="&#xE716;" FontSize="18"/>
+                        <TextBlock x:Name="NavLoginServersText" Text="Login Servers" VerticalAlignment="Center" FontSize="14"/>
+                    </StackPanel>
+                </Button>
 
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="BackdropLabel"
-                                       Text="Window Backdrop"
-                                       Style="{StaticResource SettingsRowText}"/>
+                <Button x:Name="NavServerMgmt" Click="NavServerMgmt_Click"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                        Padding="12,10" CornerRadius="8" Background="Transparent"
+                        BorderThickness="0" Tag="ServerMgmt">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon Glyph="&#xE74E;" FontSize="18"/>
+                        <TextBlock x:Name="NavServerMgmtText" Text="Server Management" VerticalAlignment="Center" FontSize="14"/>
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="NavAbout" Click="NavAbout_Click"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                        Padding="12,10" CornerRadius="8" Background="Transparent"
+                        BorderThickness="0" Tag="About">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon Glyph="&#xE946;" FontSize="18"/>
+                        <TextBlock x:Name="NavAboutText" Text="About" VerticalAlignment="Center" FontSize="14"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Padding="32,24">
+            <StackPanel x:Name="ContentPanel" Spacing="24" MaxWidth="600">
+
+                <Border x:Name="AppearanceSection" Style="{StaticResource SettingsSectionCard}">
+                    <StackPanel Spacing="20">
+                        <StackPanel Spacing="4">
+                            <TextBlock x:Name="AppearanceHeader" Text="Appearance"
+                                       FontSize="18" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="AppearanceDesc"
+                                       Text="Customize the look and feel of Talkift"
+                                       FontSize="12"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                        </StackPanel>
+
+                        <StackPanel Spacing="16">
+                            <TextBlock x:Name="BackdropLabel" Text="Window Backdrop"
+                                       FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="BackdropDesc"
+                                       Text="Choose the background effect for the application window"
+                                       FontSize="12"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
                             <ComboBox x:Name="BackdropComboBox"
-                                      Grid.Column="1"
-                                      MinWidth="180"
+                                      MinWidth="220" Padding="12,8"
+                                      CornerRadius="8"
                                       SelectionChanged="BackdropComboBox_SelectionChanged"/>
-                        </Grid>
+                        </StackPanel>
 
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="LanguageLabel"
-                                       Text="Language"
-                                       Style="{StaticResource SettingsRowText}"/>
+                        <Border Background="{ThemeResource CardStrokeColorDefaultBrush}"
+                                Height="1" Margin="0,4"/>
+
+                        <StackPanel Spacing="16">
+                            <TextBlock x:Name="LanguageLabel" Text="Language"
+                                       FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="LanguageDesc"
+                                       Text="Select your preferred language for the interface"
+                                       FontSize="12"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
                             <ComboBox x:Name="LanguageComboBox"
-                                      Grid.Column="1"
-                                      MinWidth="180"
+                                      MinWidth="220" Padding="12,8"
+                                      CornerRadius="8"
                                       SelectionChanged="LanguageComboBox_SelectionChanged"/>
-                        </Grid>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <Border Style="{StaticResource SettingsSectionCard}">
-                    <StackPanel Spacing="12">
+                <Border x:Name="LoginServersSection" Style="{StaticResource SettingsSectionCard}">
+                    <StackPanel Spacing="20">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <TextBlock x:Name="LoginServersHeader"
-                                           Text="Login Servers"
-                                           Style="{StaticResource SettingsSectionHeader}"
-                                           Margin="0"/>
+                            <StackPanel Grid.Column="0" Spacing="4">
+                                <TextBlock x:Name="LoginServersHeader" Text="Login Servers"
+                                           FontSize="18" FontWeight="SemiBold"/>
                                 <TextBlock x:Name="LoginServersDesc"
                                            Text="Manage registration and login servers"
-                                           Style="{StaticResource SettingsRowSubText}"/>
+                                           FontSize="12"
+                                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
                             </StackPanel>
                             <Button Grid.Column="1"
                                     x:Name="AddLoginServerButton"
                                     Content="Add Server"
                                     Click="AddLoginServer_Click"
-                                    CornerRadius="4"/>
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    Padding="16,8"
+                                    CornerRadius="8"/>
                         </Grid>
 
                         <ListView x:Name="LoginServerList"
@@ -88,18 +141,29 @@
                                   MaxHeight="300">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="Models:LoginServer">
-                                    <Grid Padding="12,10" CornerRadius="8"
+                                    <Grid Padding="14,12" CornerRadius="10"
                                           Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                           BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                          BorderThickness="1">
+                                          BorderThickness="1"
+                                          Margin="0,0,0,4">
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="36"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                            <TextBlock Text="{x:Bind Name}" FontWeight="SemiBold"/>
-                                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                                        <Grid Grid.Column="0" VerticalAlignment="Center">
+                                            <Ellipse Width="32" Height="32"
+                                                     Fill="{ThemeResource SystemControlBackgroundAccentBrush}"/>
+                                            <FontIcon Glyph="&#xE716;" FontSize="14"
+                                                      Foreground="White"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,0,0">
+                                            <TextBlock Text="{x:Bind Name}" FontWeight="SemiBold" FontSize="14"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,2,0,0">
                                                 <TextBlock Text="{x:Bind Address}"
                                                            Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                                            FontSize="12"/>
@@ -112,17 +176,19 @@
                                             </StackPanel>
                                         </StackPanel>
 
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                                            <Border CornerRadius="4"
-                                                    Padding="8,2"
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"
+                                                    HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <Border CornerRadius="6"
+                                                    Padding="10,4"
                                                     Background="{ThemeResource SystemControlBackgroundAccentBrush}">
                                                 <TextBlock Text="{x:Bind Type}"
                                                            Foreground="White"
-                                                           FontSize="11"/>
+                                                           FontSize="11" FontWeight="SemiBold"/>
                                             </Border>
                                             <Button Style="{StaticResource IconButtonStyle}"
                                                     Click="DeleteLoginServer_Click"
-                                                    Tag="{x:Bind}">
+                                                    Tag="{x:Bind}"
+                                                    Padding="8">
                                                 <FontIcon Glyph="&#xE74D;" FontSize="14"/>
                                             </Button>
                                         </StackPanel>
@@ -133,79 +199,106 @@
                     </StackPanel>
                 </Border>
 
-                <Border Style="{StaticResource SettingsSectionCard}">
-                    <StackPanel Spacing="16">
-                        <TextBlock x:Name="ServerMgmtHeader"
-                                   Text="Server Management"
-                                   Style="{StaticResource SettingsSectionHeader}"/>
+                <Border x:Name="ServerMgmtSection" Style="{StaticResource SettingsSectionCard}">
+                    <StackPanel Spacing="20">
+                        <StackPanel Spacing="4">
+                            <TextBlock x:Name="ServerMgmtHeader" Text="Server Management"
+                                       FontSize="18" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="ServerMgmtDesc"
+                                       Text="Configure server connection and status settings"
+                                       FontSize="12"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                        </StackPanel>
 
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <TextBlock x:Name="AutoCheckLabel"
-                                           Text="Auto-check server status"
-                                           Style="{StaticResource SettingsRowText}"/>
-                                <TextBlock x:Name="AutoCheckDesc"
-                                           Text="Automatically check if servers are online"
-                                           Style="{StaticResource SettingsRowSubText}"/>
-                            </StackPanel>
-                            <ToggleSwitch x:Name="AutoCheckToggle"
-                                          Grid.Column="1"
-                                          IsOn="{x:Bind ViewModel.AutoCheckServerStatus, Mode=TwoWay}"
-                                          Toggled="AutoCheckToggle_Toggled"/>
-                        </Grid>
+                        <StackPanel Spacing="12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock x:Name="AutoCheckLabel"
+                                               Text="Auto-check server status"
+                                               FontSize="14" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="AutoCheckDesc"
+                                               Text="Automatically check if servers are online"
+                                               FontSize="12"
+                                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                                </StackPanel>
+                                <ToggleSwitch x:Name="AutoCheckToggle"
+                                              Grid.Column="1"
+                                              IsOn="{x:Bind ViewModel.AutoCheckServerStatus, Mode=TwoWay}"
+                                              Toggled="AutoCheckToggle_Toggled"/>
+                            </Grid>
 
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <TextBlock x:Name="TimeoutLabel"
-                                           Text="Connection timeout (seconds)"
-                                           Style="{StaticResource SettingsRowText}"/>
-                                <TextBlock x:Name="TimeoutDesc"
-                                           Text="Maximum time to wait for server response"
-                                           Style="{StaticResource SettingsRowSubText}"/>
-                            </StackPanel>
-                            <NumberBox x:Name="TimeoutNumberBox"
-                                       Grid.Column="1"
-                                       Value="{x:Bind ViewModel.ConnectionTimeout, Mode=TwoWay}"
-                                       Minimum="3"
-                                       Maximum="60"
-                                       Width="100"
-                                       ValueChanged="TimeoutNumberBox_ValueChanged"/>
-                        </Grid>
+                            <Border Background="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    Height="1" Margin="0,4"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock x:Name="TimeoutLabel"
+                                               Text="Connection timeout (seconds)"
+                                               FontSize="14" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="TimeoutDesc"
+                                               Text="Maximum time to wait for server response"
+                                               FontSize="12"
+                                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                                </StackPanel>
+                                <NumberBox x:Name="TimeoutNumberBox"
+                                           Grid.Column="1"
+                                           Value="{x:Bind ViewModel.ConnectionTimeout, Mode=TwoWay}"
+                                           Minimum="3"
+                                           Maximum="60"
+                                           Width="120"
+                                           CornerRadius="8"
+                                           ValueChanged="TimeoutNumberBox_ValueChanged"/>
+                            </Grid>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <Border Style="{StaticResource SettingsSectionCard}">
-                    <StackPanel Spacing="12" HorizontalAlignment="Center">
-                        <FontIcon Glyph="&#xE716;" FontSize="48" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Talkift"
-                                   Style="{StaticResource SettingsSectionHeader}"
-                                   HorizontalAlignment="Center"
-                                   TextAlignment="Center"/>
-                        <TextBlock x:Name="AboutDesc"
-                                   Text="A modern communication platform"
-                                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                                   HorizontalAlignment="Center"
-                                   TextAlignment="Center"/>
-                        <TextBlock HorizontalAlignment="Center"
-                                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                                   FontSize="12"
-                                   Margin="0,8,0,0">
-                            <Run x:Name="VersionLabel" Text="Version"/>
-                            <Run Text="{x:Bind ViewModel.AppVersion}"/>
-                        </TextBlock>
-                        <TextBlock x:Name="CopyrightText"
-                                   Text="Copyright 2026 Talkift Team"
-                                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                                   HorizontalAlignment="Center"
-                                   FontSize="12"/>
+                <Border x:Name="AboutSection" Style="{StaticResource SettingsSectionCard}">
+                    <StackPanel Spacing="16" HorizontalAlignment="Center">
+                        <Border Width="72" Height="72" CornerRadius="18"
+                                Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                HorizontalAlignment="Center">
+                            <FontIcon Glyph="&#xE716;" FontSize="32"
+                                      Foreground="White"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </Border>
+
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <TextBlock Text="Talkift"
+                                       FontSize="20" FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="AboutDesc"
+                                       Text="A modern communication platform"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       HorizontalAlignment="Center"
+                                       FontSize="13"/>
+                        </StackPanel>
+
+                        <Border Background="{ThemeResource CardStrokeColorDefaultBrush}"
+                                Height="1" Margin="0,4"/>
+
+                        <StackPanel HorizontalAlignment="Center" Spacing="6">
+                            <TextBlock HorizontalAlignment="Center"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       FontSize="12">
+                                <Run x:Name="VersionLabel" Text="Version"/>
+                                <Run Text="{x:Bind ViewModel.AppVersion}"/>
+                            </TextBlock>
+                            <TextBlock x:Name="CopyrightText"
+                                       Text="Copyright 2026 Talkift Team"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       HorizontalAlignment="Center"
+                                       FontSize="12"/>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
@@ -213,6 +306,7 @@
                          Severity="Success"
                          IsOpen="False"
                          IsClosable="True"
+                         CornerRadius="8"
                          Margin="0,8,0,0"/>
             </StackPanel>
         </ScrollViewer>

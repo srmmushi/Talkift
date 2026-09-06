@@ -12,42 +12,65 @@ namespace Talkift.Client
         public App()
         {
             this.InitializeComponent();
+            this.UnhandledException += OnUnhandledException;
+        }
+
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            e.Handled = true;
+            CrashLogger.LogException("Application.UnhandledException", e.Exception);
         }
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
-            await LanguageService.LoadLanguageAsync();
-
-            var missingDeps = DependencyCheckService.CheckAll();
-            var reallyMissing = missingDeps.FindAll(d => !d.IsInstalled);
-
-            if (reallyMissing.Count > 0)
+            try
             {
-                _window = new Window();
-                _window.Title = LanguageService.GetString("DependenciesMissing");
-                _window.Content = new Frame();
-                _window.Activate();
+                await LanguageService.LoadLanguageAsync();
 
-                var frame = _window.Content as Frame;
-                if (frame != null)
+                var missingDeps = DependencyCheckService.CheckAll();
+                var reallyMissing = missingDeps.FindAll(d => !d.IsInstalled);
+
+                if (reallyMissing.Count > 0)
                 {
-                    frame.Navigate(typeof(DependencyMissingPage), reallyMissing);
-                }
-                return;
-            }
+                    _window = new Window();
+                    _window.Title = LanguageService.GetString("DependenciesMissing");
+                    _window.Content = new Frame();
+                    _window.Activate();
 
-            LaunchMainWindow();
+                    var frame = _window.Content as Frame;
+                    if (frame != null)
+                    {
+                        frame.Navigate(typeof(DependencyMissingPage), reallyMissing);
+                    }
+                    return;
+                }
+
+                LaunchMainWindow();
+            }
+            catch (System.Exception ex)
+            {
+                CrashLogger.LogException("App.OnLaunched", ex);
+                throw;
+            }
         }
 
         public void LaunchMainWindow()
         {
-            if (_window != null)
+            try
             {
-                _window.Close();
-            }
+                if (_window != null)
+                {
+                    _window.Close();
+                }
 
-            _window = new MainWindow();
-            _window.Activate();
+                _window = new MainWindow();
+                _window.Activate();
+            }
+            catch (System.Exception ex)
+            {
+                CrashLogger.LogException("App.LaunchMainWindow", ex);
+                throw;
+            }
         }
 
         public static Window? CurrentWindow =>

@@ -1,5 +1,7 @@
 using Microsoft.UI.Xaml;
 using System;
+using System.Threading;
+using Talkift.Client.Services;
 
 namespace Talkift.Client
 {
@@ -8,6 +10,9 @@ namespace Talkift.Client
         [STAThread]
         static void Main(string[] args)
         {
+            CrashLogger.Initialize();
+            CrashLogger.LogMessage("Application starting...");
+
             WinRT.ComWrappersSupport.InitializeComWrappers();
             Application.Start((p) =>
             {

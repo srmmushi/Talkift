@@ -18,6 +18,8 @@ namespace Talkift.Client.Views
         public AuthResponse? LastResult { get; private set; }
         public RegisterMode SelectedMode { get; private set; } = RegisterMode.Official;
 
+        public event EventHandler? LoginRequested;
+
         public RegisterDialog(Server server, AuthService authService, List<LoginServer>? loginServers = null)
         {
             this.InitializeComponent();
@@ -41,7 +43,8 @@ namespace Talkift.Client.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            ApplyLocalization();
+            try { ApplyLocalization(); }
+            catch (Exception ex) { CrashLogger.LogException("RegisterDialog.OnLoaded", ex); }
         }
 
         private void ApplyLocalization()
@@ -65,85 +68,99 @@ namespace Talkift.Client.Views
 
         private void MethodRadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (MethodRadioButtons.SelectedItem is RadioButton rb)
+            try
             {
-                SelectedMode = rb.Tag?.ToString() switch
+                if (MethodRadioButtons.SelectedItem is RadioButton rb)
                 {
-                    "Official" => RegisterMode.Official,
-                    "Local" => RegisterMode.Local,
-                    "ThirdParty" => RegisterMode.ThirdParty,
-                    _ => RegisterMode.Official
-                };
+                    SelectedMode = rb.Tag?.ToString() switch
+                    {
+                        "Official" => RegisterMode.Official,
+                        "Local" => RegisterMode.Local,
+                        "ThirdParty" => RegisterMode.ThirdParty,
+                        _ => RegisterMode.Official
+                    };
 
-                ThirdPartyPanel.Visibility = SelectedMode == RegisterMode.ThirdParty
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
+                    ThirdPartyPanel.Visibility = SelectedMode == RegisterMode.ThirdParty
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                }
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("MethodRadioButtons_SelectionChanged", ex);
             }
         }
 
         private async void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            ErrorInfoBar.IsOpen = false;
-
-            if (string.IsNullOrWhiteSpace(UsernameBox.Text))
+            try
             {
-                ShowError(LanguageService.GetString("UsernameRequired"));
-                return;
-            }
+                ErrorInfoBar.IsOpen = false;
 
-            if (UsernameBox.Text.Trim().Length < 3)
-            {
-                ShowError(LanguageService.GetString("UsernameMinLength"));
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(PasswordBox.Password))
-            {
-                ShowError(LanguageService.GetString("PasswordRequired"));
-                return;
-            }
-
-            if (PasswordBox.Password.Length < 6)
-            {
-                ShowError(LanguageService.GetString("PasswordMinLength"));
-                return;
-            }
-
-            if (PasswordBox.Password != ConfirmPasswordBox.Password)
-            {
-                ShowError(LanguageService.GetString("PasswordsNoMatch"));
-                return;
-            }
-
-            string? thirdPartyServer = null;
-            if (SelectedMode == RegisterMode.ThirdParty)
-            {
-                if (ThirdPartyServerCombo.SelectedIndex < 0)
+                if (string.IsNullOrWhiteSpace(UsernameBox.Text))
                 {
-                    ShowError(LanguageService.GetString("SelectRegistrationServer"));
+                    ShowError(LanguageService.GetString("UsernameRequired"));
                     return;
                 }
-                var selectedServer = _loginServers[ThirdPartyServerCombo.SelectedIndex];
-                thirdPartyServer = $"{selectedServer.Address}:{selectedServer.Port}";
+
+                if (UsernameBox.Text.Trim().Length < 3)
+                {
+                    ShowError(LanguageService.GetString("UsernameMinLength"));
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(PasswordBox.Password))
+                {
+                    ShowError(LanguageService.GetString("PasswordRequired"));
+                    return;
+                }
+
+                if (PasswordBox.Password.Length < 6)
+                {
+                    ShowError(LanguageService.GetString("PasswordMinLength"));
+                    return;
+                }
+
+                if (PasswordBox.Password != ConfirmPasswordBox.Password)
+                {
+                    ShowError(LanguageService.GetString("PasswordsNoMatch"));
+                    return;
+                }
+
+                string? thirdPartyServer = null;
+                if (SelectedMode == RegisterMode.ThirdParty)
+                {
+                    if (ThirdPartyServerCombo.SelectedIndex < 0)
+                    {
+                        ShowError(LanguageService.GetString("SelectRegistrationServer"));
+                        return;
+                    }
+                    var selectedServer = _loginServers[ThirdPartyServerCombo.SelectedIndex];
+                    thirdPartyServer = $"{selectedServer.Address}:{selectedServer.Port}";
+                }
+
+                SetLoading(true);
+                LastResult = await _authService.RegisterAsync(
+                    UsernameBox.Text.Trim(),
+                    PasswordBox.Password,
+                    SelectedMode,
+                    _server.Address,
+                    _server.Port,
+                    thirdPartyServer);
+                SetLoading(false);
+
+                if (!LastResult.Success)
+                {
+                    ShowError(LastResult.Message ?? LanguageService.GetString("RegistrationFailed"));
+                }
             }
-
-            SetLoading(true);
-            LastResult = await _authService.RegisterAsync(
-                UsernameBox.Text.Trim(),
-                PasswordBox.Password,
-                SelectedMode,
-                _server.Address,
-                _server.Port,
-                thirdPartyServer);
-            SetLoading(false);
-
-            if (!LastResult.Success)
+            catch (Exception ex)
             {
-                ShowError(LastResult.Message ?? LanguageService.GetString("RegistrationFailed"));
+                CrashLogger.LogException("RegisterButton_Click", ex);
+                SetLoading(false);
+                ShowError(LanguageService.GetString("RegistrationFailed"));
             }
         }
-
-        public event EventHandler? LoginRequested;
 
         private void LoginLink_Click(object sender, RoutedEventArgs e)
         {
@@ -164,14 +181,7 @@ namespace Talkift.Client.Views
 
         private void ToggleVisibility(PasswordBox pwdBox, FontIcon icon, bool showPlain)
         {
-            if (showPlain)
-            {
-                icon.Glyph = "\uE891";
-            }
-            else
-            {
-                icon.Glyph = "\uE890";
-            }
+            icon.Glyph = showPlain ? "\uE891" : "\uE890";
         }
 
         private void ShowError(string message)

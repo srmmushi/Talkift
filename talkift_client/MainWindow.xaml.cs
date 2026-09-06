@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -21,179 +22,278 @@ namespace Talkift.Client
 
         public MainWindow()
         {
-            this.InitializeComponent();
-            NavView.Loaded += NavView_Loaded;
-            ContentFrame.Navigated += ContentFrame_Navigated;
-
-            ExtendsContentIntoTitleBar = true;
-            SetTitleBar(TitleBar);
-
-            if (AppWindow.Presenter is OverlappedPresenter presenter)
+            try
             {
-                presenter.PreferredMinimumWidth = 480;
-                presenter.PreferredMinimumHeight = 360;
+                this.InitializeComponent();
+                NavView.Loaded += NavView_Loaded;
+                ContentFrame.Navigated += ContentFrame_Navigated;
+
+                ExtendsContentIntoTitleBar = true;
+                SetTitleBar(TitleBar);
+
+                if (AppWindow.Presenter is OverlappedPresenter presenter)
+                {
+                    presenter.PreferredMinimumWidth = 480;
+                    presenter.PreferredMinimumHeight = 360;
+                }
+
+                ApplyLocalization();
+                _ = InitBackdropAsync();
+
+                LanguageService.LanguageChanged += () =>
+                {
+                    DispatcherQueue.TryEnqueue(() => ApplyLocalization());
+                };
+
+                ContentFrame.Navigate(typeof(ServerListView));
             }
-
-            ApplyLocalization();
-            _ = InitBackdropAsync();
-
-            LanguageService.LanguageChanged += () =>
+            catch (Exception ex)
             {
-                DispatcherQueue.TryEnqueue(() => ApplyLocalization());
-            };
-
-            ContentFrame.Navigate(typeof(ServerListView));
+                CrashLogger.LogException("MainWindow constructor", ex);
+                throw;
+            }
         }
 
         private async System.Threading.Tasks.Task InitBackdropAsync()
         {
-            await BackdropService.LoadBackdropAsync();
-            await System.Threading.Tasks.Task.Delay(100);
-            BackdropService.ApplyCurrentBackdrop(this);
+            try
+            {
+                await BackdropService.LoadBackdropAsync();
+                await System.Threading.Tasks.Task.Delay(200);
+                BackdropService.ApplyCurrentBackdrop(this);
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("InitBackdropAsync", ex);
+            }
         }
 
         private void ApplyLocalization()
         {
-            ServersNavItem.Content = LanguageService.GetString("Servers");
-            ConversationsNavItem.Content = LanguageService.GetString("Conversations");
-            AddServerNavText.Text = LanguageService.GetString("AddServer");
-            LogoutButtonText.Text = LanguageService.GetString("Logout");
-            AppTitleText.Text = LanguageService.GetString("AppTitle");
-            Title = LanguageService.GetString("AppTitle");
+            try
+            {
+                ServersNavItem.Content = LanguageService.GetString("Servers");
+                ConversationsNavItem.Content = LanguageService.GetString("Conversations");
+                AddServerNavText.Text = LanguageService.GetString("AddServer");
+                LogoutButtonText.Text = LanguageService.GetString("Logout");
+                AppTitleText.Text = LanguageService.GetString("AppTitle");
+                Title = LanguageService.GetString("AppTitle");
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("ApplyLocalization", ex);
+            }
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
-            ContentFrame.Navigate(typeof(ServerListView));
+            try
+            {
+                ContentFrame.Navigate(typeof(ServerListView));
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("NavView_Loaded", ex);
+            }
         }
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            if (args.IsSettingsInvoked)
+            try
             {
-                ContentFrame.Navigate(typeof(SettingsPage));
+                if (args.IsSettingsInvoked)
+                {
+                    ContentFrame.Navigate(typeof(SettingsPage));
+                }
+                else if (args.InvokedItemContainer?.Tag?.ToString() == "Servers")
+                {
+                    ContentFrame.Navigate(typeof(ServerListView));
+                }
+                else if (args.InvokedItemContainer?.Tag?.ToString() == "Conversations")
+                {
+                    ContentFrame.Navigate(typeof(ConversationListPage));
+                }
             }
-            else if (args.InvokedItemContainer?.Tag?.ToString() == "Servers")
+            catch (Exception ex)
             {
-                ContentFrame.Navigate(typeof(ServerListView));
-            }
-            else if (args.InvokedItemContainer?.Tag?.ToString() == "Conversations")
-            {
-                ContentFrame.Navigate(typeof(ConversationListPage));
+                CrashLogger.LogException("NavView_ItemInvoked", ex);
             }
         }
 
         private void NavView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
-            if (ContentFrame.CanGoBack)
+            try
             {
-                ContentFrame.GoBack();
+                if (ContentFrame.CanGoBack)
+                {
+                    ContentFrame.GoBack();
+                }
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("NavView_BackRequested", ex);
             }
         }
 
         private void ContentFrame_Navigated(object sender, NavigationEventArgs e)
         {
-            if (e.SourcePageType == typeof(SettingsPage))
+            try
             {
-                NavView.SelectedItem = NavView.SettingsItem;
-            }
-            else if (e.SourcePageType == typeof(ServerListView))
-            {
-                NavView.SelectedItem = ServersNavItem;
-            }
-            else if (e.SourcePageType == typeof(ConversationListPage))
-            {
-                NavView.SelectedItem = ConversationsNavItem;
-            }
+                if (e.SourcePageType == typeof(SettingsPage))
+                {
+                    NavView.SelectedItem = NavView.SettingsItem;
+                }
+                else if (e.SourcePageType == typeof(ServerListView))
+                {
+                    NavView.SelectedItem = ServersNavItem;
+                }
+                else if (e.SourcePageType == typeof(ConversationListPage))
+                {
+                    NavView.SelectedItem = ConversationsNavItem;
+                }
 
-            NavView.IsBackEnabled = ContentFrame.CanGoBack;
+                NavView.IsBackEnabled = ContentFrame.CanGoBack;
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("ContentFrame_Navigated", ex);
+            }
         }
 
         private async void AddServerNavButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new ContentDialog
+            try
             {
-                Title = LanguageService.GetString("AddServer"),
-                PrimaryButtonText = LanguageService.GetString("Add"),
-                CloseButtonText = LanguageService.GetString("Cancel"),
-                DefaultButton = ContentDialogButton.Primary,
-                Content = new AddServerDialog(),
-                XamlRoot = this.NavView.XamlRoot
-            };
-
-            var result = await dialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
-            {
-                var addDialog = (AddServerDialog)dialog.Content;
-                var server = new Server
+                var dialog = new ContentDialog
                 {
-                    Name = addDialog.ServerName,
-                    Address = addDialog.ServerAddress,
-                    Port = addDialog.ServerPort,
-                    Password = addDialog.ServerPassword
+                    Title = LanguageService.GetString("AddServer"),
+                    PrimaryButtonText = LanguageService.GetString("Add"),
+                    CloseButtonText = LanguageService.GetString("Cancel"),
+                    DefaultButton = ContentDialogButton.Primary,
+                    Content = new AddServerDialog(),
+                    XamlRoot = this.NavView.XamlRoot
                 };
 
-                if (ContentFrame.CurrentSourcePageType == typeof(ServerListView))
+                var result = await dialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
                 {
-                    var serverPage = ContentFrame.Content as ServerListView;
-                    if (serverPage != null)
+                    var addDialog = (AddServerDialog)dialog.Content;
+                    var server = new Server
                     {
-                        await serverPage.ViewModel.AddServerAsync(server);
-                        serverPage.UpdateEmptyState();
+                        Name = addDialog.ServerName,
+                        Address = addDialog.ServerAddress,
+                        Port = addDialog.ServerPort,
+                        Password = addDialog.ServerPassword
+                    };
+
+                    if (ContentFrame.CurrentSourcePageType == typeof(ServerListView))
+                    {
+                        var serverPage = ContentFrame.Content as ServerListView;
+                        if (serverPage != null)
+                        {
+                            await serverPage.ViewModel.AddServerAsync(server);
+                            serverPage.UpdateEmptyState();
+                        }
+                    }
+                    else
+                    {
+                        NavigateToServerList();
                     }
                 }
-                else
-                {
-                    NavigateToServerList();
-                }
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("AddServerNavButton_Click", ex);
             }
         }
 
         public void NavigateToChat(Conversation? conversation = null)
         {
-            if (conversation != null)
-                CurrentConversation = conversation;
-            ContentFrame.Navigate(typeof(ChatPage));
+            try
+            {
+                if (conversation != null)
+                    CurrentConversation = conversation;
+                ContentFrame.Navigate(typeof(ChatPage));
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("NavigateToChat", ex);
+            }
         }
 
         public void NavigateToConversationList()
         {
-            ContentFrame.Navigate(typeof(ConversationListPage));
+            try
+            {
+                ContentFrame.Navigate(typeof(ConversationListPage));
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("NavigateToConversationList", ex);
+            }
         }
 
         public void NavigateToConversationSettings()
         {
-            ContentFrame.Navigate(typeof(ConversationSettingsPage));
+            try
+            {
+                ContentFrame.Navigate(typeof(ConversationSettingsPage));
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("NavigateToConversationSettings", ex);
+            }
         }
 
         public void NavigateToServerList()
         {
-            ContentFrame.Navigate(typeof(ServerListView));
+            try
+            {
+                ContentFrame.Navigate(typeof(ServerListView));
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("NavigateToServerList", ex);
+            }
         }
 
         public void UpdateUserInfo()
         {
-            if (ViewModel.IsLoggedIn && !string.IsNullOrEmpty(ViewModel.CurrentUsername))
+            try
             {
-                UserInfoPanel.Visibility = Visibility.Visible;
-                UsernameText.Text = ViewModel.CurrentUsername;
+                if (ViewModel.IsLoggedIn && !string.IsNullOrEmpty(ViewModel.CurrentUsername))
+                {
+                    UserInfoPanel.Visibility = Visibility.Visible;
+                    UsernameText.Text = ViewModel.CurrentUsername;
 
-                var glyph = MainViewModel.GetRegisterMethodGlyph(ViewModel.CurrentRegisterMethod);
-                var color = MainViewModel.GetRegisterMethodColor(ViewModel.CurrentRegisterMethod);
-                UserMethodIcon.Glyph = glyph;
-                UserMethodIcon.Foreground = new SolidColorBrush(color);
+                    var glyph = MainViewModel.GetRegisterMethodGlyph(ViewModel.CurrentRegisterMethod);
+                    var color = MainViewModel.GetRegisterMethodColor(ViewModel.CurrentRegisterMethod);
+                    UserMethodIcon.Glyph = glyph;
+                    UserMethodIcon.Foreground = new SolidColorBrush(color);
+                }
+                else
+                {
+                    UserInfoPanel.Visibility = Visibility.Collapsed;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                UserInfoPanel.Visibility = Visibility.Collapsed;
+                CrashLogger.LogException("UpdateUserInfo", ex);
             }
         }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.Logout();
-            UpdateUserInfo();
-            NavigateToServerList();
+            try
+            {
+                ViewModel.Logout();
+                UpdateUserInfo();
+                NavigateToServerList();
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("LogoutButton_Click", ex);
+            }
         }
     }
 }

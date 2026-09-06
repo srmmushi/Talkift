@@ -8,13 +8,13 @@
     mc:Ignorable="d"
     Title="Talkift">
 
-    <Grid>
+    <Grid Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Padding="16,8" x:Name="TitleBar">
+        <Grid Grid.Row="0" Padding="16,8" x:Name="TitleBar" Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -58,6 +58,7 @@
                         PaneDisplayMode="Left"
                         OpenPaneLength="220"
                         CompactPaneLength="48"
+                        PaneBackground="Transparent"
                         ItemInvoked="NavView_ItemInvoked"
                         BackRequested="NavView_BackRequested"
                         Loaded="NavView_Loaded">

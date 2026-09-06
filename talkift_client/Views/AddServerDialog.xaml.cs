@@ -38,7 +38,8 @@ namespace Talkift.Client.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            ApplyLocalization();
+            try { ApplyLocalization(); }
+            catch (Exception ex) { CrashLogger.LogException("AddServerDialog.OnLoaded", ex); }
         }
 
         private void ApplyLocalization()
@@ -54,14 +55,14 @@ namespace Talkift.Client.Views
 
         private void AddressBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var address = AddressBox.Text?.Trim() ?? string.Empty;
-            if (IsIpAddress(address))
+            try
             {
-                PortPanel.Visibility = Visibility.Visible;
+                var address = AddressBox.Text?.Trim() ?? string.Empty;
+                PortPanel.Visibility = IsIpAddress(address) ? Visibility.Visible : Visibility.Collapsed;
             }
-            else
+            catch (Exception ex)
             {
-                PortPanel.Visibility = Visibility.Collapsed;
+                CrashLogger.LogException("AddressBox_TextChanged", ex);
             }
         }
 

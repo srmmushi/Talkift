@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -20,41 +21,74 @@ namespace Talkift.Client.Views
 
         private async void ChatPage_Loaded(object sender, RoutedEventArgs e)
         {
-            ApplyLocalization();
-
-            var mainWindow = (MainWindow)Window.Current;
-            if (mainWindow.ViewModel.SelectedServer is Server server
-                && mainWindow.ViewModel.CurrentUser is User user)
+            try
             {
-                ViewModel.NewMessageReceived += OnNewMessage;
-                ViewModel.ErrorOccurred += OnError;
+                ApplyLocalization();
 
-                if (mainWindow.CurrentConversation != null)
+                var mainWindow = App.CurrentWindow as MainWindow;
+                if (mainWindow == null) return;
+
+                if (mainWindow.ViewModel.SelectedServer is Server server
+                    && mainWindow.ViewModel.CurrentUser is User user)
                 {
-                    await ViewModel.InitializeAsync(server, mainWindow.CurrentConversation, user.Id);
+                    ViewModel.NewMessageReceived += OnNewMessage;
+                    ViewModel.ErrorOccurred += OnError;
+
+                    if (mainWindow.CurrentConversation != null)
+                    {
+                        await ViewModel.InitializeAsync(server, mainWindow.CurrentConversation, user.Id);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("ChatPage_Loaded", ex);
             }
         }
 
         private void ApplyLocalization()
         {
-            MessageInput.PlaceholderText = LanguageService.GetString("TypeMessage");
-            EmptyChatText.Text = LanguageService.GetString("NoMessages");
+            try
+            {
+                MessageInput.PlaceholderText = LanguageService.GetString("TypeMessage");
+                EmptyChatText.Text = LanguageService.GetString("NoMessages");
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("ChatPage.ApplyLocalization", ex);
+            }
         }
 
         private async void ChatPage_Unloaded(object sender, RoutedEventArgs e)
         {
-            ViewModel.NewMessageReceived -= OnNewMessage;
-            ViewModel.ErrorOccurred -= OnError;
-            await ViewModel.DisconnectAsync();
+            try
+            {
+                ViewModel.NewMessageReceived -= OnNewMessage;
+                ViewModel.ErrorOccurred -= OnError;
+                await ViewModel.DisconnectAsync();
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("ChatPage_Unloaded", ex);
+            }
         }
 
         private void OnNewMessage(ChatMessage message)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            try
             {
-                MessagesList.ScrollIntoView(MessagesList.Items[^1]);
-            });
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    if (MessagesList.Items.Count > 0)
+                    {
+                        MessagesList.ScrollIntoView(MessagesList.Items[^1]);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("OnNewMessage", ex);
+            }
         }
 
         private void OnError(string error)
@@ -68,22 +102,36 @@ namespace Talkift.Client.Views
 
         private async void SendButton_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.MessageText = MessageInput.Text;
-            await ViewModel.SendMessageAsync();
-            MessageInput.Text = string.Empty;
-            SendButton.IsEnabled = false;
-            MessageInput.Focus(FocusState.Programmatic);
-        }
-
-        private async void MessageInput_KeyDown(object sender, KeyRoutedEventArgs e)
-        {
-            if (e.Key == Windows.System.VirtualKey.Enter)
+            try
             {
-                e.Handled = true;
                 ViewModel.MessageText = MessageInput.Text;
                 await ViewModel.SendMessageAsync();
                 MessageInput.Text = string.Empty;
                 SendButton.IsEnabled = false;
+                MessageInput.Focus(FocusState.Programmatic);
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("SendButton_Click", ex);
+            }
+        }
+
+        private async void MessageInput_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            try
+            {
+                if (e.Key == Windows.System.VirtualKey.Enter)
+                {
+                    e.Handled = true;
+                    ViewModel.MessageText = MessageInput.Text;
+                    await ViewModel.SendMessageAsync();
+                    MessageInput.Text = string.Empty;
+                    SendButton.IsEnabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("MessageInput_KeyDown", ex);
             }
         }
 
@@ -94,8 +142,15 @@ namespace Talkift.Client.Views
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            var mainWindow = (MainWindow)Window.Current;
-            mainWindow.NavigateToConversationSettings();
+            try
+            {
+                var mainWindow = App.CurrentWindow as MainWindow;
+                mainWindow?.NavigateToConversationSettings();
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("SettingsButton_Click", ex);
+            }
         }
     }
 }
