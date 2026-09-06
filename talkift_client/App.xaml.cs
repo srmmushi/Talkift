@@ -36,6 +36,16 @@ namespace Talkift.Client
                 return;
             }
 
+            LaunchMainWindow();
+        }
+
+        public void LaunchMainWindow()
+        {
+            if (_window != null)
+            {
+                _window.Close();
+            }
+
             _window = new MainWindow();
             _window.Activate();
         }

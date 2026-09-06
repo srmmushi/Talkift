@@ -33,7 +33,8 @@
                 <StackPanel x:Name="DependencyStackPanel" Spacing="4"/>
             </Border>
 
-            <InfoBar Severity="Warning"
+            <InfoBar x:Name="WarningInfoBar"
+                     Severity="Warning"
                      IsOpen="True"
                      IsClosable="False"/>
 
@@ -44,12 +45,29 @@
                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                        FontSize="12"/>
 
-            <Button x:Name="CloseButton"
-                    Content="Close"
-                    HorizontalAlignment="Center"
-                    Padding="32,8"
-                    CornerRadius="4"
-                    Click="CloseButton_Click"/>
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Spacing="12">
+                <Button x:Name="SkipButton"
+                        Content="Skip and Continue"
+                        HorizontalAlignment="Center"
+                        Padding="32,8"
+                        CornerRadius="4"
+                        Click="SkipButton_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundAccentBrush}"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button x:Name="CloseButton"
+                        Content="Close"
+                        HorizontalAlignment="Center"
+                        Padding="32,8"
+                        CornerRadius="4"
+                        Click="CloseButton_Click"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>

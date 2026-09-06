@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using Talkift.Client.Services;
 
@@ -22,6 +21,12 @@ namespace Talkift.Client.Views
             {
                 PopulateDependencies(missingDeps);
             }
+        }
+
+        private void SkipButton_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            app.LaunchMainWindow();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
