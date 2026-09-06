@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:Talkift.Client.Models"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Transparent">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -16,7 +16,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
         <Grid Grid.Row="0" Padding="16,12"
               Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -50,7 +49,6 @@
             </StackPanel>
         </Grid>
 
-        <!-- Messages -->
         <ListView Grid.Row="1"
                   x:Name="MessagesList"
                   Padding="16,8"
@@ -65,7 +63,6 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Mine: right-aligned blue bubble -->
                         <Grid Grid.Column="1"
                               HorizontalAlignment="Right"
                               x:Name="MineBubble"
@@ -99,7 +96,6 @@
                             </StackPanel>
                         </Grid>
 
-                        <!-- Others: left-aligned gray bubble -->
                         <StackPanel Grid.Column="0"
                                     Orientation="Horizontal"
                                     HorizontalAlignment="Left"
@@ -137,7 +133,6 @@
                    Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                    Visibility="Collapsed"/>
 
-        <!-- Connection status -->
         <InfoBar Grid.Row="1"
                  x:Name="ErrorInfoBar"
                  Severity="Error"
@@ -146,7 +141,6 @@
                  VerticalAlignment="Top"
                  Margin="16,8"/>
 
-        <!-- Input bar -->
         <Grid Grid.Row="2" Padding="16,8"
               Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"

@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:Talkift.Client.Models"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Transparent">
 
     <Grid Padding="16">
         <Grid.RowDefinitions>
@@ -16,7 +16,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
         <Grid Grid.Row="0" Margin="0,0,0,12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -52,7 +51,6 @@
             </StackPanel>
         </Grid>
 
-        <!-- Connection status -->
         <InfoBar Grid.Row="1"
                  x:Name="StatusInfoBar"
                  Severity="Informational"
@@ -60,7 +58,6 @@
                  IsClosable="True"
                  Margin="0,0,0,8"/>
 
-        <!-- Conversation list -->
         <ListView Grid.Row="2"
                   x:Name="ConversationListView"
                   IsItemClickEnabled="True"

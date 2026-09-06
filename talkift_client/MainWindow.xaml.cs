@@ -27,8 +27,13 @@ namespace Talkift.Client
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(TitleBar);
 
-            _ = InitBackdropAsync();
             ApplyLocalization();
+            _ = InitBackdropAsync();
+
+            LanguageService.LanguageChanged += () =>
+            {
+                DispatcherQueue.TryEnqueue(() => ApplyLocalization());
+            };
 
             ContentFrame.Navigate(typeof(ServerListView));
         }
@@ -36,6 +41,7 @@ namespace Talkift.Client
         private async System.Threading.Tasks.Task InitBackdropAsync()
         {
             await BackdropService.LoadBackdropAsync();
+            await System.Threading.Tasks.Task.Delay(100);
             BackdropService.ApplyCurrentBackdrop(this);
         }
 
@@ -44,7 +50,6 @@ namespace Talkift.Client
             ServersNavItem.Content = LanguageService.GetString("Servers");
             ConversationsNavItem.Content = LanguageService.GetString("Conversations");
             AddServerNavText.Text = LanguageService.GetString("AddServer");
-            SettingsNavText.Text = LanguageService.GetString("Settings");
             LogoutButtonText.Text = LanguageService.GetString("Logout");
             AppTitleText.Text = LanguageService.GetString("AppTitle");
             Title = LanguageService.GetString("AppTitle");
@@ -95,11 +100,6 @@ namespace Talkift.Client
             }
 
             NavView.IsBackEnabled = ContentFrame.CanGoBack;
-        }
-
-        private void SettingsButton_Click(object sender, RoutedEventArgs e)
-        {
-            ContentFrame.Navigate(typeof(SettingsPage));
         }
 
         private async void AddServerNavButton_Click(object sender, RoutedEventArgs e)

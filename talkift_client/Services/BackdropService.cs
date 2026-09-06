@@ -47,7 +47,7 @@ namespace Talkift.Client.Services
                         break;
                 }
             }
-            catch (Exception)
+            catch
             {
                 window.SystemBackdrop = null;
             }

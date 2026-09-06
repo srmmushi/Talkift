@@ -8,7 +8,7 @@
     xmlns:local="using:Talkift.Client.Views"
     xmlns:Models="using:Talkift.Client.Models"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Transparent">
 
     <Grid Padding="24,16">
         <Grid.RowDefinitions>

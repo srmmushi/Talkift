@@ -7,12 +7,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:Talkift.Client.Models"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Transparent">
 
     <ScrollViewer Padding="24,16">
         <StackPanel Spacing="24" MaxWidth="600" HorizontalAlignment="Left">
 
-            <!-- Back button -->
             <Button Click="BackButton_Click"
                     Style="{StaticResource SubtitleTextBlockStyle}"
                     HorizontalAlignment="Left">
@@ -22,7 +21,6 @@
                 </StackPanel>
             </Button>
 
-            <!-- Info section -->
             <StackPanel Spacing="8">
                 <TextBlock x:Name="InfoHeader"
                            Text="Info"
@@ -61,7 +59,6 @@
                 </Border>
             </StackPanel>
 
-            <!-- Members section -->
             <StackPanel Spacing="8">
                 <TextBlock x:Name="MembersHeader"
                            Text="Members"
@@ -100,7 +97,6 @@
                 </ListView>
             </StackPanel>
 
-            <!-- DND toggle -->
             <StackPanel Spacing="8"
                         Visibility="{x:Bind IsDndVisible, Mode=OneWay}">
                 <TextBlock x:Name="NotificationsHeader"
@@ -113,7 +109,6 @@
                               OnContent="Off"/>
             </StackPanel>
 
-            <!-- Owner actions -->
             <StackPanel Spacing="8"
                         Visibility="{x:Bind IsOwnerVisible, Mode=OneWay}">
                 <TextBlock x:Name="AdminHeader"
@@ -128,7 +123,6 @@
                         CornerRadius="4"/>
             </StackPanel>
 
-            <!-- Leave button -->
             <Button x:Name="LeaveButton"
                     Content="Leave"
                     Click="LeaveButton_Click"

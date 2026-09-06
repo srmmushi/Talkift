@@ -89,7 +89,7 @@ namespace Talkift.Client.Views
             CreatedLabel.Text = LanguageService.GetString("Created");
             MembersHeader.Text = LanguageService.GetString("Members");
             NotificationsHeader.Text = LanguageService.GetString("Notifications");
-            ((TextBlock)DndToggle.Header).Text = LanguageService.GetString("DoNotDisturb");
+            DndToggle.Header = LanguageService.GetString("DoNotDisturb");
             AdminHeader.Text = LanguageService.GetString("AdminActions");
             DeleteGroupButton.Content = LanguageService.GetString("DeleteGroup");
             LeaveButton.Content = LanguageService.GetString("Leave");
