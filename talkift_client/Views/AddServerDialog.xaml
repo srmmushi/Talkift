@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Talkift.Client.Views.AddServerDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Width="420">
+
+    <StackPanel Padding="8" Spacing="16">
+        <TextBox x:Name="ServerNameBox"
+                 Header="Server Name *"
+                 PlaceholderText="My Server"/>
+
+        <TextBox x:Name="AddressBox"
+                 Header="Server Address *"
+                 PlaceholderText="example.com or 192.168.1.1"
+                 TextChanged="AddressBox_TextChanged"/>
+
+        <StackPanel x:Name="PortPanel" Visibility="Collapsed" Spacing="0">
+            <NumberBox x:Name="PortBox"
+                       Header="Port"
+                       Value="8080"
+                       Minimum="1"
+                       Maximum="65535"
+                       SpinButtonPlacementMode="Compact"/>
+        </StackPanel>
+
+        <PasswordBox x:Name="PasswordBox"
+                     Header="Password (optional)"
+                     PlaceholderText="Leave empty if none"/>
+
+        <TextBlock x:Name="ValidationText"
+                   Foreground="Red"
+                   FontSize="12"
+                   Visibility="Collapsed"
+                   TextWrapping="Wrap"/>
+    </StackPanel>
+</UserControl>

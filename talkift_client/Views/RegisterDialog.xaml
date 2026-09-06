@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Talkift.Client.Views.RegisterDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Width="400">
+
+    <StackPanel Padding="8" Spacing="14">
+        <TextBlock Text="Create Account"
+                   Style="{StaticResource SubtitleTextBlockStyle}"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,8"/>
+
+        <InfoBar x:Name="ErrorInfoBar"
+                 Severity="Error"
+                 IsOpen="False"
+                 IsClosable="True"
+                 HorizontalAlignment="Stretch"/>
+
+        <TextBlock Text="Register Method"
+                   FontSize="12"
+                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+
+        <RadioButtons x:Name="MethodRadioButtons"
+                      SelectionChanged="MethodRadioButtons_SelectionChanged">
+            <RadioButton Content="Official" Tag="Official" IsChecked="True"/>
+            <RadioButton Content="Local" Tag="Local"/>
+            <RadioButton Content="Third Party" Tag="ThirdParty"/>
+        </RadioButtons>
+
+        <StackPanel x:Name="ThirdPartyPanel" Visibility="Collapsed" Spacing="4">
+            <TextBlock Text="Registration Server"
+                       FontSize="12"
+                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+            <ComboBox x:Name="ThirdPartyServerCombo"
+                      HorizontalAlignment="Stretch"/>
+        </StackPanel>
+
+        <TextBox x:Name="UsernameBox"
+                 Header="Username"
+                 PlaceholderText="3-32 characters"
+                 MaxLength="32"/>
+
+        <Grid>
+            <PasswordBox x:Name="PasswordBox"
+                         Header="Password"
+                         PlaceholderText="At least 6 characters"
+                         MaxLength="64"/>
+            <Button HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,4,8"
+                    Padding="6,2"
+                    Click="TogglePassword1_Click"
+                    Background="Transparent"
+                    BorderThickness="0">
+                <FontIcon x:Name="ToggleIcon1" Glyph="&#xE890;" FontSize="14"/>
+            </Button>
+        </Grid>
+
+        <Grid>
+            <PasswordBox x:Name="ConfirmPasswordBox"
+                         Header="Confirm Password"
+                         PlaceholderText="Re-enter password"
+                         MaxLength="64"/>
+            <Button HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,4,8"
+                    Padding="6,2"
+                    Click="TogglePassword2_Click"
+                    Background="Transparent"
+                    BorderThickness="0">
+                <FontIcon x:Name="ToggleIcon2" Glyph="&#xE890;" FontSize="14"/>
+            </Button>
+        </Grid>
+
+        <Button x:Name="RegisterButton"
+                Content="Register"
+                Style="{StaticResource AccentButtonStyle}"
+                HorizontalAlignment="Stretch"
+                Padding="16,10"
+                CornerRadius="8"
+                Click="RegisterButton_Click"/>
+
+        <HyperlinkButton HorizontalAlignment="Center"
+                          Click="LoginLink_Click">
+            <TextBlock>
+                <Run Text="Already have an account?"/>
+                <Run Text=" Login" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
+            </TextBlock>
+        </HyperlinkButton>
+
+        <ProgressRing x:Name="LoadingRing"
+                      IsActive="False"
+                      HorizontalAlignment="Center"
+                      Width="30" Height="30"/>
+    </StackPanel>
+</UserControl>

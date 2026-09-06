@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Talkift.Client.Views.ServerListView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:Talkift.Client.Views"
+    xmlns:Models="using:Talkift.Client.Models"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Padding="24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       x:Name="HeaderText"
+                       Text="Servers"
+                       Style="{StaticResource TitleLargeTextBlockStyle}"
+                       VerticalAlignment="Center"/>
+
+            <Button Grid.Column="1"
+                    x:Name="AddServerButton"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Click="AddServerButton_Click"
+                    Padding="16,8"
+                    CornerRadius="8">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon Glyph="&#xE710;" FontSize="14"/>
+                    <TextBlock Text="Add Server" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <InfoBar x:Name="StatusInfoBar"
+                 Grid.Row="1"
+                 IsClosable="True"
+                 IsOpen="False"
+                 Margin="0,0,0,12"
+                 HorizontalAlignment="Stretch"/>
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ListView x:Name="ServerListViewCtrl"
+                      ItemsSource="{x:Bind ViewModel.Servers}"
+                      SelectionMode="Single"
+                      IsItemClickEnabled="True"
+                      ItemClick="ServerListView_ItemClick"
+                      SelectionChanged="ServerListView_SelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="Models:Server">
+                        <Grid Padding="12,10" CornerRadius="8"
+                              Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                              BorderThickness="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="44"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Grid.Column="0" VerticalAlignment="Center">
+                                <Ellipse Width="36" Height="36"
+                                         Fill="{ThemeResource AccentColor}"/>
+                                <TextBlock Text="{x:Bind Name}"
+                                           FontSize="14" FontWeight="SemiBold"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,0,0">
+                                <TextBlock Text="{x:Bind Name}"
+                                           FontSize="14" FontWeight="SemiBold"/>
+                                <TextBlock Text="{x:Bind Address}"
+                                           FontSize="12"
+                                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Horizontal" Spacing="6">
+                                <Ellipse Grid.Column="2" Width="10" Height="10"
+                                         x:Name="StatusDot"
+                                         VerticalAlignment="Center"
+                                         Fill="Gray"/>
+                                <TextBlock FontSize="12"
+                                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                           Text="Offline"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <Grid.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Edit" Click="EditServer_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE70F;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutSeparator/>
+                                    <MenuFlyoutItem Text="Delete" Click="DeleteServer_Click"
+                                                     Foreground="Red">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE74D;" Foreground="Red"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                </MenuFlyout>
+                            </Grid.ContextFlyout>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <TextBlock Grid.Row="0"
+                       x:Name="EmptyStateText"
+                       Text="No servers added yet. Click 'Add Server' to get started."
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="16"
+                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                       Visibility="Collapsed"/>
+        </Grid>
+    </Grid>
+</Page>

@@ -1,0 +1,46 @@
+# Binaries and build outputs
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.cache
+*.nupkg
+
+# IDE and editor files
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.sln.docstates
+
+# Go
+talkift_server/talkift_server
+loginserver/loginserver
+*.test
+*.out
+vendor/
+
+# Data directories
+data/
+*.db
+*.sqlite
+
+# NuGet
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local

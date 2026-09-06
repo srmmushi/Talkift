@@ -1,0 +1,18 @@
+[server]
+port = 8080
+ssl_enabled = false
+ssl_cert = ""
+ssl_key = ""
+
+[storage]
+type = "local"
+retain_messages = true
+
+[loginserver]
+official = true
+offline = false
+third_party_enabled = false
+third_party_servers = []
+
+[logging]
+level = "info"
