@@ -49,6 +49,13 @@ namespace Talkift.Client.Models
         Settings
     }
 
+    public enum BackdropType
+    {
+        Default,
+        Mica,
+        Acrylic
+    }
+
     public class Conversation
     {
         [JsonPropertyName("id")]

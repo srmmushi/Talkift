@@ -16,20 +16,19 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <!-- 项目自带 Program.cs 入口，关闭 XAML 自动生成的 Main，避免重复入口点 -->
     <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-    <!-- 无打包（unpackaged）模式：直接运行 exe，不需要 MSIX -->
     <WindowsPackageType>None</WindowsPackageType>
-    <!-- 自包含 Windows App SDK 运行时，目标机器无需安装 WindowsAppRuntime -->
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
 
-  <!-- 源码中部分文件未显式 using 这些 WinUI 命名空间（Program.cs 用
-       Microsoft.UI.Dispatching、ServerListViewModel 用 Microsoft.UI.Xaml.Controls），
-       以全局 using 补齐，避免逐个改源码 -->
   <ItemGroup>
     <Using Include="Microsoft.UI.Dispatching" />
     <Using Include="Microsoft.UI.Xaml.Controls" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Strings\en.json" />
+    <EmbeddedResource Include="Resources\Strings\zh.json" />
   </ItemGroup>
 
   <ItemGroup>

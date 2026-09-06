@@ -18,28 +18,10 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Margin="0,0,0,16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <TextBlock Grid.Column="0"
-                       x:Name="HeaderText"
+            <TextBlock x:Name="HeaderText"
                        Text="Servers"
                        Style="{StaticResource TitleLargeTextBlockStyle}"
                        VerticalAlignment="Center"/>
-
-            <Button Grid.Column="1"
-                    x:Name="AddServerButton"
-                    Style="{StaticResource AccentButtonStyle}"
-                    Click="AddServerButton_Click"
-                    Padding="16,8"
-                    CornerRadius="8">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                    <FontIcon Glyph="&#xE710;" FontSize="14"/>
-                    <TextBlock Text="Add Server" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
         </Grid>
 
         <InfoBar x:Name="StatusInfoBar"
@@ -97,7 +79,8 @@
                                          x:Name="StatusDot"
                                          VerticalAlignment="Center"
                                          Fill="Gray"/>
-                                <TextBlock FontSize="12"
+                                <TextBlock x:Name="StatusText"
+                                           FontSize="12"
                                            Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                            Text="Offline"
                                            VerticalAlignment="Center"/>
@@ -105,13 +88,13 @@
 
                             <Grid.ContextFlyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem Text="Edit" Click="EditServer_Click">
+                                    <MenuFlyoutItem x:Name="EditMenuItem" Text="Edit" Click="EditServer_Click">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE70F;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutSeparator/>
-                                    <MenuFlyoutItem Text="Delete" Click="DeleteServer_Click"
+                                    <MenuFlyoutItem x:Name="DeleteMenuItem" Text="Delete" Click="DeleteServer_Click"
                                                      Foreground="Red">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE74D;" Foreground="Red"/>
@@ -126,7 +109,7 @@
 
             <TextBlock Grid.Row="0"
                        x:Name="EmptyStateText"
-                       Text="No servers added yet. Click 'Add Server' to get started."
+                       Text="No servers added yet."
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        FontSize="16"

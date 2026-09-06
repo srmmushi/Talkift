@@ -6,11 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    x:Name="DialogRoot"
     Title="Create Group"
     PrimaryButtonText="Create"
     SecondaryButtonText="Cancel"
     DefaultButton="Primary"
-    IsPrimaryButtonEnabled="False">
+    IsPrimaryButtonEnabled="False"
+    Loaded="OnLoaded">
 
     <StackPanel Spacing="12" Width="350">
         <TextBox x:Name="GroupNameInput"
@@ -18,7 +20,8 @@
                  PlaceholderText="Enter group name"
                  TextChanged="GroupNameInput_TextChanged"/>
 
-        <TextBlock Text="Select members from Public Group:"
+        <TextBlock x:Name="SelectMembersText"
+                   Text="Select members from Public Group:"
                    FontSize="12"
                    Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
 

@@ -32,44 +32,25 @@ namespace Talkift.Client.Views
 
             await ViewModel.LoadServersAsync();
             UpdateEmptyState();
+            ApplyLocalization();
         }
 
-        private void UpdateEmptyState()
+        private void ApplyLocalization()
+        {
+            HeaderText.Text = LanguageService.GetString("Servers");
+            EmptyStateText.Text = LanguageService.GetString("NoServersAdded");
+            EditMenuItem.Text = LanguageService.GetString("EditServer");
+            DeleteMenuItem.Text = LanguageService.GetString("Delete");
+            StatusText.Text = LanguageService.GetString("Offline");
+        }
+
+        public void UpdateEmptyState()
         {
             if (EmptyStateText != null)
             {
                 EmptyStateText.Visibility = ViewModel.Servers.Count == 0
                     ? Visibility.Visible
                     : Visibility.Collapsed;
-            }
-        }
-
-        private async void AddServerButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new ContentDialog
-            {
-                Title = "Add Server",
-                PrimaryButtonText = "Add",
-                CloseButtonText = "Cancel",
-                DefaultButton = ContentDialogButton.Primary,
-                Content = new AddServerDialog(),
-                XamlRoot = this.XamlRoot
-            };
-
-            var result = await dialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
-            {
-                var addDialog = (AddServerDialog)dialog.Content;
-                var server = new Server
-                {
-                    Name = addDialog.ServerName,
-                    Address = addDialog.ServerAddress,
-                    Port = addDialog.ServerPort,
-                    Password = addDialog.ServerPassword
-                };
-
-                await ViewModel.AddServerAsync(server);
-                UpdateEmptyState();
             }
         }
 
@@ -103,9 +84,9 @@ namespace Talkift.Client.Views
 
             var contentDialog = new ContentDialog
             {
-                Title = $"Login to {server.Name}",
+                Title = $"{LanguageService.GetString("LoginToServer")} - {server.Name}",
                 PrimaryButtonText = null,
-                CloseButtonText = "Cancel",
+                CloseButtonText = LanguageService.GetString("Cancel"),
                 Content = loginDialog,
                 XamlRoot = this.XamlRoot
             };
@@ -145,9 +126,9 @@ namespace Talkift.Client.Views
 
             var contentDialog = new ContentDialog
             {
-                Title = $"Register on {server.Name}",
+                Title = $"{LanguageService.GetString("CreateAccount")} - {server.Name}",
                 PrimaryButtonText = null,
-                CloseButtonText = "Cancel",
+                CloseButtonText = LanguageService.GetString("Cancel"),
                 Content = registerDialog,
                 XamlRoot = this.XamlRoot
             };
@@ -179,9 +160,9 @@ namespace Talkift.Client.Views
             {
                 var dialog = new ContentDialog
                 {
-                    Title = "Edit Server",
-                    PrimaryButtonText = "Save",
-                    CloseButtonText = "Cancel",
+                    Title = LanguageService.GetString("EditServer"),
+                    PrimaryButtonText = LanguageService.GetString("Save"),
+                    CloseButtonText = LanguageService.GetString("Cancel"),
                     DefaultButton = ContentDialogButton.Primary,
                     Content = new AddServerDialog(server),
                     XamlRoot = this.XamlRoot
@@ -204,12 +185,13 @@ namespace Talkift.Client.Views
         {
             if (sender is MenuFlyoutItem menuItem && menuItem.DataContext is Server server)
             {
+                var confirmText = string.Format(LanguageService.GetString("ConfirmDelete"), server.Name);
                 var confirmDialog = new ContentDialog
                 {
-                    Title = "Delete Server",
-                    Content = $"Are you sure you want to delete \"{server.Name}\"?",
-                    PrimaryButtonText = "Delete",
-                    CloseButtonText = "Cancel",
+                    Title = LanguageService.GetString("DeleteServer"),
+                    Content = confirmText,
+                    PrimaryButtonText = LanguageService.GetString("Delete"),
+                    CloseButtonText = LanguageService.GetString("Cancel"),
                     DefaultButton = ContentDialogButton.Close,
                     XamlRoot = this.XamlRoot
                 };

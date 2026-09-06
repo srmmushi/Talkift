@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Talkift.Client.Models;
+using Talkift.Client.Services;
 using Talkift.Client.ViewModels;
 
 namespace Talkift.Client.Views
@@ -18,6 +19,8 @@ namespace Talkift.Client.Views
 
         private async void ConversationListPage_Loaded(object sender, RoutedEventArgs e)
         {
+            ApplyLocalization();
+
             var mainWindow = (MainWindow)Window.Current;
             if (mainWindow.ViewModel.SelectedServer is Server server
                 && mainWindow.ViewModel.CurrentUser is User user)
@@ -29,6 +32,14 @@ namespace Talkift.Client.Views
                 await ViewModel.InitializeAsync(server, user.Id, user.Username);
                 await ViewModel.LoadConversationsAsync();
             }
+        }
+
+        private void ApplyLocalization()
+        {
+            HeaderText.Text = LanguageService.GetString("Conversations");
+            GroupButtonText.Text = LanguageService.GetString("Group");
+            ChatButtonText.Text = LanguageService.GetString("Chat");
+            EmptyText.Text = LanguageService.GetString("NoConversations");
         }
 
         private async void ConversationListPage_Unloaded(object sender, RoutedEventArgs e)

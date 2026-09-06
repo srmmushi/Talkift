@@ -131,7 +131,7 @@
 
         <TextBlock Grid.Row="1"
                    x:Name="EmptyChatText"
-                   Text="No messages yet. Start the conversation!"
+                   Text="No messages yet."
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"

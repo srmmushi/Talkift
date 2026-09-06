@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Talkift.Client.Models;
+using Talkift.Client.Services;
 
 namespace Talkift.Client.Views
 {
@@ -35,6 +36,22 @@ namespace Talkift.Client.Views
             }
         }
 
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplyLocalization();
+        }
+
+        private void ApplyLocalization()
+        {
+            ((TextBlock)ServerNameBox.Header).Text = LanguageService.GetString("ServerNameRequired");
+            ServerNameBox.PlaceholderText = LanguageService.GetString("ServerName");
+            ((TextBlock)AddressBox.Header).Text = LanguageService.GetString("ServerAddressRequired");
+            AddressBox.PlaceholderText = "example.com or 192.168.1.1";
+            ((TextBlock)PortBox.Header).Text = LanguageService.GetString("Port");
+            ((TextBlock)PasswordBox.Header).Text = LanguageService.GetString("PasswordOptional");
+            PasswordBox.PlaceholderText = LanguageService.GetString("Password");
+        }
+
         private void AddressBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var address = AddressBox.Text?.Trim() ?? string.Empty;
@@ -63,13 +80,13 @@ namespace Talkift.Client.Views
         {
             if (string.IsNullOrWhiteSpace(ServerName))
             {
-                ShowValidation("Server name is required.");
+                ShowValidation(LanguageService.GetString("UsernameRequired"));
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(ServerAddress))
             {
-                ShowValidation("Server address is required.");
+                ShowValidation(LanguageService.GetString("ServerAddressRequired"));
                 return false;
             }
 

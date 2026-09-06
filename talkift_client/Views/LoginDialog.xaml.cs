@@ -23,6 +23,26 @@ namespace Talkift.Client.Views
             _credentialService = credentialService;
         }
 
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplyLocalization();
+        }
+
+        private void ApplyLocalization()
+        {
+            DialogTitle.Text = LanguageService.GetString("LoginToServer");
+            ((TextBlock)UsernameBox.Header).Text = LanguageService.GetString("Username");
+            UsernameBox.PlaceholderText = LanguageService.GetString("Username");
+            ((TextBlock)PasswordBox.Header).Text = LanguageService.GetString("Password");
+            PasswordBox.PlaceholderText = LanguageService.GetString("Password");
+            RememberPasswordCheckBox.Content = LanguageService.GetString("RememberPassword");
+            OfflineLoginCheckBox.Content = LanguageService.GetString("OfflineLogin");
+            LoginButton.Content = LanguageService.GetString("Login");
+            OfflineLoginButton.Content = LanguageService.GetString("Login");
+            NoAccountText.Text = LanguageService.GetString("DontHaveAccount");
+            RegisterLinkText.Text = " " + LanguageService.GetString("Register");
+        }
+
         public void SetUsername(string username)
         {
             UsernameBox.Text = username;
@@ -38,13 +58,13 @@ namespace Talkift.Client.Views
         {
             if (string.IsNullOrWhiteSpace(UsernameBox.Text))
             {
-                ShowError("Username is required.");
+                ShowError(LanguageService.GetString("UsernameRequired"));
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(PasswordBox.Password))
             {
-                ShowError("Password is required.");
+                ShowError(LanguageService.GetString("PasswordRequired"));
                 return;
             }
 
@@ -72,7 +92,7 @@ namespace Talkift.Client.Views
 
             if (!LastResult.Success)
             {
-                ShowError(LastResult.Message ?? "Login failed.");
+                ShowError(LastResult.Message ?? LanguageService.GetString("LoginFailed"));
             }
         }
 
@@ -80,7 +100,7 @@ namespace Talkift.Client.Views
         {
             if (string.IsNullOrWhiteSpace(UsernameBox.Text))
             {
-                ShowError("Username is required.");
+                ShowError(LanguageService.GetString("UsernameRequired"));
                 return;
             }
 
@@ -107,7 +127,7 @@ namespace Talkift.Client.Views
 
             if (!LastResult.Success)
             {
-                ShowError(LastResult.Message ?? "Offline login failed.");
+                ShowError(LastResult.Message ?? LanguageService.GetString("OfflineLoginFailed"));
             }
         }
 

@@ -18,13 +18,14 @@
                     HorizontalAlignment="Left">
                 <StackPanel Orientation="Horizontal" Spacing="4">
                     <FontIcon Glyph="&#xE72B;" FontSize="14"/>
-                    <TextBlock Text="Back to Chat"/>
+                    <TextBlock x:Name="BackToChatText" Text="Back to Chat"/>
                 </StackPanel>
             </Button>
 
             <!-- Info section -->
             <StackPanel Spacing="8">
-                <TextBlock Text="Info"
+                <TextBlock x:Name="InfoHeader"
+                           Text="Info"
                            Style="{StaticResource SubtitleTextBlockStyle}"/>
                 <Border Padding="16"
                         CornerRadius="8"
@@ -37,7 +38,7 @@
                                 <ColumnDefinition Width="120"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Name" FontWeight="SemiBold" Grid.Column="0"/>
+                            <TextBlock x:Name="NameLabel" Text="Name" FontWeight="SemiBold" Grid.Column="0"/>
                             <TextBlock x:Name="NameText" Grid.Column="1" Text="{x:Bind ConversationName, Mode=OneWay}"/>
                         </Grid>
                         <Grid>
@@ -45,7 +46,7 @@
                                 <ColumnDefinition Width="120"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Type" FontWeight="SemiBold" Grid.Column="0"/>
+                            <TextBlock x:Name="TypeLabel" Text="Type" FontWeight="SemiBold" Grid.Column="0"/>
                             <TextBlock x:Name="TypeText" Grid.Column="1" Text="{x:Bind ConversationType, Mode=OneWay}"/>
                         </Grid>
                         <Grid>
@@ -53,7 +54,7 @@
                                 <ColumnDefinition Width="120"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Created" FontWeight="SemiBold" Grid.Column="0"/>
+                            <TextBlock x:Name="CreatedLabel" Text="Created" FontWeight="SemiBold" Grid.Column="0"/>
                             <TextBlock x:Name="CreatedText" Grid.Column="1" Text="{x:Bind ConversationCreated, Mode=OneWay}"/>
                         </Grid>
                     </StackPanel>
@@ -62,7 +63,8 @@
 
             <!-- Members section -->
             <StackPanel Spacing="8">
-                <TextBlock Text="Members"
+                <TextBlock x:Name="MembersHeader"
+                           Text="Members"
                            Style="{StaticResource SubtitleTextBlockStyle}"/>
                 <ListView x:Name="MembersList"
                           MaxHeight="300"
@@ -101,7 +103,8 @@
             <!-- DND toggle -->
             <StackPanel Spacing="8"
                         Visibility="{x:Bind IsDndVisible, Mode=OneWay}">
-                <TextBlock Text="Notifications"
+                <TextBlock x:Name="NotificationsHeader"
+                           Text="Notifications"
                            Style="{StaticResource SubtitleTextBlockStyle}"/>
                 <ToggleSwitch x:Name="DndToggle"
                               Header="Do Not Disturb"
@@ -113,9 +116,11 @@
             <!-- Owner actions -->
             <StackPanel Spacing="8"
                         Visibility="{x:Bind IsOwnerVisible, Mode=OneWay}">
-                <TextBlock Text="Admin Actions"
+                <TextBlock x:Name="AdminHeader"
+                           Text="Admin Actions"
                            Style="{StaticResource SubtitleTextBlockStyle}"/>
-                <Button Content="Delete Group"
+                <Button x:Name="DeleteGroupButton"
+                        Content="Delete Group"
                         Click="DeleteGroupButton_Click"
                         Background="#E81123"
                         Foreground="White"

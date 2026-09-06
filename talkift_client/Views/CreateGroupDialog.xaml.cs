@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Talkift.Client.Services;
 
@@ -16,6 +17,16 @@ namespace Talkift.Client.Views
         {
             this.InitializeComponent();
             this.Loaded += CreateGroupDialog_Loaded;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            DialogRoot.Title = LanguageService.GetString("CreateGroup");
+            DialogRoot.PrimaryButtonText = LanguageService.GetString("Create");
+            DialogRoot.SecondaryButtonText = LanguageService.GetString("Cancel");
+            ((TextBlock)GroupNameInput.Header).Text = LanguageService.GetString("GroupName");
+            GroupNameInput.PlaceholderText = LanguageService.GetString("EnterGroupName");
+            SelectMembersText.Text = LanguageService.GetString("SelectMembers");
         }
 
         private async void CreateGroupDialog_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

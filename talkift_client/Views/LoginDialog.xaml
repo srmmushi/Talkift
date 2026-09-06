@@ -6,10 +6,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Width="380">
+    Width="380"
+    Loaded="OnLoaded">
 
     <StackPanel Padding="8" Spacing="16">
-        <TextBlock Text="Login to Server"
+        <TextBlock x:Name="DialogTitle"
+                   Text="Login to Server"
                    Style="{StaticResource SubtitleTextBlockStyle}"
                    HorizontalAlignment="Center"
                    Margin="0,0,0,8"/>
@@ -61,8 +63,8 @@
                          HorizontalAlignment="Center"
                          Click="RegisterLink_Click">
             <TextBlock>
-                <Run Text="Don't have an account?"/>
-                <Run Text=" Register" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
+                <Run x:Name="NoAccountText" Text="Don't have an account?"/>
+                <Run x:Name="RegisterLinkText" Text=" Register" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
             </TextBlock>
         </HyperlinkButton>
 

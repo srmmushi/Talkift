@@ -6,10 +6,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Width="400">
+    Width="400"
+    Loaded="OnLoaded">
 
     <StackPanel Padding="8" Spacing="14">
-        <TextBlock Text="Create Account"
+        <TextBlock x:Name="DialogTitle"
+                   Text="Create Account"
                    Style="{StaticResource SubtitleTextBlockStyle}"
                    HorizontalAlignment="Center"
                    Margin="0,0,0,8"/>
@@ -20,19 +22,21 @@
                  IsClosable="True"
                  HorizontalAlignment="Stretch"/>
 
-        <TextBlock Text="Register Method"
+        <TextBlock x:Name="MethodLabel"
+                   Text="Register Method"
                    FontSize="12"
                    Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
 
         <RadioButtons x:Name="MethodRadioButtons"
                       SelectionChanged="MethodRadioButtons_SelectionChanged">
-            <RadioButton Content="Official" Tag="Official" IsChecked="True"/>
-            <RadioButton Content="Local" Tag="Local"/>
-            <RadioButton Content="Third Party" Tag="ThirdParty"/>
+            <RadioButton x:Name="OfficialRadio" Content="Official" Tag="Official" IsChecked="True"/>
+            <RadioButton x:Name="LocalRadio" Content="Local" Tag="Local"/>
+            <RadioButton x:Name="ThirdPartyRadio" Content="Third Party" Tag="ThirdParty"/>
         </RadioButtons>
 
         <StackPanel x:Name="ThirdPartyPanel" Visibility="Collapsed" Spacing="4">
-            <TextBlock Text="Registration Server"
+            <TextBlock x:Name="RegServerLabel"
+                       Text="Registration Server"
                        FontSize="12"
                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
             <ComboBox x:Name="ThirdPartyServerCombo"
@@ -84,11 +88,12 @@
                 CornerRadius="8"
                 Click="RegisterButton_Click"/>
 
-        <HyperlinkButton HorizontalAlignment="Center"
-                          Click="LoginLink_Click">
+        <HyperlinkButton x:Name="LoginLink"
+                         HorizontalAlignment="Center"
+                         Click="LoginLink_Click">
             <TextBlock>
-                <Run Text="Already have an account?"/>
-                <Run Text=" Login" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
+                <Run x:Name="HaveAccountText" Text="Already have an account?"/>
+                <Run x:Name="LoginLinkText" Text=" Login" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
             </TextBlock>
         </HyperlinkButton>
 

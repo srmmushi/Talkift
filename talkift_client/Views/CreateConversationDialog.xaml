@@ -6,11 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    x:Name="DialogRoot"
     Title="Create Conversation"
     PrimaryButtonText="Create"
     SecondaryButtonText="Cancel"
     DefaultButton="Primary"
-    IsPrimaryButtonEnabled="False">
+    IsPrimaryButtonEnabled="False"
+    Loaded="OnLoaded">
 
     <StackPanel Spacing="12" Width="350">
         <TextBox x:Name="ConvNameInput"
@@ -18,7 +20,8 @@
                  PlaceholderText="Enter conversation name"
                  TextChanged="ConvNameInput_TextChanged"/>
 
-        <TextBlock Text="Select a user from Public Group:"
+        <TextBlock x:Name="SelectUserText"
+                   Text="Select a user from Public Group:"
                    FontSize="12"
                    Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
 

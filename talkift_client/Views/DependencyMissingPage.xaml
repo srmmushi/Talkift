@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Talkift.Client.Views.DependencyMissingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Padding="32" MaxWidth="550" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Spacing="20">
+            <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                <FontIcon Glyph="&#xE7BA;" FontSize="32" Foreground="Orange"/>
+                <TextBlock x:Name="TitleText"
+                           Text="Dependencies Missing"
+                           FontSize="22"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <TextBlock x:Name="DescText"
+                       Text="The following required dependencies are not installed:"
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Center"
+                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+
+            <Border CornerRadius="8"
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+                <StackPanel x:Name="DependencyStackPanel" Spacing="4"/>
+            </Border>
+
+            <InfoBar Severity="Warning"
+                     IsOpen="True"
+                     IsClosable="False"/>
+
+            <TextBlock x:Name="RestartText"
+                       Text="Please install the missing dependencies above, then restart the application."
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Center"
+                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                       FontSize="12"/>
+
+            <Button x:Name="CloseButton"
+                    Content="Close"
+                    HorizontalAlignment="Center"
+                    Padding="32,8"
+                    CornerRadius="4"
+                    Click="CloseButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Page>

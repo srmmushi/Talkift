@@ -39,6 +39,30 @@ namespace Talkift.Client.Views
             }
         }
 
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplyLocalization();
+        }
+
+        private void ApplyLocalization()
+        {
+            DialogTitle.Text = LanguageService.GetString("CreateAccount");
+            MethodLabel.Text = LanguageService.GetString("RegisterMethod");
+            OfficialRadio.Content = LanguageService.GetString("Official");
+            LocalRadio.Content = LanguageService.GetString("Local");
+            ThirdPartyRadio.Content = LanguageService.GetString("ThirdParty");
+            RegServerLabel.Text = LanguageService.GetString("RegistrationServer");
+            ((TextBlock)UsernameBox.Header).Text = LanguageService.GetString("Username");
+            UsernameBox.PlaceholderText = LanguageService.GetString("UsernameMinLength");
+            ((TextBlock)PasswordBox.Header).Text = LanguageService.GetString("Password");
+            PasswordBox.PlaceholderText = LanguageService.GetString("PasswordMinLength");
+            ((TextBlock)ConfirmPasswordBox.Header).Text = LanguageService.GetString("Password");
+            ConfirmPasswordBox.PlaceholderText = LanguageService.GetString("Password");
+            RegisterButton.Content = LanguageService.GetString("Register");
+            HaveAccountText.Text = LanguageService.GetString("AlreadyHaveAccount");
+            LoginLinkText.Text = " " + LanguageService.GetString("Login");
+        }
+
         private void MethodRadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (MethodRadioButtons.SelectedItem is RadioButton rb)
@@ -63,31 +87,31 @@ namespace Talkift.Client.Views
 
             if (string.IsNullOrWhiteSpace(UsernameBox.Text))
             {
-                ShowError("Username is required.");
+                ShowError(LanguageService.GetString("UsernameRequired"));
                 return;
             }
 
             if (UsernameBox.Text.Trim().Length < 3)
             {
-                ShowError("Username must be at least 3 characters.");
+                ShowError(LanguageService.GetString("UsernameMinLength"));
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(PasswordBox.Password))
             {
-                ShowError("Password is required.");
+                ShowError(LanguageService.GetString("PasswordRequired"));
                 return;
             }
 
             if (PasswordBox.Password.Length < 6)
             {
-                ShowError("Password must be at least 6 characters.");
+                ShowError(LanguageService.GetString("PasswordMinLength"));
                 return;
             }
 
             if (PasswordBox.Password != ConfirmPasswordBox.Password)
             {
-                ShowError("Passwords do not match.");
+                ShowError(LanguageService.GetString("PasswordsNoMatch"));
                 return;
             }
 
@@ -96,7 +120,7 @@ namespace Talkift.Client.Views
             {
                 if (ThirdPartyServerCombo.SelectedIndex < 0)
                 {
-                    ShowError("Please select a registration server.");
+                    ShowError(LanguageService.GetString("SelectRegistrationServer"));
                     return;
                 }
                 var selectedServer = _loginServers[ThirdPartyServerCombo.SelectedIndex];
@@ -115,7 +139,7 @@ namespace Talkift.Client.Views
 
             if (!LastResult.Success)
             {
-                ShowError(LastResult.Message ?? "Registration failed.");
+                ShowError(LastResult.Message ?? LanguageService.GetString("RegistrationFailed"));
             }
         }
 

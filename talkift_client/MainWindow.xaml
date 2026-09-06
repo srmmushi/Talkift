@@ -22,7 +22,8 @@
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
                 <FontIcon Glyph="&#xE716;" FontSize="20"/>
-                <TextBlock Text="Talkift"
+                <TextBlock x:Name="AppTitleText"
+                           Text="Talkift"
                            VerticalAlignment="Center"
                            FontSize="16" FontWeight="SemiBold"/>
             </StackPanel>
@@ -41,11 +42,12 @@
                            FontSize="13"
                            Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
                 <Button x:Name="LogoutButton"
-                        Content="Logout"
                         Padding="8,2"
                         CornerRadius="4"
                         FontSize="12"
-                        Click="LogoutButton_Click"/>
+                        Click="LogoutButton_Click">
+                    <TextBlock x:Name="LogoutButtonText" Text="Logout"/>
+                </Button>
             </StackPanel>
         </Grid>
 
@@ -60,12 +62,12 @@
                         Loaded="NavView_Loaded">
 
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Servers" Tag="Servers">
+                <NavigationViewItem x:Name="ServersNavItem" Tag="Servers">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE716;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Conversations" Tag="Conversations">
+                <NavigationViewItem x:Name="ConversationsNavItem" Tag="Conversations">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE715;"/>
                     </NavigationViewItem.Icon>
@@ -74,15 +76,29 @@
 
             <NavigationView.PaneFooter>
                 <StackPanel Padding="8,4">
-<Button Click="SettingsButton_Click"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Left"
-                        Padding="12,8"
-                        CornerRadius="4">
+                    <Button x:Name="AddServerNavButton"
+                            Click="AddServerNavButton_Click"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Padding="12,8"
+                            CornerRadius="4"
+                            Margin="0,0,0,4">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE710;"/>
+                                <TextBlock x:Name="AddServerNavText" Text="Add Server" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                    <Button Click="SettingsButton_Click"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Padding="12,8"
+                            CornerRadius="4">
                         <Button.Content>
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <FontIcon Glyph="&#xE713;"/>
-                                <TextBlock Text="Settings" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="SettingsNavText" Text="Settings" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button.Content>
                     </Button>

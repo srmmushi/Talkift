@@ -30,6 +30,8 @@ namespace Talkift.Client.Views
 
         private async void ConversationSettingsPage_Loaded(object sender, RoutedEventArgs e)
         {
+            ApplyLocalization();
+
             var mainWindow = (MainWindow)Window.Current;
             if (mainWindow.CurrentConversation == null || mainWindow.ViewModel.CurrentUser == null)
                 return;
@@ -40,7 +42,9 @@ namespace Talkift.Client.Views
             _isOwner = _conversation.OwnerId == _currentUserId;
 
             ConversationName = _conversation.Name;
-            ConversationType = _conversation.IsGroup ? "Group" : "Direct Message";
+            ConversationType = _conversation.IsGroup
+                ? LanguageService.GetString("Group")
+                : LanguageService.GetString("DirectMessage");
             ConversationCreated = _conversation.CreatedAt;
             IsOwnerVisible = _isOwner;
             IsDndVisible = !_conversation.IsPublic;
@@ -64,7 +68,7 @@ namespace Talkift.Client.Views
                     {
                         if (_isOwner && m != _currentUsername)
                         {
-                            btn.Content = "Mute";
+                            btn.Content = LanguageService.GetString("Mute");
                             btn.Visibility = Visibility.Visible;
                         }
                         else
@@ -74,6 +78,21 @@ namespace Talkift.Client.Views
                     }
                 }
             }
+        }
+
+        private void ApplyLocalization()
+        {
+            BackToChatText.Text = LanguageService.GetString("BackToChat");
+            InfoHeader.Text = LanguageService.GetString("Info");
+            NameLabel.Text = LanguageService.GetString("Name");
+            TypeLabel.Text = LanguageService.GetString("Type");
+            CreatedLabel.Text = LanguageService.GetString("Created");
+            MembersHeader.Text = LanguageService.GetString("Members");
+            NotificationsHeader.Text = LanguageService.GetString("Notifications");
+            ((TextBlock)DndToggle.Header).Text = LanguageService.GetString("DoNotDisturb");
+            AdminHeader.Text = LanguageService.GetString("AdminActions");
+            DeleteGroupButton.Content = LanguageService.GetString("DeleteGroup");
+            LeaveButton.Content = LanguageService.GetString("Leave");
         }
 
         private Button? GetActionButtonForUser(string username)
@@ -110,15 +129,15 @@ namespace Talkift.Client.Views
                 var wsService = mainWindow.ChatViewModel?.WsService ?? mainWindow.ConversationListViewModel?.WsService;
                 if (wsService == null || _conversation == null) return;
 
-                if (btn.Content?.ToString() == "Mute")
+                if (btn.Content?.ToString() == LanguageService.GetString("Mute"))
                 {
                     await wsService.SendMuteAsync(_conversation.Id, username);
-                    btn.Content = "Unmute";
+                    btn.Content = LanguageService.GetString("Unmute");
                 }
                 else
                 {
                     await wsService.SendMuteAsync(_conversation.Id, username);
-                    btn.Content = "Mute";
+                    btn.Content = LanguageService.GetString("Mute");
                 }
             }
         }
@@ -127,10 +146,10 @@ namespace Talkift.Client.Views
         {
             var dialog = new ContentDialog
             {
-                Title = "Delete Group",
-                Content = "Are you sure? This will dissolve the group for all members.",
-                PrimaryButtonText = "Delete",
-                SecondaryButtonText = "Cancel",
+                Title = LanguageService.GetString("DeleteGroup"),
+                Content = LanguageService.GetString("DeleteGroupConfirm"),
+                PrimaryButtonText = LanguageService.GetString("Delete"),
+                SecondaryButtonText = LanguageService.GetString("Cancel"),
                 DefaultButton = ContentDialogButton.Secondary,
                 XamlRoot = this.XamlRoot
             };

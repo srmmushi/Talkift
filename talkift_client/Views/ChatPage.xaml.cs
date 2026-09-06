@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Talkift.Client.Models;
+using Talkift.Client.Services;
 using Talkift.Client.ViewModels;
 
 namespace Talkift.Client.Views
@@ -19,6 +20,8 @@ namespace Talkift.Client.Views
 
         private async void ChatPage_Loaded(object sender, RoutedEventArgs e)
         {
+            ApplyLocalization();
+
             var mainWindow = (MainWindow)Window.Current;
             if (mainWindow.ViewModel.SelectedServer is Server server
                 && mainWindow.ViewModel.CurrentUser is User user)
@@ -31,6 +34,12 @@ namespace Talkift.Client.Views
                     await ViewModel.InitializeAsync(server, mainWindow.CurrentConversation, user.Id);
                 }
             }
+        }
+
+        private void ApplyLocalization()
+        {
+            MessageInput.PlaceholderText = LanguageService.GetString("TypeMessage");
+            EmptyChatText.Text = LanguageService.GetString("NoMessages");
         }
 
         private async void ChatPage_Unloaded(object sender, RoutedEventArgs e)

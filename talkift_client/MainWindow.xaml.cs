@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Talkift.Client.Models;
+using Talkift.Client.Services;
 using Talkift.Client.ViewModels;
 using Talkift.Client.Views;
 
@@ -26,7 +27,27 @@ namespace Talkift.Client
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(TitleBar);
 
+            _ = InitBackdropAsync();
+            ApplyLocalization();
+
             ContentFrame.Navigate(typeof(ServerListView));
+        }
+
+        private async System.Threading.Tasks.Task InitBackdropAsync()
+        {
+            await BackdropService.LoadBackdropAsync();
+            BackdropService.ApplyCurrentBackdrop(this);
+        }
+
+        private void ApplyLocalization()
+        {
+            ServersNavItem.Content = LanguageService.GetString("Servers");
+            ConversationsNavItem.Content = LanguageService.GetString("Conversations");
+            AddServerNavText.Text = LanguageService.GetString("AddServer");
+            SettingsNavText.Text = LanguageService.GetString("Settings");
+            LogoutButtonText.Text = LanguageService.GetString("Logout");
+            AppTitleText.Text = LanguageService.GetString("AppTitle");
+            Title = LanguageService.GetString("AppTitle");
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
@@ -66,25 +87,11 @@ namespace Talkift.Client
             }
             else if (e.SourcePageType == typeof(ServerListView))
             {
-                foreach (var item in NavView.MenuItems)
-                {
-                    if (item is NavigationViewItem navItem && navItem.Tag?.ToString() == "Servers")
-                    {
-                        NavView.SelectedItem = item;
-                        break;
-                    }
-                }
+                NavView.SelectedItem = ServersNavItem;
             }
             else if (e.SourcePageType == typeof(ConversationListPage))
             {
-                foreach (var item in NavView.MenuItems)
-                {
-                    if (item is NavigationViewItem navItem && navItem.Tag?.ToString() == "Conversations")
-                    {
-                        NavView.SelectedItem = item;
-                        break;
-                    }
-                }
+                NavView.SelectedItem = ConversationsNavItem;
             }
 
             NavView.IsBackEnabled = ContentFrame.CanGoBack;
@@ -93,6 +100,46 @@ namespace Talkift.Client
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             ContentFrame.Navigate(typeof(SettingsPage));
+        }
+
+        private async void AddServerNavButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new ContentDialog
+            {
+                Title = LanguageService.GetString("AddServer"),
+                PrimaryButtonText = LanguageService.GetString("Add"),
+                CloseButtonText = LanguageService.GetString("Cancel"),
+                DefaultButton = ContentDialogButton.Primary,
+                Content = new AddServerDialog(),
+                XamlRoot = this.NavView.XamlRoot
+            };
+
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                var addDialog = (AddServerDialog)dialog.Content;
+                var server = new Server
+                {
+                    Name = addDialog.ServerName,
+                    Address = addDialog.ServerAddress,
+                    Port = addDialog.ServerPort,
+                    Password = addDialog.ServerPassword
+                };
+
+                if (ContentFrame.CurrentSourcePageType == typeof(ServerListView))
+                {
+                    var serverPage = ContentFrame.Content as ServerListView;
+                    if (serverPage != null)
+                    {
+                        await serverPage.ViewModel.AddServerAsync(server);
+                        serverPage.UpdateEmptyState();
+                    }
+                }
+                else
+                {
+                    NavigateToServerList();
+                }
+            }
         }
 
         public void NavigateToChat(Conversation? conversation = null)

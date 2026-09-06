@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Talkift.Client.Services;
 
@@ -16,6 +17,16 @@ namespace Talkift.Client.Views
         {
             this.InitializeComponent();
             this.Loaded += CreateConversationDialog_Loaded;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            DialogRoot.Title = LanguageService.GetString("CreateChat");
+            DialogRoot.PrimaryButtonText = LanguageService.GetString("Create");
+            DialogRoot.SecondaryButtonText = LanguageService.GetString("Cancel");
+            ((TextBlock)ConvNameInput.Header).Text = LanguageService.GetString("ConversationName");
+            ConvNameInput.PlaceholderText = LanguageService.GetString("EnterConvName");
+            SelectUserText.Text = LanguageService.GetString("SelectUser");
         }
 
         private async void CreateConversationDialog_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
