@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"loginserver/internal/storage"
+	"official-server/internal/storage"
 )
 
 type LoginRequest struct {
@@ -15,11 +15,13 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Code     int    `json:"code"`
-	UUID     string `json:"uuid,omitempty"`
-	Token    string `json:"token,omitempty"`
-	Username string `json:"username,omitempty"`
-	Message  string `json:"message,omitempty"`
+	Code           int    `json:"code"`
+	UUID           string `json:"uuid,omitempty"`
+	Token          string `json:"token,omitempty"`
+	Username       string `json:"username,omitempty"`
+	Email          string `json:"email,omitempty"`
+	RegisterMethod string `json:"register_method,omitempty"`
+	Message        string `json:"message,omitempty"`
 }
 
 func HandleLogin(store *storage.Storage) http.HandlerFunc {
@@ -77,10 +79,12 @@ func HandleLogin(store *storage.Storage) http.HandlerFunc {
 			req.Username, user.ID, r.RemoteAddr, time.Since(start))
 
 		writeJSON(w, http.StatusOK, LoginResponse{
-			Code:     0,
-			UUID:     user.ID,
-			Token:    token,
-			Username: user.Username,
+			Code:           0,
+			UUID:           user.ID,
+			Token:          token,
+			Username:       user.Username,
+			Email:          user.Email,
+			RegisterMethod: user.RegisterMethod,
 		})
 	}
 }

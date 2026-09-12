@@ -6,19 +6,23 @@ import (
 	"net/http"
 	"time"
 
-	"loginserver/internal/storage"
+	"official-server/internal/storage"
 )
 
 type RegisterRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username       string `json:"username"`
+	Password       string `json:"password"`
+	Email          string `json:"email,omitempty"`
+	RegisterMethod string `json:"register_method,omitempty"`
 }
 
 type RegisterResponse struct {
-	Code int    `json:"code"`
-	UUID string `json:"uuid,omitempty"`
-	Token string `json:"token,omitempty"`
-	Message string `json:"message,omitempty"`
+	Code           int    `json:"code"`
+	UUID           string `json:"uuid,omitempty"`
+	Token          string `json:"token,omitempty"`
+	Username       string `json:"username,omitempty"`
+	RegisterMethod string `json:"register_method,omitempty"`
+	Message        string `json:"message,omitempty"`
 }
 
 func HandleRegister(store *storage.Storage) http.HandlerFunc {
@@ -61,15 +65,25 @@ func HandleRegister(store *storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		user, err := store.CreateUser(req.Username, req.Password)
+		method := req.RegisterMethod
+		if method == "" {
+			method = "official"
+		}
+
+		user, err := store.CreateUser(req.Username, req.Password, req.Email, method)
 		if err != nil {
 			code := 1005
 			msg := "Internal server error"
 			status := http.StatusInternalServerError
 
-			if err == storage.ErrUsernameExists {
+			switch err {
+			case storage.ErrUsernameExists:
 				code = 1001
 				msg = "Username already exists"
+				status = http.StatusConflict
+			case storage.ErrEmailExists:
+				code = 1006
+				msg = "Email already registered"
 				status = http.StatusConflict
 			}
 
@@ -81,13 +95,15 @@ func HandleRegister(store *storage.Storage) http.HandlerFunc {
 
 		token := generateToken(user.ID)
 
-		log.Printf("[REGISTER] OK username=%s uuid=%s ip=%s duration=%v",
-			req.Username, user.ID, r.RemoteAddr, time.Since(start))
+		log.Printf("[REGISTER] OK username=%s uuid=%s method=%s ip=%s duration=%v",
+			req.Username, user.ID, method, r.RemoteAddr, time.Since(start))
 
 		writeJSON(w, http.StatusCreated, RegisterResponse{
-			Code: 0,
-			UUID: user.ID,
-			Token: token,
+			Code:           0,
+			UUID:           user.ID,
+			Token:          token,
+			Username:       user.Username,
+			RegisterMethod: method,
 		})
 	}
 }

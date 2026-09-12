@@ -5,13 +5,14 @@ import (
 	"net/http"
 	"strings"
 
-	"loginserver/internal/storage"
+	"official-server/internal/storage"
 )
 
 type VerifyResponse struct {
 	Code     int    `json:"code"`
 	UUID     string `json:"uuid,omitempty"`
 	Username string `json:"username,omitempty"`
+	Email    string `json:"email,omitempty"`
 	Message  string `json:"message,omitempty"`
 }
 
@@ -60,6 +61,7 @@ func HandleVerify(store *storage.Storage) http.HandlerFunc {
 			Code:     0,
 			UUID:     user.ID,
 			Username: user.Username,
+			Email:    user.Email,
 		})
 	}
 }

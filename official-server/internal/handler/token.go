@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const tokenSecret = "talkift-login-server-secret-key-change-me"
+const tokenSecret = "talkift-official-server-secret-key-change-me"
 
 func generateToken(userID string) string {
 	payload := userID + "|" + time.Now().Add(24*time.Hour).Format(time.RFC3339)

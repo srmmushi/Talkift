@@ -8,14 +8,17 @@ import (
 )
 
 type Config struct {
-	Server      ServerConfig      `toml:"server"`
-	Storage     StorageConfig     `toml:"storage"`
-	SSL         SSLConfig         `toml:"ssl"`
-	Log         LogConfig         `toml:"log"`
+	Server  ServerConfig  `toml:"server"`
+	Storage StorageConfig `toml:"storage"`
+	SSL     SSLConfig     `toml:"ssl"`
+	Log     LogConfig     `toml:"log"`
+	Version VersionConfig `toml:"version"`
 }
 
 type ServerConfig struct {
-	Port int `toml:"port"`
+	Port     int    `toml:"port"`
+	Name     string `toml:"name"`
+	UniqueId string `toml:"unique_id"`
 }
 
 type StorageConfig struct {
@@ -32,10 +35,18 @@ type LogConfig struct {
 	Path string `toml:"path"`
 }
 
-var defaultConfig = `# Talkift Login Server Configuration
+type VersionConfig struct {
+	Current   string `toml:"current"`
+	MinClient string `toml:"min_client"`
+	UpdateUrl string `toml:"update_url"`
+}
+
+var defaultConfig = `# Talkift Official Server Configuration
 
 [server]
 port = 8081
+name = "Talkift Official"
+unique_id = "talkift-official-v1"
 
 [storage]
 path = "data/users.json"
@@ -47,6 +58,11 @@ key = "certs/server.key"
 
 [log]
 path = "data/logs/access.log"
+
+[version]
+current = "1.0.0"
+min_client = "1.0.0"
+update_url = "https://github.com/srmmushi/Talkift/releases"
 `
 
 func Load() (*Config, error) {
@@ -64,7 +80,6 @@ func Load() (*Config, error) {
 	}
 
 	applyDefaults(&cfg)
-
 	return &cfg, nil
 }
 
@@ -72,17 +87,23 @@ func applyDefaults(cfg *Config) {
 	if cfg.Server.Port == 0 {
 		cfg.Server.Port = 8081
 	}
+	if cfg.Server.Name == "" {
+		cfg.Server.Name = "Talkift Official"
+	}
+	if cfg.Server.UniqueId == "" {
+		cfg.Server.UniqueId = "talkift-official-v1"
+	}
 	if cfg.Storage.Path == "" {
 		cfg.Storage.Path = "data/users.json"
 	}
 	if cfg.Log.Path == "" {
 		cfg.Log.Path = "data/logs/access.log"
 	}
-	if cfg.SSL.Cert == "" {
-		cfg.SSL.Cert = "certs/server.crt"
+	if cfg.Version.Current == "" {
+		cfg.Version.Current = "1.0.0"
 	}
-	if cfg.SSL.Key == "" {
-		cfg.SSL.Key = "certs/server.key"
+	if cfg.Version.MinClient == "" {
+		cfg.Version.MinClient = "1.0.0"
 	}
 }
 

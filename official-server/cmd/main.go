@@ -11,9 +11,9 @@ import (
 	"syscall"
 	"time"
 
-	"loginserver/internal/config"
-	"loginserver/internal/handler"
-	"loginserver/internal/storage"
+	"official-server/internal/config"
+	"official-server/internal/handler"
+	"official-server/internal/storage"
 )
 
 func main() {
@@ -29,9 +29,7 @@ func main() {
 		log.Printf("Warning: Cannot open log file %s: %v", cfg.Log.Path, err)
 	} else {
 		defer logFile.Close()
-		multiWriter := os.Stdout
-		log.SetOutput(multiWriter)
-		_ = logFile
+		log.SetOutput(os.Stdout)
 	}
 
 	store := storage.New(cfg.Storage.Path)
@@ -39,13 +37,16 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/register", handler.HandleRegister(store))
 	mux.HandleFunc("/api/login", handler.HandleLogin(store))
+	mux.HandleFunc("/api/login/email", handler.HandleLoginEmail(store))
 	mux.HandleFunc("/api/verify", handler.HandleVerify(store))
+	mux.HandleFunc("/api/version", handler.HandleVersion(cfg))
+	mux.HandleFunc("/api/server/info", handler.HandleServerInfo(cfg))
 
-	handler := corsMiddleware(logMiddleware(mux))
+	h := corsMiddleware(logMiddleware(mux))
 
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),
-		Handler:      handler,
+		Handler:      h,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,
@@ -59,10 +60,21 @@ func main() {
 		if cfg.SSL.Enable {
 			proto = "HTTPS"
 		}
-		log.Printf("Talkift Login Server starting on %s:%d (%s)", "0.0.0.0", cfg.Server.Port, proto)
-		log.Printf("  Register: POST http://localhost:%d/api/register", cfg.Server.Port)
-		log.Printf("  Login:    POST http://localhost:%d/api/login", cfg.Server.Port)
-		log.Printf("  Verify:   POST http://localhost:%d/api/verify", cfg.Server.Port)
+		log.Printf("===========================================")
+		log.Printf("  Talkift Official Server")
+		log.Printf("  Name:      %s", cfg.Server.Name)
+		log.Printf("  UniqueId:  %s", cfg.Server.UniqueId)
+		log.Printf("  Version:   %s", cfg.Version.Current)
+		log.Printf("  Port:      %d (%s)", cfg.Server.Port, proto)
+		log.Printf("===========================================")
+		log.Printf("  Endpoints:")
+		log.Printf("    POST /api/register       - Register new account")
+		log.Printf("    POST /api/login          - Login with username")
+		log.Printf("    POST /api/login/email    - Login with email")
+		log.Printf("    POST /api/verify         - Verify token")
+		log.Printf("    GET  /api/version        - Get server version")
+		log.Printf("    GET  /api/server/info    - Get server info")
+		log.Printf("===========================================")
 
 		var listenErr error
 		if cfg.SSL.Enable {

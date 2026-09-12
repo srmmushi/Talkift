@@ -1,4 +1,4 @@
-module loginserver
+module official-server
 
 go 1.23
 

@@ -1,0 +1,22 @@
+# Talkift Official Server Configuration
+
+[server]
+port = 8081
+name = "Talkift Official"
+unique_id = "talkift-official-v1"
+
+[storage]
+path = "data/users.json"
+
+[ssl]
+enable = false
+cert = "certs/server.crt"
+key = "certs/server.key"
+
+[log]
+path = "data/logs/access.log"
+
+[version]
+current = "1.0.0"
+min_client = "1.0.0"
+update_url = "https://github.com/srmmushi/Talkift/releases"
