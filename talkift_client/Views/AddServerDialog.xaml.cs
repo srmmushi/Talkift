@@ -47,10 +47,10 @@ namespace Talkift.Client.Views
             ((TextBlock)ServerNameBox.Header).Text = LanguageService.GetString("ServerNameRequired");
             ServerNameBox.PlaceholderText = LanguageService.GetString("ServerName");
             ((TextBlock)AddressBox.Header).Text = LanguageService.GetString("ServerAddressRequired");
-            AddressBox.PlaceholderText = "example.com or 192.168.1.1";
+            AddressBox.PlaceholderText = "192.168.1.1";
             ((TextBlock)PortBox.Header).Text = LanguageService.GetString("Port");
             ((TextBlock)PasswordBox.Header).Text = LanguageService.GetString("PasswordOptional");
-            PasswordBox.PlaceholderText = LanguageService.GetString("Password");
+            PasswordBox.PlaceholderText = LanguageService.GetString("PasswordOptionalPlaceholder");
         }
 
         private void AddressBox_TextChanged(object sender, TextChangedEventArgs e)

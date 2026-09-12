@@ -1,0 +1,38 @@
+<Page
+    x:Class="Talkift.Client.Views.V2.SearchPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="Transparent">
+
+    <Grid Padding="16,4" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+          BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+          BorderThickness="0,0,0,1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBox Grid.Column="0" x:Name="SearchInput"
+                 PlaceholderText="Search messages..."
+                 CornerRadius="4" Padding="8,4"
+                 KeyDown="SearchInput_KeyDown"
+                 TextChanged="SearchInput_TextChanged"/>
+
+        <TextBlock Grid.Column="1" x:Name="ResultCountText" Text="" FontSize="12"
+                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                   VerticalAlignment="Center" Margin="8,0"/>
+
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+            <Button x:Name="TypeFilterButton" Style="{StaticResource IconButtonStyle}"
+                    Content="all" Click="TypeFilterButton_Click" Padding="4,2"/>
+            <Button x:Name="CloseButton" Style="{StaticResource IconButtonStyle}"
+                    Click="CloseButton_Click">
+                <FontIcon Glyph="&#xE711;" FontSize="12"/>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Page>

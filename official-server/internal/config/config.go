@@ -19,7 +19,6 @@ type Config struct {
 type ServerConfig struct {
 	Port      int    `toml:"port"`
 	Name      string `toml:"name"`
-	UniqueId  string `toml:"unique_id"`
 	SecretKey string `toml:"secret_key"`
 }
 
@@ -56,7 +55,6 @@ var defaultConfig = `# Talkift Official Server Configuration
 [server]
 port = 8081
 name = "Talkift Official"
-unique_id = "talkift-official-v1"
 secret_key = "change-this-to-a-random-secret-key"
 
 [chat_server]
@@ -107,9 +105,6 @@ func applyDefaults(cfg *Config) {
 	}
 	if cfg.Server.Name == "" {
 		cfg.Server.Name = "Talkift Official"
-	}
-	if cfg.Server.UniqueId == "" {
-		cfg.Server.UniqueId = "talkift-official-v1"
 	}
 	if cfg.Server.SecretKey == "" {
 		cfg.Server.SecretKey = "change-this-to-a-random-secret-key"

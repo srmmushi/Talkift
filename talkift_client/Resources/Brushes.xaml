@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Light Theme Brushes -->
+    <SolidColorBrush x:Key="BrushPrimary" Color="{StaticResource ColorPrimary}"/>
+    <SolidColorBrush x:Key="BrushPrimaryLight" Color="{StaticResource ColorPrimaryLight}"/>
+    <SolidColorBrush x:Key="BrushPrimaryDark" Color="{StaticResource ColorPrimaryDark}"/>
+    <SolidColorBrush x:Key="BrushBackground" Color="{StaticResource ColorBackground}"/>
+    <SolidColorBrush x:Key="BrushBackgroundSecondary" Color="{StaticResource ColorBackgroundSecondary}"/>
+    <SolidColorBrush x:Key="BrushForeground" Color="{StaticResource ColorForeground}"/>
+    <SolidColorBrush x:Key="BrushForegroundSecondary" Color="{StaticResource ColorForegroundSecondary}"/>
+    <SolidColorBrush x:Key="BrushForegroundTertiary" Color="{StaticResource ColorForegroundTertiary}"/>
+    <SolidColorBrush x:Key="BrushCardBackground" Color="{StaticResource ColorCardBackground}"/>
+    <SolidColorBrush x:Key="BrushCardStroke" Color="{StaticResource ColorCardStroke}"/>
+    <SolidColorBrush x:Key="BrushAccent" Color="{StaticResource ColorAccent}"/>
+    <SolidColorBrush x:Key="BrushAccentBrush" Color="{StaticResource ColorAccent}"/>
+    <SolidColorBrush x:Key="BrushSuccess" Color="{StaticResource ColorSuccess}"/>
+    <SolidColorBrush x:Key="BrushWarning" Color="{StaticResource ColorWarning}"/>
+    <SolidColorBrush x:Key="BrushError" Color="{StaticResource ColorError}"/>
+    <SolidColorBrush x:Key="BrushInfo" Color="{StaticResource ColorInfo}"/>
+
+    <!-- System Theme Brushes -->
+    <SolidColorBrush x:Key="SystemAccentColorBrush" Color="{StaticResource ColorAccent}"/>
+    <SolidColorBrush x:Key="SystemAccentColorSecondaryBrush" Color="{StaticResource ColorPrimary}"/>
+
+    <!-- Message Bubble Brushes -->
+    <SolidColorBrush x:Key="BrushBubbleSentBackground" Color="{StaticResource ColorBubbleSent}"/>
+    <SolidColorBrush x:Key="BrushBubbleSentForeground" Color="{StaticResource ColorBubbleSentForeground}"/>
+    <SolidColorBrush x:Key="BrushBubbleReceivedBackground" Color="{StaticResource ColorBubbleReceived}"/>
+    <SolidColorBrush x:Key="BrushBubbleReceivedForeground" Color="{StaticResource ColorBubbleReceivedForeground}"/>
+    <SolidColorBrush x:Key="BrushBubbleSystemBackground" Color="{StaticResource ColorCardStroke}"/>
+
+    <!-- Dark Theme Brushes -->
+    <SolidColorBrush x:Key="DarkBrushBackground" Color="{StaticResource DarkColorBackground}"/>
+    <SolidColorBrush x:Key="DarkBrushBackgroundSecondary" Color="{StaticResource DarkColorBackgroundSecondary}"/>
+    <SolidColorBrush x:Key="DarkBrushForeground" Color="{StaticResource DarkColorForeground}"/>
+    <SolidColorBrush x:Key="DarkBrushForegroundSecondary" Color="{StaticResource DarkColorForegroundSecondary}"/>
+    <SolidColorBrush x:Key="DarkBrushCardBackground" Color="{StaticResource DarkColorCardBackground}"/>
+    <SolidColorBrush x:Key="DarkBrushCardStroke" Color="{StaticResource DarkColorCardStroke}"/>
+    <SolidColorBrush x:Key="DarkBrushAccent" Color="{StaticResource DarkColorAccent}"/>
+    <SolidColorBrush x:Key="DarkBrushSuccess" Color="{StaticResource DarkColorSuccess}"/>
+    <SolidColorBrush x:Key="DarkBrushWarning" Color="{StaticResource DarkColorWarning}"/>
+    <SolidColorBrush x:Key="DarkBrushError" Color="{StaticResource DarkColorError}"/>
+
+    <!-- Status Brushes -->
+    <SolidColorBrush x:Key="BrushOnline" Color="{StaticResource ColorOnline}"/>
+    <SolidColorBrush x:Key="BrushAway" Color="{StaticResource ColorAway}"/>
+    <SolidColorBrush x:Key="BrushBusy" Color="{StaticResource ColorBusy}"/>
+    <SolidColorBrush x:Key="BrushOffline" Color="{StaticResource ColorOffline}"/>
+
+    <!-- Special Brushes -->
+    <SolidColorBrush x:Key="MicaBackdropBrush" Color="#00000000"/>
+    <SolidColorBrush x:Key="AcrylicBackdropBrush" Color="#80000000"/>
+    <SolidColorBrush x:Key="OverlayBrush" Color="#60000000"/>
+    <SolidColorBrush x:Key="SeparatorBrush" Color="{StaticResource ColorCardStroke}"/>
+
+    <!-- Subtle Fill Brushes -->
+    <SolidColorBrush x:Key="SubtleFillColorSecondaryBrush" Color="#33000000"/>
+    <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="{StaticResource ColorAccent}"/>
+    <SolidColorBrush x:Key="SubtleFillColorTertiaryBrush" Color="#1A000000"/>
+</ResourceDictionary>

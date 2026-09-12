@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="Talkift.Client.Views.ImagePreviewDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Name="DialogRoot"
+    Title="Image Preview"
+    PrimaryButtonText="Send"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary"
+    MaxWidth="600" MaxHeight="500">
+
+    <Grid>
+        <Image x:Name="PreviewImage"
+               MaxWidth="560" MaxHeight="420"
+               Stretch="Uniform"
+               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    </Grid>
+</ContentDialog>

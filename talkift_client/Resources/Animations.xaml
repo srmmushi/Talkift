@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Entrance Animation -->
+    <Storyboard x:Key="StoryboardEntranceFadeIn">
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="0" To="1" Duration="0:0:0.3"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+    </Storyboard>
+
+    <Storyboard x:Key="StoryboardEntranceSlideFromBottom">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)"
+                         From="50" To="0" Duration="0:0:0.4"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="0" To="1" Duration="0:0:0.3"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+    </Storyboard>
+
+    <Storyboard x:Key="StoryboardEntranceSlideFromRight">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)"
+                         From="100" To="0" Duration="0:0:0.4"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="0" To="1" Duration="0:0:0.3"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+    </Storyboard>
+
+    <!-- Fade Animation -->
+    <Storyboard x:Key="StoryboardFadeIn">
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="0" To="1" Duration="0:0:0.2"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+    </Storyboard>
+
+    <Storyboard x:Key="StoryboardFadeOut">
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="1" To="0" Duration="0:0:0.2"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+    </Storyboard>
+
+    <!-- Scale Animation -->
+    <Storyboard x:Key="StoryboardScaleIn">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)"
+                         From="0.8" To="1" Duration="0:0:0.2"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)"
+                         From="0.8" To="1" Duration="0:0:0.2"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="0" To="1" Duration="0:0:0.2"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+    </Storyboard>
+
+    <!-- Shake Animation -->
+    <Storyboard x:Key="StoryboardShake">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)"
+                         From="-5" To="5" Duration="0:0:0.05"
+                         RepeatBehavior="4x"
+                         AutoReverse="True"/>
+    </Storyboard>
+
+    <!-- Pulse Animation -->
+    <Storyboard x:Key="StoryboardPulse">
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="1" To="0.5" Duration="0:0:0.5"
+                         AutoReverse="True"
+                         RepeatBehavior="Forever"/>
+    </Storyboard>
+
+    <!-- Button Press Animation -->
+    <Storyboard x:Key="StoryboardButtonPress">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)"
+                         From="1" To="0.95" Duration="0:0:0.1"/>
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)"
+                         From="1" To="0.95" Duration="0:0:0.1"/>
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="1" To="0.8" Duration="0:0:0.1"/>
+    </Storyboard>
+
+    <Storyboard x:Key="StoryboardButtonRelease">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)"
+                         From="0.95" To="1" Duration="0:0:0.15"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)"
+                         From="0.95" To="1" Duration="0:0:0.15"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="0.8" To="1" Duration="0:0:0.15"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+    </Storyboard>
+
+    <!-- Typing Indicator Animation -->
+    <Storyboard x:Key="StoryboardTypingPulse">
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="0.3" To="1" Duration="0:0:0.5"
+                         AutoReverse="True"
+                         RepeatBehavior="Forever"/>
+    </Storyboard>
+
+    <!-- Connected Animation -->
+    <Storyboard x:Key="StoryboardConnectedAnimation">
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                         From="0" To="1" Duration="0:0:0.5"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)"
+                         From="0.9" To="1" Duration="0:0:0.5"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)"
+                         From="0.9" To="1" Duration="0:0:0.5"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+    </Storyboard>
+
+    <!-- Shadow Animation -->
+    <Storyboard x:Key="StoryboardShadowHover">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.Effect).(DropShadow.BlurRadius)"
+                         From="0" To="12" Duration="0:0:0.2"
+                         EasingFunction="{StaticResource EasingFunctionNormal}"/>
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.Effect).(DropShadow.OffsetX)"
+                         From="0" To="0" Duration="0:0:0.2"/>
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.Effect).(DropShadow.OffsetY)"
+                         From="0" To="4" Duration="0:0:0.2"/>
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.Effect).(DropShadow.Color).A"
+                         From="0" To="40" Duration="0:0:0.2"/>
+    </Storyboard>
+
+</ResourceDictionary>

@@ -26,7 +26,6 @@ namespace Talkift.Client
             try
             {
                 this.InitializeComponent();
-                NavView.Loaded += NavView_Loaded;
                 ContentFrame.Navigated += ContentFrame_Navigated;
 
                 ExtendsContentIntoTitleBar = true;
@@ -108,14 +107,6 @@ namespace Talkift.Client
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                ContentFrame.Navigate(typeof(ServerListView));
-            }
-            catch (Exception ex)
-            {
-                CrashLogger.LogException("NavView_Loaded", ex);
-            }
         }
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)

@@ -1,0 +1,53 @@
+<Page
+    x:Class="Talkift.Client.Views.V2.ConversationList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Talkift.Client.Views.Controls"
+    mc:Ignorable="d"
+    Background="Transparent">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Padding="16,12" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+              BorderThickness="0,0,0,1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <FontIcon Grid.Column="0" Glyph="&#xE716;" FontSize="24" VerticalAlignment="Center" Margin="0,0,12,0"/>
+            <TextBlock Grid.Column="1" Text="Conversations" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            <Button Grid.Column="2" Style="{StaticResource IconButtonStyle}" Click="AddButton_Click">
+                <FontIcon Glyph="&#xE710;" FontSize="16"/>
+            </Button>
+        </Grid>
+
+        <ListView Grid.Row="1" x:Name="ConversationListView" Padding="4,0"
+                  SelectionMode="Single" ItemsSource="{x:Bind ViewModel.Conversations}">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Padding" Value="0"/>
+                </Style>
+            </Style.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:ConversationModel">
+                    <controls:ConversationItem Control Model="{x:Bind}"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <TextBlock x:Name="EmptyText" Text="No conversations yet."
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                   Visibility="Collapsed"/>
+    </Grid>
+</Page>

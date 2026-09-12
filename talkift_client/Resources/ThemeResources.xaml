@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Colors.xaml"/>
+        <ResourceDictionary Source="Brushes.xaml"/>
+        <ResourceDictionary Source="Typography.xaml"/>
+        <ResourceDictionary Source="Styles.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- System Backdrop Configuration -->
+    <muxc:ExperimentalWindowBackdrop x:Key="MicaBackdrop"
+                                      DisplayPolicy="Always"
+                                      Policy="Mica"/>
+    <muxc:ExperimentalWindowBackdrop x:Key="AcrylicBackdrop"
+                                      DisplayPolicy="Always"
+                                      Policy="Mica"/>
+
+    <!-- Theme-specific Resources -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="PageBackgroundBrush" Color="{StaticResource ColorBackground}"/>
+            <SolidColorBrush x:Key="NavigationViewPaneBackground" Color="{StaticResource ColorBackgroundSecondary}"/>
+            <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource ColorCardBackground}"/>
+            <SolidColorBrush x:Key="CardStrokeBrush" Color="{StaticResource ColorCardStroke}"/>
+            <SolidColorBrush x:Key="SeparatorBrush" Color="{StaticResource ColorCardStroke}"/>
+            <SolidColorBrush x:Key="ShadowBrush" Color="#20000000"/>
+            <SolidColorBrush x:Key="FocusVisualBrush" Color="{StaticResource ColorAccent}"/>
+            <SolidColorBrush x:Key="FocusVisualSecondaryBrush" Color="{StaticResource ColorAccent}"/>
+            <SolidColorBrush x:Key="TextBoxBorderBrush" Color="{StaticResource ColorCardStroke}"/>
+            <SolidColorBrush x:Key="TextBoxDisabledBorderBrush" Color="#D0CECE"/>
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="PageBackgroundBrush" Color="{StaticResource DarkColorBackground}"/>
+            <SolidColorBrush x:Key="NavigationViewPaneBackground" Color="{StaticResource DarkColorBackgroundSecondary}"/>
+            <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource DarkColorCardBackground}"/>
+            <SolidColorBrush x:Key="CardStrokeBrush" Color="{StaticResource DarkColorCardStroke}"/>
+            <SolidColorBrush x:Key="SeparatorBrush" Color="{StaticResource DarkColorCardStroke}"/>
+            <SolidColorBrush x:Key="ShadowBrush" Color="#40000000"/>
+            <SolidColorBrush x:Key="FocusVisualBrush" Color="{StaticResource DarkColorAccent}"/>
+            <SolidColorBrush x:Key="FocusVisualSecondaryBrush" Color="{StaticResource DarkColorAccent}"/>
+            <SolidColorBrush x:Key="TextBoxBorderBrush" Color="{StaticResource DarkColorCardStroke}"/>
+            <SolidColorBrush x:Key="TextBoxDisabledBorderBrush" Color="#504F4F"/>
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <!-- Shadow Effects -->
+    <muxc:DropShadow x:Key="ThemeShadow">
+        <muxc:DropShadow.Color>
+            <Color A="40" R="0" G="0" B="0"/>
+        </muxc:DropShadow.Color>
+        <muxc:DropShadow.BlurRadius>
+            12
+        </muxc:DropShadow.BlurRadius>
+        <muxc:DropShadow.OffsetX>
+            0
+        </muxc:DropShadow.OffsetX>
+        <muxc:DropShadow.OffsetY>
+            4
+        </muxc:DropShadow.OffsetY>
+    </muxc:DropShadow>
+
+    <muxc:DropShadow x:Key="CardShadow">
+        <muxc:DropShadow.Color>
+            <Color A="20" R="0" G="0" B="0"/>
+        </muxc:DropShadow.Color>
+        <muxc:DropShadow.BlurRadius>
+            8
+        </muxc:DropShadow.BlurRadius>
+        <muxc:DropShadow.OffsetX>
+            0
+        </muxc:DropShadow.OffsetX>
+        <muxc:DropShadow.OffsetY>
+            2
+        </muxc:DropShadow.OffsetY>
+    </muxc:DropShadow>
+
+    <muxc:DropShadow x:Key="MessageShadow">
+        <muxc:DropShadow.Color>
+            <Color A="15" R="0" G="0" B="0"/>
+        </muxc:DropShadow.Color>
+        <muxc:DropShadow.BlurRadius>
+            4
+        </muxc:DropShadow.BlurRadius>
+        <muxc:DropShadow.OffsetX>
+            0
+        </muxc:DropShadow.OffsetX>
+        <muxc:DropShadow.OffsetY>
+            1
+        </muxc:DropShadow.OffsetY>
+    </muxc:DropShadow>
+
+    <!-- Connected Animation Configuration -->
+    <muxc:ConnectedAnimation x:Key="ConnectedItemAnimation"
+                             Duration="0:0:0.35"
+                             EasingMode="EaseOut">
+        <muxc:ConnectedAnimation.Direction>
+            <muxc:ConnectedAnimationDirection From="Left" To="Right"/>
+        </muxc:ConnectedAnimation.Direction>
+    </muxc:ConnectedAnimation>
+
+    <!-- Custom Transition -->
+    <muxc:DrillInNavigationTransitionInfo x:Key="DrillInTransition"/>
+    <muxc:EntranceThemeTransition x:Key="EntranceTransition"/>
+    <muxc:PaneNavigationTransitionInfo x:Key="PaneNavigationTransition"/>
+
+    <!-- Opacity Animations -->
+    <x:Double x:Key="AnimationDurationFast">0.1</x:Double>
+    <x:Double x:Key="AnimationDurationNormal">0.3</x:Double>
+    <x:Double x:Key="AnimationDurationSlow">0.5</x:Double>
+
+    <!-- Backdrop Settings -->
+    <x:Boolean x:Key="EnableMicaBackdrop">True</x:Boolean>
+    <x:Boolean x:Key="EnableAcrylicBackdrop">False</x:Boolean>
+    <x:Boolean x:Key="EnableBackdropAnimation">True</x:Boolean>
+
+    <!-- Corner Radius Theme -->
+    <CornerRadius x:Key="SmallCornerRadius">4</CornerRadius>
+    <CornerRadius x:Key="MediumCornerRadius">8</CornerRadius>
+    <CornerRadius x:Key="LargeCornerRadius">12</CornerRadius>
+    <CornerRadius x:Key="ExtraLargeCornerRadius">16</CornerRadius>
+    <CornerRadius x:Key="FullCornerRadius">20</CornerRadius>
+    <CornerRadius x:Key="CircleCornerRadius">9999</CornerRadius>
+
+    <!-- Grid Splitter Style -->
+    <Style x:Key="GridSplitterStyle" TargetType="muxc:GridSplitter">
+        <Setter Property="Width" Value="4"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="PointerOverBackground" Value="{ThemeResource AccentFillColorSecondaryBrush}"/>
+    </Style>
+
+    <!-- ScrollBar Style -->
+    <Style x:Key="CustomScrollBarStyle" TargetType="ScrollBar">
+        <Setter Property="Width" Value="8"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{ThemeResource ForegroundSecondary}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid>
+                        <Rectangle Fill="Transparent"/>
+                        <Thumb x:Name="ThumbElement" Background="{TemplateBinding Foreground}"
+                               CornerRadius="4" Width="8"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

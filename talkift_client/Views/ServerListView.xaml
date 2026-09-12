@@ -10,17 +10,17 @@
     mc:Ignorable="d"
     Background="Transparent">
 
-    <Grid Padding="24,16">
+    <Grid Padding="20,12" HorizontalAlignment="Left">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0,0,0,16">
+        <Grid Grid.Row="0" Margin="0,0,0,12">
             <TextBlock x:Name="HeaderText"
                        Text="Servers"
-                       Style="{StaticResource TitleLargeTextBlockStyle}"
+                       FontSize="20" FontWeight="SemiBold"
                        VerticalAlignment="Center"/>
         </Grid>
 
@@ -28,7 +28,7 @@
                  Grid.Row="1"
                  IsClosable="True"
                  IsOpen="False"
-                 Margin="0,0,0,12"
+                 Margin="0,0,0,10"
                  HorizontalAlignment="Stretch"/>
 
         <Grid Grid.Row="2">
@@ -45,41 +45,41 @@
                       SelectionChanged="ServerListView_SelectionChanged">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="Models:Server">
-                        <Grid Padding="14,12" CornerRadius="10"
+                        <Grid Padding="12,10" CornerRadius="8"
                               Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                               BorderThickness="1"
-                              Margin="0,0,0,6">
+                              Margin="0,0,0,4">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="44"/>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <Grid Grid.Column="0" VerticalAlignment="Center">
+                            <Grid Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0">
                                 <Ellipse Width="36" Height="36"
                                          Fill="{ThemeResource SystemControlBackgroundAccentBrush}"/>
-                                <TextBlock Text="{x:Bind Name}"
+                                <TextBlock Text="{x:Bind local:ServerListView.GetInitial(Name)}"
                                            FontSize="14" FontWeight="SemiBold"
                                            Foreground="White"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"/>
                             </Grid>
 
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,0,0">
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="{x:Bind Name}"
-                                           FontSize="14" FontWeight="SemiBold"/>
-                                <TextBlock Text="{x:Bind Address}"
-                                           FontSize="12"
+                                           FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="{x:Bind local:ServerListView.GetAddressDisplay(Address, Port)}"
+                                           FontSize="11"
                                            Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                                           Margin="0,2,0,0"/>
+                                           Margin="0,1,0,0"/>
                             </StackPanel>
 
-                            <StackPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Horizontal" Spacing="6">
-                                <Ellipse Width="10" Height="10"
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Horizontal" Spacing="4">
+                                <Ellipse Width="8" Height="8"
                                          VerticalAlignment="Center"
                                          Fill="{x:Bind local:ServerListView.GetStatusBrush(IsOnline)}"/>
-                                <TextBlock FontSize="12"
+                                <TextBlock FontSize="11"
                                            Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                            Text="{x:Bind local:ServerListView.GetStatusText(IsOnline)}"
                                            VerticalAlignment="Center"/>
@@ -111,7 +111,7 @@
                        Text="No servers added yet."
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
-                       FontSize="16"
+                       FontSize="14"
                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                        Visibility="Collapsed"/>
         </Grid>

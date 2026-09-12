@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml;
 using Talkift.Client.Models;
 using Talkift.Client.Services;
 
@@ -13,6 +14,8 @@ namespace Talkift.Client.ViewModels
     {
         private readonly WebSocketService _wsService = new();
         private string _currentUserId = string.Empty;
+        private bool _isSubscribed;
+        private DispatcherQueue? _dispatcherQueue;
 
         [ObservableProperty]
         private Server? _currentServer;
@@ -50,14 +53,19 @@ namespace Talkift.Client.ViewModels
             CurrentServer = server;
             CurrentConversation = conversation;
             ChatTitle = conversation.Name;
-            MemberCountText = conversation.IsGroup ? $"{conversation.Members.Count} members" : "";
+            MemberCountText = conversation.IsGroup ? string.Format(LanguageService.GetString("MembersCount"), conversation.Members.Count) : "";
+            _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-            _wsService.MessageReceived += OnRawMessage;
-            _wsService.NewMessageReceived += OnIncomingMessage;
-            _wsService.Connected += () => IsConnected = true;
-            _wsService.Disconnected += () => IsConnected = false;
-            _wsService.ErrorOccurred += msg => ErrorOccurred?.Invoke(msg);
-            _wsService.UserJoined += username => UserJoined?.Invoke(username);
+            if (!_isSubscribed)
+            {
+                _wsService.MessageReceived += OnRawMessage;
+                _wsService.NewMessageReceived += OnIncomingMessage;
+                _wsService.Connected += OnConnected;
+                _wsService.Disconnected += OnDisconnected;
+                _wsService.ErrorOccurred += OnWsError;
+                _wsService.UserJoined += OnWsUserJoined;
+                _isSubscribed = true;
+            }
 
             if (!_wsService.IsConnected)
             {
@@ -70,6 +78,26 @@ namespace Talkift.Client.ViewModels
 
         private void OnRawMessage(string raw)
         {
+        }
+
+        private void OnConnected()
+        {
+            IsConnected = true;
+        }
+
+        private void OnDisconnected()
+        {
+            IsConnected = false;
+        }
+
+        private void OnWsError(string msg)
+        {
+            ErrorOccurred?.Invoke(msg);
+        }
+
+        private void OnWsUserJoined(string username)
+        {
+            UserJoined?.Invoke(username);
         }
 
         private void OnIncomingMessage(string conversationId, ChatMessage message)
@@ -110,18 +138,26 @@ namespace Talkift.Client.ViewModels
 
         public void AddMessage(ChatMessage message)
         {
-            if (message.ConversationId == CurrentConversation?.Id)
+            void Update()
             {
-                message.IsMine = message.SenderId == _currentUserId;
-                message.TimeDisplay = FormatTimestamp(message.Timestamp);
-                Messages.Add(message);
-
-                if (CurrentConversation != null)
+                if (message.ConversationId == CurrentConversation?.Id)
                 {
-                    CurrentConversation.LastMessage = message.Content;
-                    CurrentConversation.LastMessageTime = message.TimeDisplay;
+                    message.IsMine = message.SenderId == _currentUserId;
+                    message.TimeDisplay = FormatTimestamp(message.Timestamp);
+                    Messages.Add(message);
+
+                    if (CurrentConversation != null)
+                    {
+                        CurrentConversation.LastMessage = message.Content;
+                        CurrentConversation.LastMessageTime = message.TimeDisplay;
+                    }
                 }
             }
+
+            if (_dispatcherQueue != null)
+                _dispatcherQueue.TryEnqueue(Update);
+            else
+                Update();
         }
 
         public void LoadHistoryFromServer(System.Collections.Generic.List<ChatMessage> historyMessages)
@@ -147,17 +183,22 @@ namespace Talkift.Client.ViewModels
             CurrentConversation = conversation;
             ChatTitle = conversation.Name;
             if (conversation.IsGroup)
-                MemberCountText = $"{conversation.Members.Count} members";
+                MemberCountText = string.Format(LanguageService.GetString("MembersCount"), conversation.Members.Count);
         }
 
         public async Task DisconnectAsync()
         {
-            _wsService.MessageReceived -= OnRawMessage;
-            _wsService.NewMessageReceived -= OnIncomingMessage;
-            _wsService.Connected -= () => IsConnected = true;
-            _wsService.Disconnected -= () => IsConnected = false;
-            _wsService.ErrorOccurred -= msg => ErrorOccurred?.Invoke(msg);
-            _wsService.UserJoined -= username => UserJoined?.Invoke(username);
+            if (_isSubscribed)
+            {
+                _wsService.MessageReceived -= OnRawMessage;
+                _wsService.NewMessageReceived -= OnIncomingMessage;
+                _wsService.Connected -= OnConnected;
+                _wsService.Disconnected -= OnDisconnected;
+                _wsService.ErrorOccurred -= OnWsError;
+                _wsService.UserJoined -= OnWsUserJoined;
+                _isSubscribed = false;
+            }
+            await _wsService.DisconnectAsync();
         }
 
         private static string FormatTimestamp(long timestamp)
@@ -167,8 +208,34 @@ namespace Talkift.Client.ViewModels
             if (dt.Date == now.Date)
                 return dt.ToString("HH:mm");
             if (dt.Date == now.Date.AddDays(-1))
-                return "Yesterday " + dt.ToString("HH:mm");
+                return LanguageService.GetString("Yesterday") + " " + dt.ToString("HH:mm");
             return dt.ToString("MM/dd HH:mm");
+        }
+
+        public System.Collections.Generic.List<ChatMessage> SearchMessages(string query)
+        {
+            var results = new System.Collections.Generic.List<ChatMessage>();
+            foreach (var msg in Messages)
+            {
+                if (msg.Content != null && msg.Content.Contains(query, StringComparison.OrdinalIgnoreCase))
+                {
+                    results.Add(msg);
+                }
+            }
+            return results;
+        }
+
+        public System.Collections.Generic.List<string> GetPinnedMessages()
+        {
+            var pinned = new System.Collections.Generic.List<string>();
+            foreach (var msg in Messages)
+            {
+                if (msg.IsPinned)
+                {
+                    pinned.Add($"[{msg.SenderName}] {msg.Content}");
+                }
+            }
+            return pinned;
         }
     }
 }

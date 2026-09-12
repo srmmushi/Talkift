@@ -1,0 +1,57 @@
+<Page
+    x:Class="Talkift.Client.Views.V2.ContactPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Talkift.Client.Views.Controls"
+    mc:Ignorable="d"
+    Background="Transparent">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Padding="16,12" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+              BorderThickness="0,0,0,1">
+            <TextBlock Text="Contacts" FontSize="16" FontWeight="SemiBold"/>
+        </Grid>
+
+        <TextBox Grid.Row="0" x:Name="SearchContactBox"
+                 PlaceholderText="Search contacts..." Grid.Column="1"
+                 CornerRadius="4" Padding="8,4" Margin="8,4" Width="200"/>
+
+        <ListView Grid.Row="1" x:Name="ContactListView" Padding="4,0"
+                  SelectionMode="Single"
+                  ItemsSource="{x:Bind ViewModel.Contacts}">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:UserProfileModel">
+                    <Grid Padding="8,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <controls:AvatarControl Grid.Column="0" Width="36" Height="36"
+                                                Username="{x:Bind Username}"/>
+                        <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="{x:Bind DisplayName}" FontSize="13" FontWeight="SemiBold"/>
+                            <TextBlock Text="{x:Bind Status}" FontSize="11"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                            <Button Content="Chat" Style="{StaticResource AccentButtonStyle}"
+                                    CornerRadius="4" Padding="8,4" Click="ChatButton_Click"/>
+                            <Button Content="Info" Style="{StaticResource IconButtonStyle}"
+                                    CornerRadius="4" Padding="4,8"/>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>

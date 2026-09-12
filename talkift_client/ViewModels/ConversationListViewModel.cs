@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml;
 using Talkift.Client.Models;
 using Talkift.Client.Services;
 
@@ -15,6 +16,8 @@ namespace Talkift.Client.ViewModels
         private readonly WebSocketService _wsService = new();
         private string _currentUserId = string.Empty;
         private string _currentUsername = string.Empty;
+        private bool _isSubscribed;
+        private DispatcherQueue? _dispatcherQueue;
 
         [ObservableProperty]
         private Server? _currentServer;
@@ -26,7 +29,7 @@ namespace Talkift.Client.ViewModels
         private bool _isConnected;
 
         [ObservableProperty]
-        private string _connectionStatus = "Disconnected";
+        private string _connectionStatus = string.Empty;
 
         public ObservableCollection<Conversation> Conversations { get; } = new();
 
@@ -44,13 +47,18 @@ namespace Talkift.Client.ViewModels
             CurrentServer = server;
             _currentUserId = userId;
             _currentUsername = username;
+            _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-            _wsService.Connected += OnConnected;
-            _wsService.Disconnected += OnDisconnected;
-            _wsService.ErrorOccurred += msg => ErrorOccurred?.Invoke(msg);
-            _wsService.NewMessageReceived += OnNewMessage;
-            _wsService.ConversationUpdated += OnConversationUpdated;
-            _wsService.JoinRequestReceived += (from, group) => JoinRequestReceived?.Invoke(from, group);
+            if (!_isSubscribed)
+            {
+                _wsService.Connected += OnConnected;
+                _wsService.Disconnected += OnDisconnected;
+                _wsService.ErrorOccurred += OnWsError;
+                _wsService.NewMessageReceived += OnNewMessage;
+                _wsService.ConversationUpdated += OnConversationUpdated;
+                _wsService.JoinRequestReceived += OnJoinRequest;
+                _isSubscribed = true;
+            }
 
             if (!_wsService.IsConnected)
             {
@@ -58,38 +66,60 @@ namespace Talkift.Client.ViewModels
                 await _wsService.ConnectAsync(url, userId: userId);
             }
 
-            ConnectionStatus = "Connected";
+            ConnectionStatus = LanguageService.GetString("Online");
             IsConnected = true;
         }
 
         private void OnConnected()
         {
             IsConnected = true;
-            ConnectionStatus = "Connected";
+            ConnectionStatus = LanguageService.GetString("Online");
         }
 
         private void OnDisconnected()
         {
             IsConnected = false;
-            ConnectionStatus = "Disconnected";
+            ConnectionStatus = LanguageService.GetString("Offline");
+        }
+
+        private void OnWsError(string msg)
+        {
+            ErrorOccurred?.Invoke(msg);
+        }
+
+        private void OnJoinRequest(string from, string group)
+        {
+            JoinRequestReceived?.Invoke(from, group);
         }
 
         private void OnNewMessage(string conversationId, ChatMessage message)
         {
-            var conv = Conversations.FirstOrDefault(c => c.Id == conversationId);
-            if (conv != null)
+            void Update()
             {
-                conv.LastMessage = message.Content;
-                conv.LastMessageTime = message.TimeDisplay;
-
-                if (!message.IsMine)
+                var conv = Conversations.FirstOrDefault(c => c.Id == conversationId);
+                if (conv != null)
                 {
-                    conv.UnreadCount++;
-                    UnreadCounts[conversationId] = conv.UnreadCount;
-                }
+                    conv.LastMessage = message.Content;
+                    conv.LastMessageTime = message.TimeDisplay;
 
-                Conversations.Move(Conversations.IndexOf(conv), 0);
+                    if (!message.IsMine)
+                    {
+                        conv.UnreadCount++;
+                        UnreadCounts[conversationId] = conv.UnreadCount;
+                    }
+
+                    var idx = Conversations.IndexOf(conv);
+                    if (idx > 0)
+                    {
+                        Conversations.Move(idx, 0);
+                    }
+                }
             }
+
+            if (_dispatcherQueue != null)
+                _dispatcherQueue.TryEnqueue(Update);
+            else
+                Update();
         }
 
         private void OnConversationUpdated(Conversation conversation)
@@ -160,12 +190,17 @@ namespace Talkift.Client.ViewModels
 
         public async Task DisconnectAsync()
         {
-            _wsService.Connected -= OnConnected;
-            _wsService.Disconnected -= OnDisconnected;
-            _wsService.ErrorOccurred -= msg => ErrorOccurred?.Invoke(msg);
-            _wsService.NewMessageReceived -= OnNewMessage;
-            _wsService.ConversationUpdated -= OnConversationUpdated;
-            _wsService.JoinRequestReceived -= (from, group) => JoinRequestReceived?.Invoke(from, group);
+            if (_isSubscribed)
+            {
+                _wsService.Connected -= OnConnected;
+                _wsService.Disconnected -= OnDisconnected;
+                _wsService.ErrorOccurred -= OnWsError;
+                _wsService.NewMessageReceived -= OnNewMessage;
+                _wsService.ConversationUpdated -= OnConversationUpdated;
+                _wsService.JoinRequestReceived -= OnJoinRequest;
+                _isSubscribed = false;
+            }
+            await _wsService.DisconnectAsync();
         }
     }
 }

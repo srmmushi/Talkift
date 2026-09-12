@@ -17,7 +17,6 @@ func HandleVersion(cfg *config.Config) http.HandlerFunc {
 		writeJSON(w, http.StatusOK, map[string]interface{}{
 			"code":       0,
 			"server_name": cfg.Server.Name,
-			"unique_id":  cfg.Server.UniqueId,
 			"version":    cfg.Version.Current,
 			"min_client": cfg.Version.MinClient,
 			"update_url": cfg.Version.UpdateUrl,
@@ -35,7 +34,6 @@ func HandleServerInfo(cfg *config.Config, store *storage.Storage) http.HandlerFu
 		writeJSON(w, http.StatusOK, map[string]interface{}{
 			"code":         0,
 			"server_name":  cfg.Server.Name,
-			"unique_id":    cfg.Server.UniqueId,
 			"version":      cfg.Version.Current,
 			"min_client":   cfg.Version.MinClient,
 			"chat_host":    cfg.ChatServer.Host,

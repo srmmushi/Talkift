@@ -12,6 +12,28 @@ namespace Talkift.Client.Views
         public DependencyMissingPage()
         {
             this.InitializeComponent();
+            this.Loaded += DependencyMissingPage_Loaded;
+        }
+
+        private void DependencyMissingPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            ApplyLocalization();
+        }
+
+        private void ApplyLocalization()
+        {
+            try
+            {
+                TitleText.Text = LanguageService.GetString("DependenciesMissing");
+                DescText.Text = LanguageService.GetString("MissingDependenciesDesc");
+                RestartText.Text = LanguageService.GetString("RestartAfterInstall");
+                SkipButton.Content = LanguageService.GetString("SkipAndContinue");
+                CloseButton.Content = LanguageService.GetString("Close");
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("DependencyMissingPage.ApplyLocalization", ex);
+            }
         }
 
         protected override void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)

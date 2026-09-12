@@ -36,6 +36,11 @@ namespace Talkift.Client.Views
                 await ViewModel.LoadServersAsync();
                 UpdateEmptyState();
                 ApplyLocalization();
+
+                LanguageService.LanguageChanged += () =>
+                {
+                    DispatcherQueue.TryEnqueue(() => ApplyLocalization());
+                };
             }
             catch (Exception ex)
             {
@@ -255,6 +260,12 @@ namespace Talkift.Client.Views
         private static readonly Brush OfflineBrush = new SolidColorBrush(Colors.Gray);
 
         public static string Localized(string key) => LanguageService.GetString(key);
+
+        public static string GetInitial(string name) =>
+            string.IsNullOrEmpty(name) ? "?" : name[0].ToString().ToUpper();
+
+        public static string GetAddressDisplay(string address, int port) =>
+            $"{address}:{port}";
 
         public static Windows.UI.Color GetStatusColor(bool isOnline) =>
             isOnline ? Colors.Green : Colors.Gray;

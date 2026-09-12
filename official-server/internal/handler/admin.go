@@ -101,7 +101,6 @@ func HandleGetConfig(cfg *config.Config) http.HandlerFunc {
 		writeJSON(w, http.StatusOK, map[string]interface{}{
 			"code":        0,
 			"server_name": cfg.Server.Name,
-			"unique_id":   cfg.Server.UniqueId,
 			"version":     cfg.Version.Current,
 			"chat_host":   cfg.ChatServer.Host,
 			"chat_port":   cfg.ChatServer.Port,

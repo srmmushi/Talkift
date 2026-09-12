@@ -118,7 +118,6 @@ func main() {
 		log.Printf("===========================================")
 		log.Printf("  Talkift Official Server")
 		log.Printf("  Name:      %s", cfg.Server.Name)
-		log.Printf("  UniqueId:  %s", cfg.Server.UniqueId)
 		log.Printf("  Version:   %s", cfg.Version.Current)
 		log.Printf("  Port:      %d (%s)", cfg.Server.Port, proto)
 		log.Printf("  Chat:      %s:%d (%s)", cfg.ChatServer.Host, cfg.ChatServer.Port, cfg.ChatServer.Protocol)
