@@ -65,6 +65,10 @@ func HandleLogin(store *storage.Storage) http.HandlerFunc {
 				code = 1002
 				msg = "Invalid password"
 				status = http.StatusUnauthorized
+			case storage.ErrUserBanned:
+				code = 1007
+				msg = "User is banned"
+				status = http.StatusForbidden
 			}
 
 			writeJSON(w, status, LoginResponse{Code: code, Message: msg})

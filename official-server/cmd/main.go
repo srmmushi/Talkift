@@ -33,14 +33,61 @@ func main() {
 	}
 
 	store := storage.New(cfg.Storage.Path)
+	versionStore := storage.NewVersionStorage(cfg.Storage.VersionPath, cfg.Storage.ConfigPath)
 
 	mux := http.NewServeMux()
+
+	// Auth endpoints (5)
 	mux.HandleFunc("/api/register", handler.HandleRegister(store))
 	mux.HandleFunc("/api/login", handler.HandleLogin(store))
 	mux.HandleFunc("/api/login/email", handler.HandleLoginEmail(store))
 	mux.HandleFunc("/api/verify", handler.HandleVerify(store))
-	mux.HandleFunc("/api/version", handler.HandleVersion(cfg))
-	mux.HandleFunc("/api/server/info", handler.HandleServerInfo(cfg))
+	mux.HandleFunc("/api/logout", handler.HandleLogout())
+
+	// User endpoints (7)
+	mux.HandleFunc("/api/user/profile", handler.HandleGetProfile(store))
+	mux.HandleFunc("/api/user/profile/update", handler.HandleUpdateProfile(store))
+	mux.HandleFunc("/api/user/status", handler.HandleSetStatus(store))
+	mux.HandleFunc("/api/user/search", handler.HandleSearchUsers(store))
+	mux.HandleFunc("/api/user/change-password", handler.HandleChangePassword(store))
+	mux.HandleFunc("/api/user/avatar", handler.HandleSetAvatar(store))
+	mux.HandleFunc("/api/user/block", handler.HandleBlockUser())
+
+	// Server endpoints (4)
+	mux.HandleFunc("/api/version", handler.HandleVersion(cfg, versionStore))
+	mux.HandleFunc("/api/server/info", handler.HandleServerInfo(cfg, store))
+	mux.HandleFunc("/api/health", handler.HandleHealthCheck(store))
+	mux.HandleFunc("/api/ping", handler.HandlePing)
+
+	// Admin endpoints (5)
+	mux.HandleFunc("/api/admin/users", handler.HandleGetUsers(store))
+	mux.HandleFunc("/api/admin/ban", handler.HandleBanUser(store))
+	mux.HandleFunc("/api/admin/unban", handler.HandleUnbanUser(store))
+	mux.HandleFunc("/api/admin/stats", handler.HandleGetStats(store, cfg))
+	mux.HandleFunc("/api/admin/config", handler.HandleGetConfig(cfg))
+
+	// Version management endpoints (6)
+	mux.HandleFunc("/api/versions", handler.HandleGetVersions(versionStore))
+	mux.HandleFunc("/api/version/latest", handler.HandleGetLatestVersion(versionStore))
+	mux.HandleFunc("/api/version/create", handler.HandleCreateVersion(versionStore))
+	mux.HandleFunc("/api/version/delete", handler.HandleDeleteVersion(versionStore))
+	mux.HandleFunc("/api/version/download", handler.HandleDownloadVersion(versionStore))
+	mux.HandleFunc("/api/version/notes", handler.HandleGetReleaseNotes(versionStore))
+
+	// Friend endpoints (4)
+	mux.HandleFunc("/api/friend/request", handler.HandleSendFriendRequest(store))
+	mux.HandleFunc("/api/friend/accept", handler.HandleAcceptFriendRequest())
+	mux.HandleFunc("/api/friend/reject", handler.HandleRejectFriendRequest())
+	mux.HandleFunc("/api/friend/pending", handler.HandleGetFriendRequests())
+
+	// Notification endpoints (4)
+	mux.HandleFunc("/api/notifications", handler.HandleGetNotifications())
+	mux.HandleFunc("/api/notification/read", handler.HandleMarkNotificationRead())
+	mux.HandleFunc("/api/notification/read-all", handler.HandleMarkAllNotificationsRead())
+	mux.HandleFunc("/api/notification/delete", handler.HandleDeleteNotification())
+
+	// Chat server config endpoint (1)
+	mux.HandleFunc("/api/chat/config", handler.HandleGetChatConfig(versionStore))
 
 	h := corsMiddleware(logMiddleware(mux))
 
@@ -66,14 +113,17 @@ func main() {
 		log.Printf("  UniqueId:  %s", cfg.Server.UniqueId)
 		log.Printf("  Version:   %s", cfg.Version.Current)
 		log.Printf("  Port:      %d (%s)", cfg.Server.Port, proto)
+		log.Printf("  Chat:      %s:%d (%s)", cfg.ChatServer.Host, cfg.ChatServer.Port, cfg.ChatServer.Protocol)
 		log.Printf("===========================================")
-		log.Printf("  Endpoints:")
-		log.Printf("    POST /api/register       - Register new account")
-		log.Printf("    POST /api/login          - Login with username")
-		log.Printf("    POST /api/login/email    - Login with email")
-		log.Printf("    POST /api/verify         - Verify token")
-		log.Printf("    GET  /api/version        - Get server version")
-		log.Printf("    GET  /api/server/info    - Get server info")
+		log.Printf("  API Endpoints: 46")
+		log.Printf("    Auth:        5  (/api/register, /api/login, /api/login/email, /api/verify, /api/logout)")
+		log.Printf("    User:        7  (/api/user/*)")
+		log.Printf("    Server:      4  (/api/version, /api/server/info, /api/health, /api/ping)")
+		log.Printf("    Admin:       5  (/api/admin/*)")
+		log.Printf("    Version:     6  (/api/versions, /api/version/*)")
+		log.Printf("    Friend:      4  (/api/friend/*)")
+		log.Printf("    Notification:4  (/api/notifications, /api/notification/*)")
+		log.Printf("    Chat:        1  (/api/chat/config)")
 		log.Printf("===========================================")
 
 		var listenErr error

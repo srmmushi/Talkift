@@ -6,7 +6,7 @@ echo ""
 
 cd "$(dirname "$0")"
 
-mkdir -p data/logs
+mkdir -p data/logs data/version data/config
 
 echo "Starting official server..."
 go run ./cmd/main.go

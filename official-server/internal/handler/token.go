@@ -6,13 +6,13 @@ import (
 	"encoding/hex"
 	"strings"
 	"time"
-)
 
-const tokenSecret = "talkift-official-server-secret-key-change-me"
+	"official-server/internal/config"
+)
 
 func generateToken(userID string) string {
 	payload := userID + "|" + time.Now().Add(24*time.Hour).Format(time.RFC3339)
-	mac := hmac.New(sha256.New, []byte(tokenSecret))
+	mac := hmac.New(sha256.New, []byte("talkift-official-secret"))
 	mac.Write([]byte(payload))
 	sig := hex.EncodeToString(mac.Sum(nil))
 	return payload + "|" + sig
@@ -36,7 +36,7 @@ func parseToken(token string) string {
 	}
 
 	payload := userID + "|" + expiresStr
-	mac := hmac.New(sha256.New, []byte(tokenSecret))
+	mac := hmac.New(sha256.New, []byte("talkift-official-secret"))
 	mac.Write([]byte(payload))
 	expectedSig := hex.EncodeToString(mac.Sum(nil))
 
@@ -45,4 +45,20 @@ func parseToken(token string) string {
 	}
 
 	return userID
+}
+
+func generateAPIKey() string {
+	b := make([]byte, 32)
+	for i := range b {
+		b[i] = "abcdefghijklmnopqrstuvwxyz0123456789"[time.Now().UnixNano()%36]
+		time.Sleep(1)
+	}
+	return hex.EncodeToString(b)
+}
+
+func getSecretKey(cfg *config.Config) string {
+	if cfg.Server.SecretKey != "" {
+		return cfg.Server.SecretKey
+	}
+	return "talkift-official-secret"
 }

@@ -42,7 +42,11 @@ namespace Talkift.Client
 
                 LanguageService.LanguageChanged += () =>
                 {
-                    DispatcherQueue.TryEnqueue(() => ApplyLocalization());
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        ApplyLocalization();
+                        RefreshCurrentPage();
+                    });
                 };
 
                 ContentFrame.Navigate(typeof(ServerListView));
@@ -82,6 +86,22 @@ namespace Talkift.Client
             catch (Exception ex)
             {
                 CrashLogger.LogException("ApplyLocalization", ex);
+            }
+        }
+
+        private void RefreshCurrentPage()
+        {
+            try
+            {
+                var currentPage = ContentFrame.CurrentSourcePageType;
+                if (currentPage != null)
+                {
+                    ContentFrame.Navigate(currentPage);
+                }
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("RefreshCurrentPage", ex);
             }
         }
 

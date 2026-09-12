@@ -8,15 +8,15 @@
     mc:Ignorable="d"
     Background="Transparent">
 
-    <Grid Padding="0">
+    <Grid Padding="0" x:Name="RootGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="Auto" MinWidth="180" MaxWidth="280"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-              BorderThickness="0,0,1,0">
+              BorderThickness="0,0,1,0" Padding="0,0,8,0">
             <StackPanel Padding="16,24" Spacing="4">
                 <TextBlock x:Name="TitleText"
                            Text="Settings"
@@ -200,7 +200,7 @@
                                                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                                TextTrimming="CharacterEllipsis"/>
                                 </StackPanel>
-                                <Button Grid.Column="1" Content="Change" Click="ChangeStoragePath_Click"
+                                <Button Grid.Column="1" x:Name="ChangeStoragePathButton" Content="Change" Click="ChangeStoragePath_Click"
                                         Padding="12,6" CornerRadius="6"/>
                             </Grid>
 
@@ -217,7 +217,7 @@
                                                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                                TextTrimming="CharacterEllipsis"/>
                                 </StackPanel>
-                                <Button Grid.Column="1" Content="Open" Click="OpenLogFolder_Click"
+                                <Button Grid.Column="1" x:Name="OpenLogFolderButton" Content="Open" Click="OpenLogFolder_Click"
                                         Padding="12,6" CornerRadius="6"/>
                             </Grid>
                         </StackPanel>

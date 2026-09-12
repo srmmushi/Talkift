@@ -13,6 +13,7 @@ namespace Talkift.Client.Views
     {
         public SettingsViewModel ViewModel { get; } = new();
         private Button? _activeNavButton;
+        private bool _isLoading;
 
         public SettingsPage()
         {
@@ -24,6 +25,7 @@ namespace Talkift.Client.Views
         {
             try
             {
+                _isLoading = true;
                 await ViewModel.LoadSettingsAsync();
 
                 BackdropComboBox.Items.Clear();
@@ -33,9 +35,11 @@ namespace Talkift.Client.Views
                 BackdropComboBox.SelectedIndex = ViewModel.SelectedBackdropIndex;
 
                 LanguageComboBox.Items.Clear();
-                LanguageComboBox.Items.Add("English");
-                LanguageComboBox.Items.Add("\u4e2d\u6587");
-                LanguageComboBox.SelectedIndex = ViewModel.SelectedLanguageIndex;
+                foreach (var lang in LanguageService.GetAvailableLanguages())
+                {
+                    LanguageComboBox.Items.Add(LanguageService.GetLanguageDisplayName(lang));
+                }
+                LanguageComboBox.SelectedIndex = LanguageService.GetLanguageIndex(LanguageService.CurrentLanguage);
 
                 OpacitySlider.Value = ViewModel.Opacity * 100;
                 OpacityValueText.Text = $"{(int)(ViewModel.Opacity * 100)}%";
@@ -51,9 +55,11 @@ namespace Talkift.Client.Views
 
                 ApplyLocalization();
                 ShowSection(AppearanceSection, NavAppearance);
+                _isLoading = false;
             }
             catch (Exception ex)
             {
+                _isLoading = false;
                 CrashLogger.LogException("SettingsPage_Loaded", ex);
             }
         }
@@ -99,7 +105,7 @@ namespace Talkift.Client.Views
 
         private async void BackdropComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try { if (BackdropComboBox.SelectedIndex >= 0) await ViewModel.SaveBackdropAsync(BackdropComboBox.SelectedIndex); }
+            try { if (!_isLoading && BackdropComboBox.SelectedIndex >= 0) await ViewModel.SaveBackdropAsync(BackdropComboBox.SelectedIndex); }
             catch (Exception ex) { CrashLogger.LogException("BackdropComboBox_SelectionChanged", ex); }
         }
 
@@ -107,12 +113,18 @@ namespace Talkift.Client.Views
         {
             try
             {
-                if (LanguageComboBox.SelectedIndex >= 0 && LanguageComboBox.SelectedIndex != ViewModel.SelectedLanguageIndex)
+                if (_isLoading) return;
+                if (LanguageComboBox.SelectedIndex >= 0)
                 {
-                    await ViewModel.SaveLanguageAsync(LanguageComboBox.SelectedIndex);
-                    ApplyLocalization();
-                    StatusInfoBar.Message = LanguageService.GetString("LanguageChanged");
-                    StatusInfoBar.IsOpen = true;
+                    var langs = LanguageService.GetAvailableLanguages();
+                    var selectedLang = langs[LanguageComboBox.SelectedIndex];
+                    if (selectedLang != LanguageService.CurrentLanguage)
+                    {
+                        await LanguageService.SetLanguageAsync(selectedLang);
+                        ApplyLocalization();
+                        StatusInfoBar.Message = LanguageService.GetString("LanguageChanged");
+                        StatusInfoBar.IsOpen = true;
+                    }
                 }
             }
             catch (Exception ex) { CrashLogger.LogException("LanguageComboBox_SelectionChanged", ex); }
@@ -122,6 +134,7 @@ namespace Talkift.Client.Views
         {
             try
             {
+                if (_isLoading) return;
                 var opacity = e.NewValue / 100.0;
                 OpacityValueText.Text = $"{(int)e.NewValue}%";
                 await ViewModel.SaveOpacityAsync(opacity);
@@ -130,11 +143,11 @@ namespace Talkift.Client.Views
         }
 
         private async void AutoCheckToggle_Toggled(object sender, RoutedEventArgs e) =>
-            TryCatch(async () => await ViewModel.SaveAutoCheckAsync(AutoCheckToggle.IsOn));
+            TryCatch(async () => { if (!_isLoading) await ViewModel.SaveAutoCheckAsync(AutoCheckToggle.IsOn); });
 
         private async void TimeoutNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
         {
-            try { if (args.NewValue >= 3) await ViewModel.SaveConnectionTimeoutAsync((int)args.NewValue); }
+            try { if (!_isLoading && args.NewValue >= 3) await ViewModel.SaveConnectionTimeoutAsync((int)args.NewValue); }
             catch (Exception ex) { CrashLogger.LogException("TimeoutNumberBox_ValueChanged", ex); }
         }
 
@@ -161,7 +174,7 @@ namespace Talkift.Client.Views
             try
             {
                 var picker = new Windows.Storage.Pickers.FolderPicker();
-                picker.FileTypeFilter.Add("*);
+                picker.FileTypeFilter.Add("*");
                 var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
                 WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
                 var folder = await picker.PickSingleFolderAsync();
@@ -194,30 +207,39 @@ namespace Talkift.Client.Views
                 TitleText.Text = LanguageService.GetString("Settings");
                 NavAppearanceText.Text = LanguageService.GetString("Appearance");
                 NavServerMgmtText.Text = LanguageService.GetString("ServerManagement");
-                NavOfficialText.Text = "Official Server";
-                NavStorageText.Text = "Storage";
+                NavOfficialText.Text = LanguageService.GetString("OfficialServer");
+                NavStorageText.Text = LanguageService.GetString("Storage");
                 NavAboutText.Text = LanguageService.GetString("About");
 
                 AppearanceHeader.Text = LanguageService.GetString("Appearance");
-                AppearanceDesc.Text = "Customize the look and feel";
+                AppearanceDesc.Text = LanguageService.GetString("CustomizeAppearance");
                 BackdropLabel.Text = LanguageService.GetString("Backdrop");
-                OpacityLabel.Text = "Window Opacity";
+                OpacityLabel.Text = LanguageService.GetString("WindowOpacity");
                 LanguageLabel.Text = LanguageService.GetString("Language");
 
                 ServerMgmtHeader.Text = LanguageService.GetString("ServerManagement");
-                ServerMgmtDesc.Text = "Configure server connection settings";
+                ServerMgmtDesc.Text = LanguageService.GetString("ConfigureServerSettings");
                 AutoCheckLabel.Text = LanguageService.GetString("AutoCheckServerStatus");
                 AutoCheckDesc.Text = LanguageService.GetString("AutoCheckServerStatusDesc");
                 TimeoutLabel.Text = LanguageService.GetString("ConnectionTimeout");
                 TimeoutDesc.Text = LanguageService.GetString("ConnectionTimeoutDesc");
 
-                OfficialHeader.Text = "Official Server";
-                OfficialDesc.Text = "Configure the official Talkift server";
+                OfficialHeader.Text = LanguageService.GetString("OfficialServer");
+                OfficialDesc.Text = LanguageService.GetString("OfficialServerDesc");
+                ((TextBlock)OfficialAddrBox.Header).Text = LanguageService.GetString("ServerAddress");
+                OfficialAddrBox.PlaceholderText = "server.talkift.com";
+                ((TextBlock)OfficialPortBox.Header).Text = LanguageService.GetString("Port");
+                ((TextBlock)OfficialIdBox.Header).Text = LanguageService.GetString("ServerName");
+                OfficialEmailCheck.Content = LanguageService.GetString("LoginWithEmail");
+                OfficialOfflineCheck.Content = LanguageService.GetString("OfflineLogin");
+                SaveOfficialButton.Content = LanguageService.GetString("Save");
 
-                StorageHeader.Text = "Storage";
-                StorageDesc.Text = "Configure data and log storage paths";
-                StoragePathLabel.Text = "Data Storage Path";
-                LogPathLabel.Text = "Log Storage Path";
+                StorageHeader.Text = LanguageService.GetString("Storage");
+                StorageDesc.Text = LanguageService.GetString("StorageDesc");
+                StoragePathLabel.Text = LanguageService.GetString("DataStoragePath");
+                LogPathLabel.Text = LanguageService.GetString("LogStoragePath");
+                ChangeStoragePathButton.Content = LanguageService.GetString("Change");
+                OpenLogFolderButton.Content = LanguageService.GetString("Open");
 
                 AboutDesc.Text = LanguageService.GetString("About");
                 CopyrightText.Text = LanguageService.GetString("Copyright");

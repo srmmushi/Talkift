@@ -1,0 +1,76 @@
+package handler
+
+import (
+	"net/http"
+
+	"official-server/internal/config"
+	"official-server/internal/storage"
+)
+
+type VersionResponse struct {
+	Code       int                    `json:"code"`
+	ServerName string                 `json:"server_name"`
+	UniqueId   string                 `json:"unique_id"`
+	Version    *config.VersionConfig  `json:"version,omitempty"`
+	Message    string                 `json:"message,omitempty"`
+}
+
+func HandleVersion(cfg *config.Config, versionStore *storage.VersionStorage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			writeJSON(w, http.StatusMethodNotAllowed, VersionResponse{
+				Code: 1004, Message: "Method not allowed",
+			})
+			return
+		}
+
+		writeJSON(w, http.StatusOK, VersionResponse{
+			Code:       0,
+			ServerName: cfg.Server.Name,
+			UniqueId:   cfg.Server.UniqueId,
+			Version:    &cfg.Version,
+		})
+	}
+}
+
+func HandleServerInfo(cfg *config.Config, store *storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			writeJSON(w, http.StatusMethodNotAllowed, map[string]interface{}{
+				"code": 1004, "message": "Method not allowed",
+			})
+			return
+		}
+
+		writeJSON(w, http.StatusOK, map[string]interface{}{
+			"code":        0,
+			"server_name": cfg.Server.Name,
+			"unique_id":   cfg.Server.UniqueId,
+			"version":     cfg.Version.Current,
+			"min_client":  cfg.Version.MinClient,
+			"chat_host":   cfg.ChatServer.Host,
+			"chat_port":   cfg.ChatServer.Port,
+			"chat_proto":  cfg.ChatServer.Protocol,
+			"status":      "online",
+			"online_users": store.GetOnlineCount(),
+			"total_users":  store.GetTotalCount(),
+		})
+	}
+}
+
+func HandleHealthCheck(store *storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, http.StatusOK, map[string]interface{}{
+			"status":      "healthy",
+			"online_users": store.GetOnlineCount(),
+			"total_users":  store.GetTotalCount(),
+		})
+	}
+}
+
+func HandlePing(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"code":    0,
+		"message": "pong",
+	})
+}
