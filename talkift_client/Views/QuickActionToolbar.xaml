@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Talkift.Client.Views.QuickActionToolbar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Height="36">
+
+    <StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Center">
+        <Button x:Name="EmojiButton" Style="{StaticResource IconButtonStyle}"
+                ToolTipService.ToolTip="Emoji" Click="EmojiButton_Click">
+            <FontIcon Glyph="&#xE70E;" FontSize="18"/>
+        </Button>
+        <Button x:Name="FileButton" Style="{StaticResource IconButtonStyle}"
+                ToolTipService.ToolTip="File" Click="FileButton_Click">
+            <FontIcon Glyph="&#xE7C3;" FontSize="18"/>
+        </Button>
+        <Button x:Name="ImageAttachButton" Style="{StaticResource IconButtonStyle}"
+                ToolTipService.ToolTip="Image" Click="ImageAttachButton_Click">
+            <FontIcon Glyph="&#xE71B;" FontSize="18"/>
+        </Button>
+        <Button x:Name="VoiceButton" Style="{StaticResource IconButtonStyle}"
+                ToolTipService.ToolTip="Voice" Click="VoiceButton_Click">
+            <FontIcon Glyph="&#xE724;" FontSize="18"/>
+        </Button>
+    </StackPanel>
+</UserControl>

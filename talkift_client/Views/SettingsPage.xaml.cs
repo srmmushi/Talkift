@@ -49,7 +49,6 @@ namespace Talkift.Client.Views
 
                 OfficialAddrBox.Text = ViewModel.OfficialServer.Address;
                 OfficialPortBox.Value = ViewModel.OfficialServer.Port;
-                OfficialIdBox.Text = ViewModel.OfficialServer.UniqueId;
                 OfficialEmailCheck.IsChecked = ViewModel.OfficialServer.SupportsEmail;
                 OfficialOfflineCheck.IsChecked = ViewModel.OfficialServer.SupportsOffline;
 
@@ -142,8 +141,11 @@ namespace Talkift.Client.Views
             catch (Exception ex) { CrashLogger.LogException("OpacitySlider_ValueChanged", ex); }
         }
 
-        private async void AutoCheckToggle_Toggled(object sender, RoutedEventArgs e) =>
-            TryCatch(async () => { if (!_isLoading) await ViewModel.SaveAutoCheckAsync(AutoCheckToggle.IsOn); });
+        private async void AutoCheckToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            try { if (!_isLoading) await ViewModel.SaveAutoCheckAsync(AutoCheckToggle.IsOn); }
+            catch (Exception ex) { CrashLogger.LogException("AutoCheckToggle_Toggled", ex); }
+        }
 
         private async void TimeoutNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
         {
@@ -157,7 +159,7 @@ namespace Talkift.Client.Views
             {
                 var server = new OfficialServer
                 {
-                    Address = OfficialAddrBox.Text?.Trim() ?? "server.talkift.com",
+                    Address = OfficialAddrBox.Text?.Trim() ?? "47.113.216.177",
                     Port = (int)OfficialPortBox.Value,
                     SupportsEmail = OfficialEmailCheck.IsChecked == true,
                     SupportsOffline = OfficialOfflineCheck.IsChecked == true
@@ -227,11 +229,10 @@ namespace Talkift.Client.Views
                 OfficialHeader.Text = LanguageService.GetString("OfficialServer");
                 OfficialDesc.Text = LanguageService.GetString("OfficialServerDesc");
                 ((TextBlock)OfficialAddrBox.Header).Text = LanguageService.GetString("ServerAddress");
-                OfficialAddrBox.PlaceholderText = "server.talkift.com";
+                OfficialAddrBox.PlaceholderText = "47.113.216.177";
                 ((TextBlock)OfficialPortBox.Header).Text = LanguageService.GetString("Port");
-                ((TextBlock)OfficialIdBox.Header).Text = LanguageService.GetString("ServerName");
-                OfficialEmailCheck.Content = LanguageService.GetString("LoginWithEmail");
-                OfficialOfflineCheck.Content = LanguageService.GetString("OfflineLogin");
+                OfficialEmailCheck.Content = LanguageService.GetString("SupportEmailLogin");
+                OfficialOfflineCheck.Content = LanguageService.GetString("SupportOfflineLogin");
                 SaveOfficialButton.Content = LanguageService.GetString("Save");
 
                 StorageHeader.Text = LanguageService.GetString("Storage");
@@ -241,8 +242,9 @@ namespace Talkift.Client.Views
                 ChangeStoragePathButton.Content = LanguageService.GetString("Change");
                 OpenLogFolderButton.Content = LanguageService.GetString("Open");
 
-                AboutDesc.Text = LanguageService.GetString("About");
+                AboutDesc.Text = LanguageService.GetString("AboutDescription");
                 CopyrightText.Text = LanguageService.GetString("Copyright");
+                VersionLabel.Text = LanguageService.GetString("Version");
             }
             catch (Exception ex) { CrashLogger.LogException("SettingsPage.ApplyLocalization", ex); }
         }

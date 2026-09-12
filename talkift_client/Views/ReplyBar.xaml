@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Talkift.Client.Views.ReplyBar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Visibility="Collapsed">
+
+    <Grid Padding="12,6" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+          BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+          BorderThickness="0,1,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{ThemeResource SystemAccentColor}" CornerRadius="2"/>
+
+        <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
+            <TextBlock x:Name="ReplyToText" Text="Reply to"
+                       FontSize="11" FontWeight="SemiBold"
+                       Foreground="{ThemeResource SystemAccentColor}"/>
+            <TextBlock x:Name="OriginalMessageText" Text=""
+                       FontSize="12" TextTrimming="CharacterEllipsis"
+                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                       MaxLines="1"/>
+        </StackPanel>
+
+        <Button Grid.Column="2" x:Name="CancelReplyButton"
+                Style="{StaticResource IconButtonStyle}"
+                Click="CancelReplyButton_Click">
+            <FontIcon Glyph="&#xE711;" FontSize="12"/>
+        </Button>
+    </Grid>
+</UserControl>

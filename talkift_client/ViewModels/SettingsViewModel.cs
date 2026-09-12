@@ -86,6 +86,8 @@ namespace Talkift.Client.ViewModels
             var official = await _storage.LoadAsync<OfficialServer>("official_server");
             if (official != null)
                 OfficialServer = official;
+            else
+                OfficialServer = new OfficialServer();
         }
 
         public async Task SaveBackdropAsync(int index)

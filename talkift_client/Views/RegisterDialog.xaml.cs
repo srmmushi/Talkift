@@ -43,8 +43,8 @@ namespace Talkift.Client.Views
             EmailBox.PlaceholderText = LanguageService.GetString("EmailPlaceholder");
             ((TextBlock)PasswordBox.Header).Text = LanguageService.GetString("Password");
             PasswordBox.PlaceholderText = LanguageService.GetString("PasswordMinLength");
-            ((TextBlock)ConfirmPasswordBox.Header).Text = LanguageService.GetString("Password");
-            ConfirmPasswordBox.PlaceholderText = LanguageService.GetString("Password");
+            ((TextBlock)ConfirmPasswordBox.Header).Text = LanguageService.GetString("ConfirmPassword");
+            ConfirmPasswordBox.PlaceholderText = LanguageService.GetString("ConfirmPasswordPlaceholder");
             RegisterButton.Content = LanguageService.GetString("Register");
             HaveAccountText.Text = LanguageService.GetString("AlreadyHaveAccount");
             LoginLinkText.Text = " " + LanguageService.GetString("Login");

@@ -126,7 +126,7 @@ namespace Talkift.Client.Views
                 var dialog = new ContentDialog
                 {
                     Title = LanguageService.GetString("JoinRequest"),
-                    Content = $"{fromUser} wants to join {groupName}",
+                    Content = $"{fromUser} {LanguageService.GetString("JoinRequest")} {groupName}",
                     PrimaryButtonText = LanguageService.GetString("Accept"),
                     SecondaryButtonText = LanguageService.GetString("Reject"),
                     DefaultButton = ContentDialogButton.Primary,

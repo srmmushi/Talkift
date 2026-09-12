@@ -23,6 +23,8 @@ namespace Talkift.Client.Models
         public int Port { get; set; } = 8080;
         public string Password { get; set; } = string.Empty;
         public bool IsOnline { get; set; }
+        public string IconPath { get; set; } = string.Empty;
+        public bool IsExpanded { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 
@@ -30,13 +32,15 @@ namespace Talkift.Client.Models
     {
         public string Id { get; set; } = "official";
         public string Name { get; set; } = "Talkift Official";
-        public string Address { get; set; } = "server.talkift.com";
-        public int Port { get; set; } = 443;
-        public string UniqueId { get; set; } = "talkift-official-v1";
+        public string Address { get; set; } = "47.113.216.177";
+        public int Port { get; set; } = 8001;
         public bool IsEnabled { get; set; } = true;
         public bool SupportsEmail { get; set; } = true;
         public bool SupportsOffline { get; set; } = true;
         public string Version { get; set; } = "1.0.0";
+
+        public static string ChatAddress => "47.113.216.177";
+        public static int ChatPort => 8002;
     }
 
     public enum PageType
@@ -107,6 +111,9 @@ namespace Talkift.Client.Models
 
         [JsonPropertyName("type")]
         public string Type { get; set; } = "chat";
+
+        [JsonPropertyName("is_pinned")]
+        public bool IsPinned { get; set; }
 
         public bool IsMine { get; set; }
         public string TimeDisplay { get; set; } = string.Empty;

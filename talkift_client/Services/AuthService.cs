@@ -46,15 +46,15 @@ namespace Talkift.Client.Services
                     _currentRegisterMethod = result.RegisterMethod ?? "local";
                 }
 
-                return result ?? new AuthResponse { Success = false, Message = "No response from server" };
+                return result ?? new AuthResponse { Success = false, Message = LanguageService.GetString("NoResponseFromServer") };
             }
             catch (HttpRequestException)
             {
-                return new AuthResponse { Success = false, Code = 1005, Message = "Cannot connect to server" };
+                return new AuthResponse { Success = false, Code = 1005, Message = LanguageService.GetString("CannotConnectToServer") };
             }
             catch (TaskCanceledException)
             {
-                return new AuthResponse { Success = false, Code = 1005, Message = "Connection timed out" };
+                return new AuthResponse { Success = false, Code = 1005, Message = LanguageService.GetString("ConnectionTimedOut") };
             }
             catch (Exception ex)
             {
@@ -81,15 +81,15 @@ namespace Talkift.Client.Services
                     _currentRegisterMethod = result.RegisterMethod ?? "official";
                 }
 
-                return result ?? new AuthResponse { Success = false, Message = "No response from server" };
+                return result ?? new AuthResponse { Success = false, Message = LanguageService.GetString("NoResponseFromServer") };
             }
             catch (HttpRequestException)
             {
-                return new AuthResponse { Success = false, Code = 1005, Message = "Cannot connect to server" };
+                return new AuthResponse { Success = false, Code = 1005, Message = LanguageService.GetString("CannotConnectToServer") };
             }
             catch (TaskCanceledException)
             {
-                return new AuthResponse { Success = false, Code = 1005, Message = "Connection timed out" };
+                return new AuthResponse { Success = false, Code = 1005, Message = LanguageService.GetString("ConnectionTimedOut") };
             }
             catch (Exception ex)
             {
@@ -116,15 +116,15 @@ namespace Talkift.Client.Services
                     _currentRegisterMethod = result.RegisterMethod ?? "local";
                 }
 
-                return result ?? new AuthResponse { Success = false, Message = "No response from server" };
+                return result ?? new AuthResponse { Success = false, Message = LanguageService.GetString("NoResponseFromServer") };
             }
             catch (HttpRequestException)
             {
-                return new AuthResponse { Success = false, Code = 1005, Message = "Cannot connect to server" };
+                return new AuthResponse { Success = false, Code = 1005, Message = LanguageService.GetString("CannotConnectToServer") };
             }
             catch (TaskCanceledException)
             {
-                return new AuthResponse { Success = false, Code = 1005, Message = "Connection timed out" };
+                return new AuthResponse { Success = false, Code = 1005, Message = LanguageService.GetString("ConnectionTimedOut") };
             }
             catch (Exception ex)
             {
@@ -165,15 +165,15 @@ namespace Talkift.Client.Services
                     _currentRegisterMethod = method;
                 }
 
-                return result ?? new AuthResponse { Success = false, Message = "No response from server" };
+                return result ?? new AuthResponse { Success = false, Message = LanguageService.GetString("NoResponseFromServer") };
             }
             catch (HttpRequestException)
             {
-                return new AuthResponse { Success = false, Code = 1005, Message = "Cannot connect to server" };
+                return new AuthResponse { Success = false, Code = 1005, Message = LanguageService.GetString("CannotConnectToServer") };
             }
             catch (TaskCanceledException)
             {
-                return new AuthResponse { Success = false, Code = 1005, Message = "Connection timed out" };
+                return new AuthResponse { Success = false, Code = 1005, Message = LanguageService.GetString("ConnectionTimedOut") };
             }
             catch (Exception ex)
             {

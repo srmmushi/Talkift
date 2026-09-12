@@ -97,7 +97,7 @@ namespace Talkift.Client.ViewModels
 
             if (!server.IsOnline)
             {
-                ShowInfoBar(InfoBarSeverity.Error, "Server is offline. Please check the address and port.");
+                ShowInfoBar(InfoBarSeverity.Error, LanguageService.GetString("ServerOffline"));
                 return;
             }
 

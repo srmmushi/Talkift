@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:Talkift.Client.Models"
+    xmlns:views="using:Talkift.Client.Views"
     mc:Ignorable="d"
     Background="Transparent">
 
@@ -16,38 +17,12 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Padding="16,12"
-              Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-              BorderThickness="0,0,0,1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <FontIcon Grid.Column="0" Glyph="&#xE716;" FontSize="24"
-                      VerticalAlignment="Center" Margin="0,0,12,0"/>
-
-            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock x:Name="ChatTitleText"
-                           Text="{x:Bind ViewModel.ChatTitle, Mode=OneWay}"
-                           FontSize="16" FontWeight="SemiBold"/>
-                <TextBlock x:Name="MemberCountText"
-                           Text="{x:Bind ViewModel.MemberCountText, Mode=OneWay}"
-                           FontSize="12"
-                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
-            </StackPanel>
-
-            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
-                <Button x:Name="SettingsButton"
-                        Style="{StaticResource IconButtonStyle}"
-                        ToolTipService.ToolTip="Settings"
-                        Click="SettingsButton_Click">
-                    <FontIcon Glyph="&#xE713;" FontSize="16"/>
-                </Button>
-            </StackPanel>
-        </Grid>
+        <views:ChatHeader x:Name="ChatHeaderCtrl" Grid.Row="0"
+                          ChatClicked="ChatHeaderCtrl_ChatClicked"
+                          SearchClicked="ChatHeaderCtrl_SearchClicked"
+                          PinClicked="ChatHeaderCtrl_PinClicked"
+                          MembersClicked="ChatHeaderCtrl_MembersClicked"
+                          MoreClicked="ChatHeaderCtrl_MoreClicked"/>
 
         <ListView Grid.Row="1"
                   x:Name="MessagesList"
@@ -58,6 +33,15 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:ChatMessage">
                     <Grid Padding="0,3" HorizontalAlignment="Stretch">
+                        <Grid.Flyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="Copy" Click="MsgCtx_Copy"/>
+                                <MenuFlyoutItem Text="Reply" Click="MsgCtx_Reply"/>
+                                <MenuFlyoutItem Text="Pin" Click="MsgCtx_Pin"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="Delete" Click="MsgCtx_Delete" Foreground="Red"/>
+                            </MenuFlyout>
+                        </Grid.Flyout>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
@@ -133,6 +117,12 @@
                    Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                    Visibility="Collapsed"/>
 
+        <views:MessageSearchPanel x:Name="SearchPanel" Grid.Row="1"
+                                  VerticalAlignment="Top" Margin="16,8"/>
+
+        <views:PinMessagePanel x:Name="PinPanel" Grid.Row="1"
+                               VerticalAlignment="Top" Margin="16,8"/>
+
         <InfoBar Grid.Row="1"
                  x:Name="ErrorInfoBar"
                  Severity="Error"
@@ -141,34 +131,64 @@
                  VerticalAlignment="Top"
                  Margin="16,8"/>
 
+        <views:TypingIndicator x:Name="TypingIndicator" Grid.Row="2"
+                               HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                               Margin="16,0"/>
+
+        <views:ReplyBar x:Name="ReplyBar" Grid.Row="2"
+                        VerticalAlignment="Bottom"/>
+
+        <views:FileAttachmentPreview x:Name="FilePreview" Grid.Row="2"
+                                     VerticalAlignment="Bottom"/>
+
+        <views:VoiceRecorder x:Name="VoiceRecorder" Grid.Row="2"
+                             VerticalAlignment="Bottom"/>
+
         <Grid Grid.Row="2" Padding="16,8"
               Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
               BorderThickness="0,1,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-            <TextBox Grid.Column="0"
-                     x:Name="MessageInput"
-                     PlaceholderText="Type a message..."
-                     CornerRadius="20"
-                     Padding="12,8"
-                     KeyDown="MessageInput_KeyDown"
-                     TextChanged="MessageInput_TextChanged"
-                     AcceptsReturn="False"/>
+            <views:QuickActionToolbar x:Name="QuickToolbar" Grid.Row="0"/>
 
-            <Button Grid.Column="1"
-                    x:Name="SendButton"
-                    Style="{StaticResource AccentButtonStyle}"
-                    Margin="8,0,0,0"
-                    CornerRadius="20"
-                    Padding="16,8"
-                    Click="SendButton_Click"
-                    IsEnabled="False">
-                <FontIcon Glyph="&#xE77D;" FontSize="16"/>
-            </Button>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0"
+                         x:Name="MessageInput"
+                         PlaceholderText="Type a message..."
+                         CornerRadius="20"
+                         Padding="12,8"
+                         KeyDown="MessageInput_KeyDown"
+                         TextChanged="MessageInput_TextChanged"
+                         AcceptsReturn="False"/>
+
+                <Button Grid.Column="1"
+                        x:Name="SendButton"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Margin="8,0,0,0"
+                        CornerRadius="20"
+                        Padding="16,8"
+                        Click="SendButton_Click"
+                        IsEnabled="False">
+                    <FontIcon Glyph="&#xE77D;" FontSize="16"/>
+                </Button>
+            </Grid>
         </Grid>
+
+        <Flyout x:Name="EmojiFlyout">
+            <views:EmojiPicker x:Name="EmojiPicker"/>
+        </Flyout>
+
+        <views:MessageReactionBar x:Name="ReactionBar" Grid.Row="1"
+                                  HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                                  Margin="0,0,0,8"/>
     </Grid>
 </Page>

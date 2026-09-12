@@ -1,86 +1,87 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+using System;
+using Microsoft.UI.Dispatching;
+using Talkift.Client.Engines;
 using Talkift.Client.Services;
-using Talkift.Client.Views;
+using Talkift.Client.Services.V2;
+using Talkift.Client.ViewModels.V2;
 
-namespace Talkift.Client
+namespace Talkift.Client;
+
+public sealed partial class App : Application
 {
-    public partial class App : Application
+    public static IChatEngine ChatEngine { get; private set; } = null!;
+    public static IUiEngine UiEngine { get; private set; } = null!;
+    public static IAuthService AuthService { get; private set; } = null!;
+    public static IThemeService ThemeService { get; private set; } = null!;
+    public static INotificationService NotificationService { get; private set; } = null!;
+    public static ILoggerService LoggerService { get; private set; } = null!;
+    public static IMessageStore MessageStore { get; private set; } = null!;
+
+    public static Window CurrentWindow { get; private set; } = null!;
+
+    private ServiceProvider? _serviceProvider;
+    private bool _disposed;
+
+    protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        private Window? _window;
+        var host = AppHost.Create();
+        _serviceProvider = host.Services;
 
-        public App()
+        ChatEngine = _serviceProvider.GetRequiredService<IChatEngine>();
+        UiEngine = _serviceProvider.GetRequiredService<IUiEngine>();
+        AuthService = _serviceProvider.GetRequiredService<IAuthService>();
+        ThemeService = _serviceProvider.GetRequiredService<IThemeService>();
+        NotificationService = _serviceProvider.GetRequiredService<INotificationService>();
+        LoggerService = _serviceProvider.GetRequiredService<ILoggerService>();
+        MessageStore = _serviceProvider.GetRequiredService<IMessageStore>();
+
+        CurrentWindow = new ShellWindow();
+        CurrentWindow.Activate();
+    }
+
+    public static T GetRequiredService<T>() where T : class
+    {
+        return (T)CurrentWindow.Resources["ServiceContainer"] ??
+               throw new InvalidOperationException($"Service {typeof(T).Name} not found");
+    }
+
+    public void NavigateToServerList()
+    {
+        CurrentWindow.DispatcherQueue.TryEnqueue(() =>
         {
-            this.InitializeComponent();
-            this.UnhandledException += OnUnhandledException;
-        }
+            // Navigation handled by MainViewModel
+        });
+    }
 
-        private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    public void NavigateToConversationList()
+    {
+        CurrentWindow.DispatcherQueue.TryEnqueue(() =>
         {
-            e.Handled = true;
-            CrashLogger.LogException("Application.UnhandledException", e.Exception);
-        }
+            // Navigation handled by MainViewModel
+        });
+    }
 
-        protected override async void OnLaunched(LaunchActivatedEventArgs args)
+    public void NavigateToChat(ConversationModel? conversation = null)
+    {
+        CurrentWindow.DispatcherQueue.TryEnqueue(() =>
         {
-            try
-            {
-                var storage = new StorageService();
-                var savedPath = await storage.LoadAsync<string>("storage_path");
-                if (!string.IsNullOrWhiteSpace(savedPath) && System.IO.Directory.Exists(savedPath))
-                {
-                    StorageService.SetDataDirectory(savedPath);
-                }
+            // Navigation handled by MainViewModel
+        });
+    }
 
-                await LanguageService.LoadLanguageAsync();
+    protected override void OnSuspending(object sender, SuspendingEventArgs args)
+    {
+        if (_disposed) return;
+        ChatEngine.DisconnectAsync().GetAwaiter().GetResult();
+        LoggerService.FlushAsync().GetAwaiter().GetResult();
+        _disposed = true;
+        base.OnSuspending(sender, args);
+    }
 
-                var missingDeps = DependencyCheckService.CheckAll();
-                var reallyMissing = missingDeps.FindAll(d => !d.IsInstalled);
-
-                if (reallyMissing.Count > 0)
-                {
-                    _window = new Window();
-                    _window.Title = LanguageService.GetString("DependenciesMissing");
-                    _window.Content = new Frame();
-                    _window.Activate();
-
-                    var frame = _window.Content as Frame;
-                    if (frame != null)
-                    {
-                        frame.Navigate(typeof(DependencyMissingPage), reallyMissing);
-                    }
-                    return;
-                }
-
-                LaunchMainWindow();
-            }
-            catch (System.Exception ex)
-            {
-                CrashLogger.LogException("App.OnLaunched", ex);
-                throw;
-            }
-        }
-
-        public void LaunchMainWindow()
-        {
-            try
-            {
-                if (_window != null)
-                {
-                    _window.Close();
-                }
-
-                _window = new MainWindow();
-                _window.Activate();
-            }
-            catch (System.Exception ex)
-            {
-                CrashLogger.LogException("App.LaunchMainWindow", ex);
-                throw;
-            }
-        }
-
-        public static Window? CurrentWindow =>
-            ((App)Current)._window;
+    protected override void OnExit()
+    {
+        ChatEngine?.Dispose();
+        LoggerService?.FlushAsync().GetAwaiter().GetResult();
+        base.OnExit();
     }
 }

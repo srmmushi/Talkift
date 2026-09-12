@@ -58,7 +58,7 @@ namespace Talkift.Client.Services
             }
             catch (Exception ex)
             {
-                ErrorOccurred?.Invoke($"Connection failed: {ex.Message}");
+                ErrorOccurred?.Invoke(string.Format(LanguageService.GetString("ConnectionFailed"), ex.Message));
                 Disconnected?.Invoke();
             }
         }
@@ -215,7 +215,7 @@ namespace Talkift.Client.Services
                     case "error":
                         if (root.TryGetProperty("payload", out var errPayload))
                         {
-                            var errMsg = errPayload.TryGetProperty("message", out var em) ? em.GetString() ?? "" : "Unknown error";
+                            var errMsg = errPayload.TryGetProperty("message", out var em) ? em.GetString() ?? "" : LanguageService.GetString("UnknownError");
                             ErrorOccurred?.Invoke(errMsg);
                         }
                         break;
@@ -260,11 +260,11 @@ namespace Talkift.Client.Services
                 if (_reconnectAttempts > MaxReconnectAttempts)
                 {
                     _shouldReconnect = false;
-                    ErrorOccurred?.Invoke($"Connection lost. Gave up after {MaxReconnectAttempts} reconnect attempts.");
+                    ErrorOccurred?.Invoke(string.Format(LanguageService.GetString("ConnectionLostGaveUp"), MaxReconnectAttempts));
                     return;
                 }
 
-                ErrorOccurred?.Invoke($"Connection lost. Reconnecting ({_reconnectAttempts}/{MaxReconnectAttempts})...");
+                ErrorOccurred?.Invoke(string.Format(LanguageService.GetString("ConnectionLostReconnecting") + " ({0}/{1})", _reconnectAttempts, MaxReconnectAttempts));
                 await Task.Delay(_reconnectDelay);
                 _reconnectDelay = Math.Min(_reconnectDelay * 2, MaxReconnectDelay);
 
@@ -276,7 +276,7 @@ namespace Talkift.Client.Services
                     }
                     catch (Exception ex)
                     {
-                        ErrorOccurred?.Invoke($"Reconnect failed: {ex.Message}");
+                        ErrorOccurred?.Invoke(string.Format(LanguageService.GetString("ReconnectFailed"), ex.Message));
                     }
                 }
             }
@@ -302,7 +302,7 @@ namespace Talkift.Client.Services
             if (dt.Date == now.Date)
                 return dt.ToString("HH:mm");
             if (dt.Date == now.Date.AddDays(-1))
-                return "Yesterday " + dt.ToString("HH:mm");
+                return LanguageService.GetString("Yesterday") + " " + dt.ToString("HH:mm");
             return dt.ToString("MM/dd HH:mm");
         }
 

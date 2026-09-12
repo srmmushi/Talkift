@@ -101,6 +101,8 @@ namespace Talkift.Client.Views
                 AdminHeader.Text = LanguageService.GetString("AdminActions");
                 DeleteGroupButton.Content = LanguageService.GetString("DeleteGroup");
                 LeaveButton.Content = LanguageService.GetString("Leave");
+                DndToggle.OnContent = LanguageService.GetString("On");
+                DndToggle.OffContent = LanguageService.GetString("Off");
             }
             catch (Exception ex)
             {

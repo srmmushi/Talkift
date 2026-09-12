@@ -1,0 +1,46 @@
+<Window
+    x:Class="Talkift.Client.Views.V2.ShellWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Talkift"
+    Width="1200" Height="800"
+    ExtendsContentIntoTitleBar="True"
+    SetTitleBar="TitleBar">
+
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="TitleBar" Grid.Row="0" Padding="16,8" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                <FontIcon Glyph="&#xE716;" FontSize="22"/>
+                <TextBlock Text="{x:Bind ViewModel.AppTitle}" VerticalAlignment="Center"
+                           FontSize="17" FontWeight="SemiBold"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8"
+                        VerticalAlignment="Center" x:Name="UserInfoPanel"
+                        Visibility="Collapsed">
+                <TextBlock x:Name="UsernameText" Text="{x:Bind ViewModel.Username}"
+                           VerticalAlignment="Center" FontSize="13"/>
+                <Button x:Name="LogoutButton" Padding="8,2" CornerRadius="4"
+                        FontSize="12" Click="LogoutButton_Click">
+                    <TextBlock Text="Logout"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <ContentControl Grid.Row="1" Content="{x:Bind ViewModel.PageContent}"/>
+    </Grid>
+</Window>
