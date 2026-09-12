@@ -36,8 +36,8 @@ namespace Talkift.Client.Views
             DialogTitle.Text = LanguageService.GetString("LoginToServer");
             ((TextBlock)UsernameBox.Header).Text = LanguageService.GetString("Username");
             UsernameBox.PlaceholderText = LanguageService.GetString("Username");
-            ((TextBlock)EmailBox.Header).Text = "Email";
-            EmailBox.PlaceholderText = "Enter your email";
+            ((TextBlock)EmailBox.Header).Text = LanguageService.GetString("Email");
+            EmailBox.PlaceholderText = LanguageService.GetString("EmailPlaceholder");
             ((TextBlock)PasswordBox.Header).Text = LanguageService.GetString("Password");
             PasswordBox.PlaceholderText = LanguageService.GetString("Password");
             RememberPasswordCheckBox.Content = LanguageService.GetString("RememberPassword");
@@ -45,6 +45,9 @@ namespace Talkift.Client.Views
             OfflineLoginButton.Content = LanguageService.GetString("OfflineLogin");
             NoAccountText.Text = LanguageService.GetString("DontHaveAccount");
             RegisterLinkText.Text = " " + LanguageService.GetString("Register");
+            LoginModeToggle.Header = LanguageService.GetString("LoginWithEmail");
+            LoginModeToggle.OnContent = LanguageService.GetString("Email");
+            LoginModeToggle.OffContent = LanguageService.GetString("Username");
         }
 
         private void LoginModeToggle_Toggled(object sender, RoutedEventArgs e)
@@ -62,7 +65,7 @@ namespace Talkift.Client.Views
             {
                 if (string.IsNullOrWhiteSpace(EmailBox.Text))
                 {
-                    ShowError("Please enter your email.");
+                    ShowError(LanguageService.GetString("EmailRequired"));
                     return;
                 }
             }

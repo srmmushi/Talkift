@@ -39,6 +39,8 @@ namespace Talkift.Client.Views
             LocalRadio.Content = LanguageService.GetString("Local");
             ((TextBlock)UsernameBox.Header).Text = LanguageService.GetString("Username");
             UsernameBox.PlaceholderText = LanguageService.GetString("UsernameMinLength");
+            ((TextBlock)EmailBox.Header).Text = LanguageService.GetString("EmailOptional");
+            EmailBox.PlaceholderText = LanguageService.GetString("EmailPlaceholder");
             ((TextBlock)PasswordBox.Header).Text = LanguageService.GetString("Password");
             PasswordBox.PlaceholderText = LanguageService.GetString("PasswordMinLength");
             ((TextBlock)ConfirmPasswordBox.Header).Text = LanguageService.GetString("Password");

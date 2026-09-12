@@ -28,6 +28,7 @@ namespace Talkift.Client.Services
 
         public static async Task SetLanguageAsync(string lang)
         {
+            if (_currentLanguage == lang) return;
             _currentLanguage = lang;
             await _storage.SaveAsync("language", lang);
             await LoadStringsAsync(lang);
@@ -47,6 +48,21 @@ namespace Talkift.Client.Services
                 "en" => "English",
                 _ => lang
             };
+        }
+
+        public static string[] GetAvailableLanguages()
+        {
+            return new[] { "en", "zh" };
+        }
+
+        public static int GetLanguageIndex(string lang)
+        {
+            var langs = GetAvailableLanguages();
+            for (int i = 0; i < langs.Length; i++)
+            {
+                if (langs[i] == lang) return i;
+            }
+            return 0;
         }
 
         private static async Task LoadStringsAsync(string lang)
