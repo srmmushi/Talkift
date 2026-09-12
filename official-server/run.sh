@@ -6,7 +6,9 @@ echo ""
 
 cd "$(dirname "$0")"
 
-mkdir -p data/logs data/version data/config
+mkdir -p data/user data/logs data/version data/config
 
-echo "Starting official server..."
-go run ./cmd/main.go
+echo "Usage: ./run.sh [--port 8081]"
+echo ""
+
+go run ./cmd/main.go "$@"

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -18,10 +19,17 @@ import (
 )
 
 func main() {
+	port := flag.Int("port", 0, "Server port (overrides config.toml)")
+	flag.Parse()
+
 	cfg, err := config.Load("config.toml")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to load config: %v\n", err)
 		os.Exit(1)
+	}
+
+	if *port > 0 {
+		cfg.Server.Port = *port
 	}
 
 	utils.InitLogger(cfg.Logging.Level)

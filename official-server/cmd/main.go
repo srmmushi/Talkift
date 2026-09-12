@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -17,9 +18,16 @@ import (
 )
 
 func main() {
+	port := flag.Int("port", 0, "Server port (overrides config.toml)")
+	flag.Parse()
+
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
+	}
+
+	if *port > 0 {
+		cfg.Server.Port = *port
 	}
 
 	config.EnsureDirs(cfg)
