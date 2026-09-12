@@ -68,12 +68,8 @@ namespace Talkift.Client.Views
 
         private static bool IsIpAddress(string input)
         {
-            if (string.IsNullOrWhiteSpace(input))
-                return false;
-
-            if (IPAddress.TryParse(input, out _))
-                return true;
-
+            if (string.IsNullOrWhiteSpace(input)) return false;
+            if (IPAddress.TryParse(input, out _)) return true;
             return Regex.IsMatch(input, @"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$");
         }
 
@@ -89,21 +85,6 @@ namespace Talkift.Client.Views
             {
                 ShowValidation(LanguageService.GetString("ServerAddressRequired"));
                 return false;
-            }
-
-            if (IsIpAddress(ServerAddress))
-            {
-                if (!IPAddress.TryParse(ServerAddress, out _))
-                {
-                    ShowValidation("Invalid IP address format.");
-                    return false;
-                }
-
-                if (ServerPort < 1 || ServerPort > 65535)
-                {
-                    ShowValidation("Port must be between 1 and 65535.");
-                    return false;
-                }
             }
 
             ValidationText.Visibility = Visibility.Collapsed;

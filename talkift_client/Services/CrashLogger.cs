@@ -7,9 +7,7 @@ namespace Talkift.Client.Services
 {
     public static class CrashLogger
     {
-        private static readonly string LogDir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Talkift", "Logs");
+        private static string LogDir => StorageService.LogsDir;
 
         private static string GetLogFilePath()
         {
@@ -21,13 +19,19 @@ namespace Talkift.Client.Services
         {
             try
             {
-                if (!Directory.Exists(LogDir))
-                    Directory.CreateDirectory(LogDir);
-
+                Directory.CreateDirectory(LogDir);
                 AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
                 TaskScheduler.UnobservedTaskException += OnTaskSchedulerUnobservedException;
             }
             catch { }
+        }
+
+        public static void SetLogDirectory(string path)
+        {
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                Directory.CreateDirectory(path);
+            }
         }
 
         private static void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -55,9 +59,7 @@ namespace Talkift.Client.Services
         {
             try
             {
-                if (!Directory.Exists(LogDir))
-                    Directory.CreateDirectory(LogDir);
-
+                Directory.CreateDirectory(LogDir);
                 var logFile = GetLogFilePath();
                 var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 var separator = new string('=', 80);
@@ -84,9 +86,7 @@ Stack Trace:
                 }
 
                 log += $"{separator}{Environment.NewLine}";
-
                 File.AppendAllText(logFile, log);
-
                 Debug.WriteLine($"[CrashLogger] Logged {source}: {ex.Message}");
             }
             catch { }
@@ -96,9 +96,7 @@ Stack Trace:
         {
             try
             {
-                if (!Directory.Exists(LogDir))
-                    Directory.CreateDirectory(LogDir);
-
+                Directory.CreateDirectory(LogDir);
                 var logFile = GetLogFilePath();
                 var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 File.AppendAllText(logFile, $"[{timestamp}] {message}{Environment.NewLine}");

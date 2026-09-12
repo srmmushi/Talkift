@@ -11,9 +11,11 @@ namespace Talkift.Client.Views
         private readonly AuthService _authService;
         private readonly CredentialService _credentialService;
         private readonly Server _server;
+        private bool _useEmail;
 
         public AuthResponse? LastResult { get; private set; }
-        public bool RememberPassword => RememberPasswordCheckBox.IsChecked == true;
+
+        public event EventHandler? RegisterRequested;
 
         public LoginDialog(Server server, AuthService authService, CredentialService credentialService)
         {
@@ -25,7 +27,8 @@ namespace Talkift.Client.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            ApplyLocalization();
+            try { ApplyLocalization(); }
+            catch (Exception ex) { CrashLogger.LogException("LoginDialog.OnLoaded", ex); }
         }
 
         private void ApplyLocalization()
@@ -33,33 +36,43 @@ namespace Talkift.Client.Views
             DialogTitle.Text = LanguageService.GetString("LoginToServer");
             ((TextBlock)UsernameBox.Header).Text = LanguageService.GetString("Username");
             UsernameBox.PlaceholderText = LanguageService.GetString("Username");
+            ((TextBlock)EmailBox.Header).Text = "Email";
+            EmailBox.PlaceholderText = "Enter your email";
             ((TextBlock)PasswordBox.Header).Text = LanguageService.GetString("Password");
             PasswordBox.PlaceholderText = LanguageService.GetString("Password");
             RememberPasswordCheckBox.Content = LanguageService.GetString("RememberPassword");
-            OfflineLoginCheckBox.Content = LanguageService.GetString("OfflineLogin");
             LoginButton.Content = LanguageService.GetString("Login");
-            OfflineLoginButton.Content = LanguageService.GetString("Login");
+            OfflineLoginButton.Content = LanguageService.GetString("OfflineLogin");
             NoAccountText.Text = LanguageService.GetString("DontHaveAccount");
             RegisterLinkText.Text = " " + LanguageService.GetString("Register");
         }
 
-        public void SetUsername(string username)
+        private void LoginModeToggle_Toggled(object sender, RoutedEventArgs e)
         {
-            UsernameBox.Text = username;
-        }
-
-        public void SetSavedCredential(StoredCredential credential)
-        {
-            UsernameBox.Text = credential.Username;
-            RememberPasswordCheckBox.IsChecked = true;
+            _useEmail = LoginModeToggle.IsOn;
+            UsernameBox.Visibility = _useEmail ? Visibility.Collapsed : Visibility.Visible;
+            EmailBox.Visibility = _useEmail ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(UsernameBox.Text))
+            ErrorInfoBar.IsOpen = false;
+
+            if (_useEmail)
             {
-                ShowError(LanguageService.GetString("UsernameRequired"));
-                return;
+                if (string.IsNullOrWhiteSpace(EmailBox.Text))
+                {
+                    ShowError("Please enter your email.");
+                    return;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(UsernameBox.Text))
+                {
+                    ShowError(LanguageService.GetString("UsernameRequired"));
+                    return;
+                }
             }
 
             if (string.IsNullOrWhiteSpace(PasswordBox.Password))
@@ -69,28 +82,32 @@ namespace Talkift.Client.Views
             }
 
             SetLoading(true);
-            LastResult = await _authService.LoginAsync(
-                UsernameBox.Text.Trim(),
-                PasswordBox.Password,
-                _server.Address,
-                _server.Port);
 
-            if (LastResult.Success && RememberPassword)
-            {
-                await _credentialService.SaveCredentialAsync(new StoredCredential
-                {
-                    ServerId = _server.Id,
-                    Username = LastResult.Username ?? UsernameBox.Text.Trim(),
-                    Token = LastResult.Token ?? string.Empty,
-                    RegisterMethod = LastResult.RegisterMethod ?? "local",
-                    ServerAddress = _server.Address,
-                    ServerPort = _server.Port
-                });
-            }
+            LastResult = _useEmail
+                ? await _authService.LoginWithEmailAsync(EmailBox.Text.Trim(), PasswordBox.Password, _server.Address, _server.Port)
+                : await _authService.LoginAsync(UsernameBox.Text.Trim(), PasswordBox.Password, _server.Address, _server.Port);
 
             SetLoading(false);
 
-            if (!LastResult.Success)
+            if (LastResult.Success)
+            {
+                if (RememberPasswordCheckBox.IsChecked == true)
+                {
+                    await _credentialService.SaveCredentialAsync(new StoredCredential
+                    {
+                        ServerId = _server.Id,
+                        Username = LastResult.Username ?? UsernameBox.Text.Trim(),
+                        Token = LastResult.Token ?? "",
+                        RegisterMethod = LastResult.RegisterMethod ?? "local",
+                        ServerAddress = _server.Address,
+                        ServerPort = _server.Port
+                    });
+                }
+
+                var parentDialog = this.Parent as ContentDialog;
+                parentDialog?.Hide();
+            }
+            else
             {
                 ShowError(LastResult.Message ?? LanguageService.GetString("LoginFailed"));
             }
@@ -98,6 +115,8 @@ namespace Talkift.Client.Views
 
         private async void OfflineLoginButton_Click(object sender, RoutedEventArgs e)
         {
+            ErrorInfoBar.IsOpen = false;
+
             if (string.IsNullOrWhiteSpace(UsernameBox.Text))
             {
                 ShowError(LanguageService.GetString("UsernameRequired"));
@@ -105,47 +124,19 @@ namespace Talkift.Client.Views
             }
 
             SetLoading(true);
-            LastResult = await _authService.OfflineLoginAsync(
-                UsernameBox.Text.Trim(),
-                _server.Address,
-                _server.Port);
-
-            if (LastResult.Success && RememberPassword)
-            {
-                await _credentialService.SaveCredentialAsync(new StoredCredential
-                {
-                    ServerId = _server.Id,
-                    Username = LastResult.Username ?? UsernameBox.Text.Trim(),
-                    Token = LastResult.Token ?? string.Empty,
-                    RegisterMethod = LastResult.RegisterMethod ?? "local",
-                    ServerAddress = _server.Address,
-                    ServerPort = _server.Port
-                });
-            }
-
+            LastResult = await _authService.OfflineLoginAsync(UsernameBox.Text.Trim(), _server.Address, _server.Port);
             SetLoading(false);
 
-            if (!LastResult.Success)
+            if (LastResult.Success)
+            {
+                var parentDialog = this.Parent as ContentDialog;
+                parentDialog?.Hide();
+            }
+            else
             {
                 ShowError(LastResult.Message ?? LanguageService.GetString("OfflineLoginFailed"));
             }
         }
-
-        private void OfflineLoginCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            PasswordBox.Visibility = Visibility.Collapsed;
-            LoginButton.Visibility = Visibility.Collapsed;
-            OfflineLoginButton.Visibility = Visibility.Visible;
-        }
-
-        private void OfflineLoginCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            PasswordBox.Visibility = Visibility.Visible;
-            LoginButton.Visibility = Visibility.Visible;
-            OfflineLoginButton.Visibility = Visibility.Collapsed;
-        }
-
-        public event EventHandler? RegisterRequested;
 
         private void RegisterLink_Click(object sender, RoutedEventArgs e)
         {

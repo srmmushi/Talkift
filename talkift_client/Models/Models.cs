@@ -8,6 +8,7 @@ namespace Talkift.Client.Models
     {
         public string Id { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
         public string RegisterMethod { get; set; } = "local";
         public DateTime CreatedAt { get; set; }
@@ -25,20 +26,17 @@ namespace Talkift.Client.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 
-    public class LoginServer
+    public class OfficialServer
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string Name { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
-        public int Port { get; set; } = 8081;
-        public LoginServerType Type { get; set; } = LoginServerType.Official;
-    }
-
-    public enum LoginServerType
-    {
-        Official,
-        Local,
-        ThirdParty
+        public string Id { get; set; } = "official";
+        public string Name { get; set; } = "Talkift Official";
+        public string Address { get; set; } = "server.talkift.com";
+        public int Port { get; set; } = 443;
+        public string UniqueId { get; set; } = "talkift-official-v1";
+        public bool IsEnabled { get; set; } = true;
+        public bool SupportsEmail { get; set; } = true;
+        public bool SupportsOffline { get; set; } = true;
+        public string Version { get; set; } = "1.0.0";
     }
 
     public enum PageType
@@ -181,5 +179,14 @@ namespace Talkift.Client.Models
     {
         [JsonPropertyName("group_id")]
         public string GroupId { get; set; } = string.Empty;
+    }
+
+    public class VersionInfo
+    {
+        public string Version { get; set; } = string.Empty;
+        public string DownloadUrl { get; set; } = string.Empty;
+        public string ReleaseNotes { get; set; } = string.Empty;
+        public DateTime ReleaseDate { get; set; }
+        public bool IsLatest { get; set; }
     }
 }

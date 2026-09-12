@@ -25,6 +25,13 @@ namespace Talkift.Client
         {
             try
             {
+                var storage = new StorageService();
+                var savedPath = await storage.LoadAsync<string>("storage_path");
+                if (!string.IsNullOrWhiteSpace(savedPath) && System.IO.Directory.Exists(savedPath))
+                {
+                    StorageService.SetDataDirectory(savedPath);
+                }
+
                 await LanguageService.LoadLanguageAsync();
 
                 var missingDeps = DependencyCheckService.CheckAll();

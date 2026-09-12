@@ -45,5 +45,8 @@ logs/
 .env
 .env.local
 
+# Official server (do not upload)
+official-server/
+
 # Misc leftovers
 /talkift_client/full.xml

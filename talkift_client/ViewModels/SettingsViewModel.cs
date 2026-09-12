@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Talkift.Client.Models;
 using Talkift.Client.Services;
 
@@ -17,9 +16,6 @@ namespace Talkift.Client.ViewModels
         private string _appVersion = "1.0.0";
 
         [ObservableProperty]
-        private int _selectedTabIndex;
-
-        [ObservableProperty]
         private int _selectedBackdropIndex;
 
         [ObservableProperty]
@@ -30,6 +26,18 @@ namespace Talkift.Client.ViewModels
 
         [ObservableProperty]
         private int _connectionTimeout = 10;
+
+        [ObservableProperty]
+        private double _opacity = 1.0;
+
+        [ObservableProperty]
+        private string _storagePath = string.Empty;
+
+        [ObservableProperty]
+        private string _logPath = string.Empty;
+
+        [ObservableProperty]
+        private OfficialServer _officialServer = new();
 
         public string[] BackdropOptions => new[]
         {
@@ -44,18 +52,16 @@ namespace Talkift.Client.ViewModels
             "\u4e2d\u6587"
         };
 
-        public ObservableCollection<LoginServer> LoginServers { get; } = new();
+        public ObservableCollection<Server> Servers { get; } = new();
 
         public async Task LoadSettingsAsync()
         {
-            LoginServers.Clear();
-            var servers = await _storage.LoadAsync<List<LoginServer>>("login_servers");
+            Servers.Clear();
+            var servers = await _storage.LoadAsync<List<Server>>("servers");
             if (servers != null)
             {
                 foreach (var s in servers)
-                {
-                    LoginServers.Add(s);
-                }
+                    Servers.Add(s);
             }
 
             SelectedBackdropIndex = (int)BackdropService.CurrentBackdrop;
@@ -70,18 +76,16 @@ namespace Talkift.Client.ViewModels
 
             var timeout = await _storage.LoadAsync<int?>("connection_timeout");
             ConnectionTimeout = timeout ?? 10;
-        }
 
-        public async Task AddLoginServerAsync(LoginServer server)
-        {
-            LoginServers.Add(server);
-            await SaveLoginServersAsync();
-        }
+            var opacity = await _storage.LoadAsync<double?>("opacity");
+            Opacity = opacity ?? 1.0;
 
-        public async Task RemoveLoginServerAsync(LoginServer server)
-        {
-            LoginServers.Remove(server);
-            await SaveLoginServersAsync();
+            StoragePath = StorageService.DataDir;
+            LogPath = StorageService.LogsDir;
+
+            var official = await _storage.LoadAsync<OfficialServer>("official_server");
+            if (official != null)
+                OfficialServer = official;
         }
 
         public async Task SaveBackdropAsync(int index)
@@ -106,6 +110,17 @@ namespace Talkift.Client.ViewModels
             await LanguageService.SetLanguageAsync(lang);
         }
 
+        public async Task SaveOpacityAsync(double opacity)
+        {
+            Opacity = opacity;
+            await BackdropService.SetOpacityAsync(opacity);
+            var mainWindow = App.CurrentWindow as MainWindow;
+            if (mainWindow?.RootGrid != null)
+            {
+                BackdropService.ApplyOpacity(mainWindow.RootGrid, opacity);
+            }
+        }
+
         public async Task SaveAutoCheckAsync(bool value)
         {
             AutoCheckServerStatus = value;
@@ -118,9 +133,20 @@ namespace Talkift.Client.ViewModels
             await _storage.SaveAsync("connection_timeout", value);
         }
 
-        private async Task SaveLoginServersAsync()
+        public async Task SaveStoragePathAsync(string path)
         {
-            await _storage.SaveAsync("login_servers", LoginServers);
+            if (!string.IsNullOrWhiteSpace(path) && System.IO.Directory.Exists(path))
+            {
+                StoragePath = path;
+                StorageService.SetDataDirectory(path);
+                await _storage.SaveAsync("storage_path", path);
+            }
+        }
+
+        public async Task SaveOfficialServerAsync(OfficialServer server)
+        {
+            OfficialServer = server;
+            await _storage.SaveAsync("official_server", server);
         }
     }
 }

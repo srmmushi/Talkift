@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Talkift.Client.Models;
@@ -11,7 +10,6 @@ namespace Talkift.Client.Views
     {
         private readonly AuthService _authService;
         private readonly Server _server;
-        private readonly List<LoginServer> _loginServers;
         private bool _pwd1Visible;
         private bool _pwd2Visible;
 
@@ -20,25 +18,11 @@ namespace Talkift.Client.Views
 
         public event EventHandler? LoginRequested;
 
-        public RegisterDialog(Server server, AuthService authService, List<LoginServer>? loginServers = null)
+        public RegisterDialog(Server server, AuthService authService)
         {
             this.InitializeComponent();
             _server = server;
             _authService = authService;
-            _loginServers = loginServers ?? new List<LoginServer>();
-
-            foreach (var ls in _loginServers)
-            {
-                if (ls.Type == LoginServerType.ThirdParty || ls.Type == LoginServerType.Local)
-                {
-                    ThirdPartyServerCombo.Items.Add($"{ls.Name} ({ls.Address}:{ls.Port})");
-                }
-            }
-
-            if (ThirdPartyServerCombo.Items.Count > 0)
-            {
-                ThirdPartyServerCombo.SelectedIndex = 0;
-            }
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -53,8 +37,6 @@ namespace Talkift.Client.Views
             MethodLabel.Text = LanguageService.GetString("RegisterMethod");
             OfficialRadio.Content = LanguageService.GetString("Official");
             LocalRadio.Content = LanguageService.GetString("Local");
-            ThirdPartyRadio.Content = LanguageService.GetString("ThirdParty");
-            RegServerLabel.Text = LanguageService.GetString("RegistrationServer");
             ((TextBlock)UsernameBox.Header).Text = LanguageService.GetString("Username");
             UsernameBox.PlaceholderText = LanguageService.GetString("UsernameMinLength");
             ((TextBlock)PasswordBox.Header).Text = LanguageService.GetString("Password");
@@ -76,11 +58,10 @@ namespace Talkift.Client.Views
                     {
                         "Official" => RegisterMode.Official,
                         "Local" => RegisterMode.Local,
-                        "ThirdParty" => RegisterMode.ThirdParty,
                         _ => RegisterMode.Official
                     };
 
-                    ThirdPartyPanel.Visibility = SelectedMode == RegisterMode.ThirdParty
+                    EmailBox.Visibility = SelectedMode == RegisterMode.Official
                         ? Visibility.Visible
                         : Visibility.Collapsed;
                 }
@@ -127,18 +108,6 @@ namespace Talkift.Client.Views
                     return;
                 }
 
-                string? thirdPartyServer = null;
-                if (SelectedMode == RegisterMode.ThirdParty)
-                {
-                    if (ThirdPartyServerCombo.SelectedIndex < 0)
-                    {
-                        ShowError(LanguageService.GetString("SelectRegistrationServer"));
-                        return;
-                    }
-                    var selectedServer = _loginServers[ThirdPartyServerCombo.SelectedIndex];
-                    thirdPartyServer = $"{selectedServer.Address}:{selectedServer.Port}";
-                }
-
                 SetLoading(true);
                 LastResult = await _authService.RegisterAsync(
                     UsernameBox.Text.Trim(),
@@ -146,12 +115,17 @@ namespace Talkift.Client.Views
                     SelectedMode,
                     _server.Address,
                     _server.Port,
-                    thirdPartyServer);
+                    EmailBox.Visibility == Visibility.Visible ? EmailBox.Text?.Trim() : null);
                 SetLoading(false);
 
                 if (!LastResult.Success)
                 {
                     ShowError(LastResult.Message ?? LanguageService.GetString("RegistrationFailed"));
+                }
+                else
+                {
+                    var parentDialog = this.Parent as ContentDialog;
+                    parentDialog?.Hide();
                 }
             }
             catch (Exception ex)
@@ -170,18 +144,13 @@ namespace Talkift.Client.Views
         private void TogglePassword1_Click(object sender, RoutedEventArgs e)
         {
             _pwd1Visible = !_pwd1Visible;
-            ToggleVisibility(PasswordBox, ToggleIcon1, _pwd1Visible);
+            ToggleIcon1.Glyph = _pwd1Visible ? "\uE891" : "\uE890";
         }
 
         private void TogglePassword2_Click(object sender, RoutedEventArgs e)
         {
             _pwd2Visible = !_pwd2Visible;
-            ToggleVisibility(ConfirmPasswordBox, ToggleIcon2, _pwd2Visible);
-        }
-
-        private void ToggleVisibility(PasswordBox pwdBox, FontIcon icon, bool showPlain)
-        {
-            icon.Glyph = showPlain ? "\uE891" : "\uE890";
+            ToggleIcon2.Glyph = _pwd2Visible ? "\uE891" : "\uE890";
         }
 
         private void ShowError(string message)

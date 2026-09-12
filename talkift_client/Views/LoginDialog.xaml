@@ -23,10 +23,24 @@
                  HorizontalAlignment="Stretch"
                  Margin="0,0,0,8"/>
 
+        <ToggleSwitch x:Name="LoginModeToggle"
+                      Header="Login with Email"
+                      Toggled="LoginModeToggle_Toggled"
+                      OffContent="Username"
+                      OnContent="Email"/>
+
         <TextBox x:Name="UsernameBox"
                  Header="Username"
                  PlaceholderText="Enter your username"
-                 MaxLength="32"/>
+                 MaxLength="32"
+                 CornerRadius="4"/>
+
+        <TextBox x:Name="EmailBox"
+                 Header="Email"
+                 PlaceholderText="Enter your email"
+                 MaxLength="128"
+                 Visibility="Collapsed"
+                 CornerRadius="4"/>
 
         <PasswordBox x:Name="PasswordBox"
                      Header="Password"
@@ -37,11 +51,6 @@
         <CheckBox x:Name="RememberPasswordCheckBox"
                   Content="Remember password"
                   IsChecked="True"/>
-
-        <CheckBox x:Name="OfflineLoginCheckBox"
-                  Content="Offline login (no password required)"
-                  Checked="OfflineLoginCheckBox_Checked"
-                  Unchecked="OfflineLoginCheckBox_Unchecked"/>
 
         <Button x:Name="LoginButton"
                 Content="Login"

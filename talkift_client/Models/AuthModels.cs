@@ -11,13 +11,13 @@ namespace Talkift.Client.Models
         [JsonPropertyName("password")]
         public string Password { get; set; } = string.Empty;
 
+        [JsonPropertyName("email")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Email { get; set; }
+
         [JsonPropertyName("register_method")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? RegisterMethod { get; set; }
-
-        [JsonPropertyName("register_server_ip")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? RegisterServerIP { get; set; }
     }
 
     public class AuthResponse
@@ -36,6 +36,9 @@ namespace Talkift.Client.Models
 
         [JsonPropertyName("username")]
         public string? Username { get; set; }
+
+        [JsonPropertyName("email")]
+        public string? Email { get; set; }
 
         [JsonPropertyName("register_method")]
         public string? RegisterMethod { get; set; }
@@ -58,7 +61,6 @@ namespace Talkift.Client.Models
     public enum RegisterMode
     {
         Official,
-        Local,
-        ThirdParty
+        Local
     }
 }

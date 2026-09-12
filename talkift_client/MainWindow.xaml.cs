@@ -61,6 +61,7 @@ namespace Talkift.Client
                 await BackdropService.LoadBackdropAsync();
                 await System.Threading.Tasks.Task.Delay(200);
                 BackdropService.ApplyCurrentBackdrop(this);
+                BackdropService.ApplyOpacity(RootGrid, BackdropService.CurrentOpacity);
             }
             catch (Exception ex)
             {
@@ -73,7 +74,6 @@ namespace Talkift.Client
             try
             {
                 ServersNavItem.Content = LanguageService.GetString("Servers");
-                ConversationsNavItem.Content = LanguageService.GetString("Conversations");
                 AddServerNavText.Text = LanguageService.GetString("AddServer");
                 LogoutButtonText.Text = LanguageService.GetString("Logout");
                 AppTitleText.Text = LanguageService.GetString("AppTitle");
@@ -109,10 +109,6 @@ namespace Talkift.Client
                 {
                     ContentFrame.Navigate(typeof(ServerListView));
                 }
-                else if (args.InvokedItemContainer?.Tag?.ToString() == "Conversations")
-                {
-                    ContentFrame.Navigate(typeof(ConversationListPage));
-                }
             }
             catch (Exception ex)
             {
@@ -146,10 +142,6 @@ namespace Talkift.Client
                 else if (e.SourcePageType == typeof(ServerListView))
                 {
                     NavView.SelectedItem = ServersNavItem;
-                }
-                else if (e.SourcePageType == typeof(ConversationListPage))
-                {
-                    NavView.SelectedItem = ConversationsNavItem;
                 }
 
                 NavView.IsBackEnabled = ContentFrame.CanGoBack;
@@ -207,6 +199,28 @@ namespace Talkift.Client
             }
         }
 
+        public void NavigateToServerList()
+        {
+            try { ContentFrame.Navigate(typeof(ServerListView)); }
+            catch (Exception ex) { CrashLogger.LogException("NavigateToServerList", ex); }
+        }
+
+        public void NavigateToConversationList(Server? server = null)
+        {
+            try
+            {
+                if (server != null && ViewModel.SelectedServer == null)
+                {
+                    ViewModel.SelectServer(server);
+                }
+                ContentFrame.Navigate(typeof(ConversationListPage));
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("NavigateToConversationList", ex);
+            }
+        }
+
         public void NavigateToChat(Conversation? conversation = null)
         {
             try
@@ -221,40 +235,10 @@ namespace Talkift.Client
             }
         }
 
-        public void NavigateToConversationList()
-        {
-            try
-            {
-                ContentFrame.Navigate(typeof(ConversationListPage));
-            }
-            catch (Exception ex)
-            {
-                CrashLogger.LogException("NavigateToConversationList", ex);
-            }
-        }
-
         public void NavigateToConversationSettings()
         {
-            try
-            {
-                ContentFrame.Navigate(typeof(ConversationSettingsPage));
-            }
-            catch (Exception ex)
-            {
-                CrashLogger.LogException("NavigateToConversationSettings", ex);
-            }
-        }
-
-        public void NavigateToServerList()
-        {
-            try
-            {
-                ContentFrame.Navigate(typeof(ServerListView));
-            }
-            catch (Exception ex)
-            {
-                CrashLogger.LogException("NavigateToServerList", ex);
-            }
+            try { ContentFrame.Navigate(typeof(ConversationSettingsPage)); }
+            catch (Exception ex) { CrashLogger.LogException("NavigateToConversationSettings", ex); }
         }
 
         public void UpdateUserInfo()

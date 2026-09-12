@@ -6,18 +6,20 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Width="420"
+    Width="380"
     Loaded="OnLoaded">
 
     <StackPanel Padding="8" Spacing="16">
         <TextBox x:Name="ServerNameBox"
                  Header="Server Name *"
-                 PlaceholderText="My Server"/>
+                 PlaceholderText="My Server"
+                 CornerRadius="4"/>
 
         <TextBox x:Name="AddressBox"
                  Header="Server Address *"
                  PlaceholderText="example.com or 192.168.1.1"
-                 TextChanged="AddressBox_TextChanged"/>
+                 TextChanged="AddressBox_TextChanged"
+                 CornerRadius="4"/>
 
         <StackPanel x:Name="PortPanel" Visibility="Collapsed" Spacing="0">
             <NumberBox x:Name="PortBox"

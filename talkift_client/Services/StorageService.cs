@@ -14,17 +14,38 @@ namespace Talkift.Client.Services
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
 
-        private readonly string _dataDir;
+        private static string _dataDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Talkift");
 
         public StorageService()
         {
-            _dataDir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Talkift");
             Directory.CreateDirectory(_dataDir);
         }
 
-        public string DataDir => _dataDir;
+        public static string DataDir
+        {
+            get => _dataDir;
+            set
+            {
+                _dataDir = value;
+                Directory.CreateDirectory(_dataDir);
+            }
+        }
+
+        public static string LogsDir => Path.Combine(DataDir, "Logs");
+        public static string ConfigDir => Path.Combine(DataDir, "Config");
+
+        public static void SetDataDirectory(string path)
+        {
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                _dataDir = path;
+                Directory.CreateDirectory(_dataDir);
+                Directory.CreateDirectory(LogsDir);
+                Directory.CreateDirectory(ConfigDir);
+            }
+        }
 
         public async Task<T?> LoadAsync<T>(string key)
         {

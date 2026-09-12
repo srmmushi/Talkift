@@ -49,6 +49,7 @@ namespace Talkift.Client.Views
         {
             try
             {
+                BackToServersText.Text = LanguageService.GetString("Servers");
                 HeaderText.Text = LanguageService.GetString("Conversations");
                 GroupButtonText.Text = LanguageService.GetString("Group");
                 ChatButtonText.Text = LanguageService.GetString("Chat");
@@ -72,6 +73,19 @@ namespace Talkift.Client.Views
             catch (Exception ex)
             {
                 CrashLogger.LogException("ConversationListPage_Unloaded", ex);
+            }
+        }
+
+        private void BackToServers_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var mainWindow = App.CurrentWindow as MainWindow;
+                mainWindow?.NavigateToServerList();
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("BackToServers_Click", ex);
             }
         }
 
@@ -102,10 +116,7 @@ namespace Talkift.Client.Views
 
         private void OnJoinRequest(string fromUser, string groupName)
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                _ = HandleJoinRequestAsync(fromUser, groupName);
-            });
+            DispatcherQueue.TryEnqueue(() => _ = HandleJoinRequestAsync(fromUser, groupName));
         }
 
         private async Task HandleJoinRequestAsync(string fromUser, string groupName)
@@ -140,9 +151,7 @@ namespace Talkift.Client.Views
             try
             {
                 if (e.ClickedItem is Conversation conversation)
-                {
                     ViewModel.SelectConversation(conversation);
-                }
             }
             catch (Exception ex)
             {
@@ -154,34 +163,20 @@ namespace Talkift.Client.Views
         {
             try
             {
-                var dialog = new CreateGroupDialog
-                {
-                    XamlRoot = this.XamlRoot,
-                    WebSocketService = ViewModel.WsService
-                };
+                var dialog = new CreateGroupDialog { XamlRoot = this.XamlRoot, WebSocketService = ViewModel.WsService };
                 await dialog.ShowAsync();
             }
-            catch (Exception ex)
-            {
-                CrashLogger.LogException("CreateGroupButton_Click", ex);
-            }
+            catch (Exception ex) { CrashLogger.LogException("CreateGroupButton_Click", ex); }
         }
 
         private async void CreateConvButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var dialog = new CreateConversationDialog
-                {
-                    XamlRoot = this.XamlRoot,
-                    WebSocketService = ViewModel.WsService
-                };
+                var dialog = new CreateConversationDialog { XamlRoot = this.XamlRoot, WebSocketService = ViewModel.WsService };
                 await dialog.ShowAsync();
             }
-            catch (Exception ex)
-            {
-                CrashLogger.LogException("CreateConvButton_Click", ex);
-            }
+            catch (Exception ex) { CrashLogger.LogException("CreateConvButton_Click", ex); }
         }
     }
 }

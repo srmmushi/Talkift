@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -32,10 +31,9 @@ namespace Talkift.Client.Services
         {
             try
             {
-                var client = Client;
                 var url = $"http://{address}:{port}/api/login";
                 var request = new AuthRequest { Username = username, Password = password };
-                var response = await client.PostAsJsonAsync(url, request);
+                var response = await Client.PostAsJsonAsync(url, request);
 
                 var body = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<AuthResponse>(body, JsonOptions);
@@ -46,6 +44,41 @@ namespace Talkift.Client.Services
                     _currentUserId = result.UUID ?? string.Empty;
                     _currentUsername = result.Username ?? username;
                     _currentRegisterMethod = result.RegisterMethod ?? "local";
+                }
+
+                return result ?? new AuthResponse { Success = false, Message = "No response from server" };
+            }
+            catch (HttpRequestException)
+            {
+                return new AuthResponse { Success = false, Code = 1005, Message = "Cannot connect to server" };
+            }
+            catch (TaskCanceledException)
+            {
+                return new AuthResponse { Success = false, Code = 1005, Message = "Connection timed out" };
+            }
+            catch (Exception ex)
+            {
+                return new AuthResponse { Success = false, Code = 1007, Message = ex.Message };
+            }
+        }
+
+        public async Task<AuthResponse> LoginWithEmailAsync(string email, string password, string address, int port)
+        {
+            try
+            {
+                var url = $"http://{address}:{port}/api/login/email";
+                var request = new AuthRequest { Email = email, Password = password };
+                var response = await Client.PostAsJsonAsync(url, request);
+
+                var body = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<AuthResponse>(body, JsonOptions);
+
+                if (result != null && result.Success)
+                {
+                    _token = result.Token ?? string.Empty;
+                    _currentUserId = result.UUID ?? string.Empty;
+                    _currentUsername = result.Username ?? string.Empty;
+                    _currentRegisterMethod = result.RegisterMethod ?? "official";
                 }
 
                 return result ?? new AuthResponse { Success = false, Message = "No response from server" };
@@ -68,10 +101,9 @@ namespace Talkift.Client.Services
         {
             try
             {
-                var client = Client;
                 var url = $"http://{address}:{port}/api/login/offline";
                 var request = new AuthRequest { Username = username, Password = "" };
-                var response = await client.PostAsJsonAsync(url, request);
+                var response = await Client.PostAsJsonAsync(url, request);
 
                 var body = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<AuthResponse>(body, JsonOptions);
@@ -100,32 +132,28 @@ namespace Talkift.Client.Services
             }
         }
 
-        public async Task<AuthResponse> RegisterAsync(string username, string password, RegisterMode mode, string address, int port, string? thirdPartyServer = null)
+        public async Task<AuthResponse> RegisterAsync(string username, string password, RegisterMode mode, string address, int port, string? email = null)
         {
             try
             {
-                var client = Client;
                 var method = mode switch
                 {
                     RegisterMode.Official => "official",
                     RegisterMode.Local => "local",
-                    RegisterMode.ThirdParty => "third_party",
                     _ => "local"
                 };
 
-                var url = mode == RegisterMode.ThirdParty && thirdPartyServer != null
-                    ? $"http://{address}:{port}/api/register/thirdparty"
-                    : $"http://{address}:{port}/api/register";
+                var url = $"http://{address}:{port}/api/register";
 
                 var request = new AuthRequest
                 {
                     Username = username,
                     Password = password,
-                    RegisterMethod = method,
-                    RegisterServerIP = thirdPartyServer
+                    Email = email,
+                    RegisterMethod = method
                 };
 
-                var response = await client.PostAsJsonAsync(url, request);
+                var response = await Client.PostAsJsonAsync(url, request);
                 var body = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<AuthResponse>(body, JsonOptions);
 

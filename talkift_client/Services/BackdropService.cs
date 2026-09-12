@@ -11,6 +11,7 @@ namespace Talkift.Client.Services
         private static readonly StorageService _storage = new();
 
         public static BackdropType CurrentBackdrop { get; private set; } = BackdropType.Mica;
+        public static double CurrentOpacity { get; private set; } = 1.0;
 
         public static async Task LoadBackdropAsync()
         {
@@ -20,6 +21,12 @@ namespace Talkift.Client.Services
                 if (!string.IsNullOrEmpty(saved) && Enum.TryParse<BackdropType>(saved, out var type))
                 {
                     CurrentBackdrop = type;
+                }
+
+                var opacity = await _storage.LoadAsync<double?>("opacity");
+                if (opacity.HasValue)
+                {
+                    CurrentOpacity = opacity.Value;
                 }
             }
             catch (Exception ex)
@@ -32,6 +39,12 @@ namespace Talkift.Client.Services
         {
             CurrentBackdrop = type;
             await _storage.SaveAsync("backdrop", type.ToString());
+        }
+
+        public static async Task SetOpacityAsync(double opacity)
+        {
+            CurrentOpacity = Math.Clamp(opacity, 0.1, 1.0);
+            await _storage.SaveAsync("opacity", CurrentOpacity);
         }
 
         public static void ApplyBackdrop(Window window, BackdropType type)
@@ -58,6 +71,14 @@ namespace Talkift.Client.Services
             {
                 CrashLogger.LogException("BackdropService.ApplyBackdrop", ex);
                 window.SystemBackdrop = null;
+            }
+        }
+
+        public static void ApplyOpacity(Microsoft.UI.Xaml.UIElement element, double opacity)
+        {
+            if (element != null)
+            {
+                element.Opacity = opacity;
             }
         }
 

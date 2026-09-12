@@ -31,22 +31,20 @@
                       SelectionChanged="MethodRadioButtons_SelectionChanged">
             <RadioButton x:Name="OfficialRadio" Content="Official" Tag="Official" IsChecked="True"/>
             <RadioButton x:Name="LocalRadio" Content="Local" Tag="Local"/>
-            <RadioButton x:Name="ThirdPartyRadio" Content="Third Party" Tag="ThirdParty"/>
         </RadioButtons>
-
-        <StackPanel x:Name="ThirdPartyPanel" Visibility="Collapsed" Spacing="4">
-            <TextBlock x:Name="RegServerLabel"
-                       Text="Registration Server"
-                       FontSize="12"
-                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
-            <ComboBox x:Name="ThirdPartyServerCombo"
-                      HorizontalAlignment="Stretch"/>
-        </StackPanel>
 
         <TextBox x:Name="UsernameBox"
                  Header="Username"
                  PlaceholderText="3-32 characters"
-                 MaxLength="32"/>
+                 MaxLength="32"
+                 CornerRadius="4"/>
+
+        <TextBox x:Name="EmailBox"
+                 Header="Email (optional)"
+                 PlaceholderText="your@email.com"
+                 MaxLength="128"
+                 Visibility="Collapsed"
+                 CornerRadius="4"/>
 
         <Grid>
             <PasswordBox x:Name="PasswordBox"

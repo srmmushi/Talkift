@@ -42,14 +42,7 @@ namespace Talkift.Client.ViewModels
 
         partial void OnIsLoggedInChanged(bool value)
         {
-            if (value)
-            {
-                StatusBarText = CurrentUsername;
-            }
-            else
-            {
-                StatusBarText = string.Empty;
-            }
+            StatusBarText = value ? CurrentUsername : string.Empty;
         }
 
         [RelayCommand]
@@ -94,7 +87,6 @@ namespace Talkift.Client.ViewModels
             {
                 "official" => "\uE716",
                 "local" => "\uE77B",
-                "third_party" => "\uE710",
                 _ => "\uE716"
             };
         }
@@ -105,7 +97,6 @@ namespace Talkift.Client.ViewModels
             {
                 "official" => Windows.UI.Color.FromArgb(255, 0, 120, 215),
                 "local" => Windows.UI.Color.FromArgb(255, 16, 137, 64),
-                "third_party" => Windows.UI.Color.FromArgb(255, 136, 23, 152),
                 _ => Windows.UI.Color.FromArgb(255, 0, 120, 215)
             };
         }

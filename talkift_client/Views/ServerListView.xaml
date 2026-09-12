@@ -45,10 +45,11 @@
                       SelectionChanged="ServerListView_SelectionChanged">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="Models:Server">
-                        <Grid Padding="12,10" CornerRadius="8"
+                        <Grid Padding="14,12" CornerRadius="10"
                               Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                              BorderThickness="1">
+                              BorderThickness="1"
+                              Margin="0,0,0,6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="44"/>
                                 <ColumnDefinition Width="*"/>
@@ -57,7 +58,7 @@
 
                             <Grid Grid.Column="0" VerticalAlignment="Center">
                                 <Ellipse Width="36" Height="36"
-                                         Fill="{ThemeResource AccentColor}"/>
+                                         Fill="{ThemeResource SystemControlBackgroundAccentBrush}"/>
                                 <TextBlock Text="{x:Bind Name}"
                                            FontSize="14" FontWeight="SemiBold"
                                            Foreground="White"
@@ -75,7 +76,7 @@
                             </StackPanel>
 
                             <StackPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Horizontal" Spacing="6">
-                                <Ellipse Grid.Column="2" Width="10" Height="10"
+                                <Ellipse Width="10" Height="10"
                                          VerticalAlignment="Center"
                                          Fill="{x:Bind local:ServerListView.GetStatusBrush(IsOnline)}"/>
                                 <TextBlock FontSize="12"

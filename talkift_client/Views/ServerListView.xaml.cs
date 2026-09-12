@@ -83,10 +83,10 @@ namespace Talkift.Client.Views
 
                     if (_mainViewModel.IsLoggedIn)
                     {
-                        _mainViewModel.CurrentPage = PageType.Chat;
+                        _mainViewModel.CurrentPage = PageType.ConversationList;
                         var mainWindow = App.CurrentWindow as MainWindow;
                         mainWindow?.UpdateUserInfo();
-                        mainWindow?.NavigateToChat();
+                        mainWindow?.NavigateToConversationList(server);
                     }
                     else
                     {
@@ -136,7 +136,7 @@ namespace Talkift.Client.Views
 
                     var mainWindow = App.CurrentWindow as MainWindow;
                     mainWindow?.UpdateUserInfo();
-                    mainWindow?.NavigateToChat();
+                    mainWindow?.NavigateToConversationList(server);
                 }
             }
             catch (Exception ex)
@@ -149,15 +149,7 @@ namespace Talkift.Client.Views
         {
             try
             {
-                List<LoginServer>? loginServers = null;
-                try
-                {
-                    var storage = new StorageService();
-                    loginServers = await storage.LoadAsync<List<LoginServer>>("login_servers");
-                }
-                catch { }
-
-                var registerDialog = new RegisterDialog(server, _authService, loginServers);
+                var registerDialog = new RegisterDialog(server, _authService);
 
                 var contentDialog = new ContentDialog
                 {
@@ -181,11 +173,11 @@ namespace Talkift.Client.Views
                     _mainViewModel.SelectServer(server);
                     _mainViewModel.OnLoginSuccess(
                         registerDialog.LastResult.Username ?? string.Empty,
-                        registerDialog.LastResult.RegisterMethod ?? registerDialog.SelectedMode.ToString().ToLower());
+                        registerDialog.LastResult.RegisterMethod ?? "local");
 
                     var mainWindow = App.CurrentWindow as MainWindow;
                     mainWindow?.UpdateUserInfo();
-                    mainWindow?.NavigateToChat();
+                    mainWindow?.NavigateToConversationList(server);
                 }
             }
             catch (Exception ex)
@@ -262,24 +254,15 @@ namespace Talkift.Client.Views
         private static readonly Brush OnlineBrush = new SolidColorBrush(Colors.Green);
         private static readonly Brush OfflineBrush = new SolidColorBrush(Colors.Gray);
 
-        public static string Localized(string key)
-        {
-            return LanguageService.GetString(key);
-        }
+        public static string Localized(string key) => LanguageService.GetString(key);
 
-        public static Windows.UI.Color GetStatusColor(bool isOnline)
-        {
-            return isOnline ? Colors.Green : Colors.Gray;
-        }
+        public static Windows.UI.Color GetStatusColor(bool isOnline) =>
+            isOnline ? Colors.Green : Colors.Gray;
 
-        public static Brush GetStatusBrush(bool isOnline)
-        {
-            return isOnline ? OnlineBrush : OfflineBrush;
-        }
+        public static Brush GetStatusBrush(bool isOnline) =>
+            isOnline ? OnlineBrush : OfflineBrush;
 
-        public static string GetStatusText(bool isOnline)
-        {
-            return isOnline ? LanguageService.GetString("Online") : LanguageService.GetString("Offline");
-        }
+        public static string GetStatusText(bool isOnline) =>
+            isOnline ? LanguageService.GetString("Online") : LanguageService.GetString("Offline");
     }
 }

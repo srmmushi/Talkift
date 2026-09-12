@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -11,7 +12,6 @@ namespace Talkift.Client.Views
     public sealed partial class SettingsPage : Page
     {
         public SettingsViewModel ViewModel { get; } = new();
-
         private Button? _activeNavButton;
 
         public SettingsPage()
@@ -37,6 +37,18 @@ namespace Talkift.Client.Views
                 LanguageComboBox.Items.Add("\u4e2d\u6587");
                 LanguageComboBox.SelectedIndex = ViewModel.SelectedLanguageIndex;
 
+                OpacitySlider.Value = ViewModel.Opacity * 100;
+                OpacityValueText.Text = $"{(int)(ViewModel.Opacity * 100)}%";
+
+                StoragePathValue.Text = ViewModel.StoragePath;
+                LogPathValue.Text = ViewModel.LogPath;
+
+                OfficialAddrBox.Text = ViewModel.OfficialServer.Address;
+                OfficialPortBox.Value = ViewModel.OfficialServer.Port;
+                OfficialIdBox.Text = ViewModel.OfficialServer.UniqueId;
+                OfficialEmailCheck.IsChecked = ViewModel.OfficialServer.SupportsEmail;
+                OfficialOfflineCheck.IsChecked = ViewModel.OfficialServer.SupportsOffline;
+
                 ApplyLocalization();
                 ShowSection(AppearanceSection, NavAppearance);
             }
@@ -51,16 +63,15 @@ namespace Talkift.Client.Views
             try
             {
                 AppearanceSection.Visibility = Visibility.Collapsed;
-                LoginServersSection.Visibility = Visibility.Collapsed;
                 ServerMgmtSection.Visibility = Visibility.Collapsed;
+                OfficialSection.Visibility = Visibility.Collapsed;
+                StorageSection.Visibility = Visibility.Collapsed;
                 AboutSection.Visibility = Visibility.Collapsed;
 
                 section.Visibility = Visibility.Visible;
 
                 if (_activeNavButton != null)
-                {
                     _activeNavButton.Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent);
-                }
 
                 navButton.Background = (Brush)Application.Current.Resources["SystemControlBackgroundAccentButtonBrush"];
                 _activeNavButton = navButton;
@@ -71,43 +82,25 @@ namespace Talkift.Client.Views
             }
         }
 
-        private void NavAppearance_Click(object sender, RoutedEventArgs e)
-        {
-            try { ShowSection(AppearanceSection, NavAppearance); }
-            catch (Exception ex) { CrashLogger.LogException("NavAppearance_Click", ex); }
-        }
+        private void NavAppearance_Click(object sender, RoutedEventArgs e) =>
+            TryCatch(() => ShowSection(AppearanceSection, NavAppearance));
 
-        private void NavLoginServers_Click(object sender, RoutedEventArgs e)
-        {
-            try { ShowSection(LoginServersSection, NavLoginServers); }
-            catch (Exception ex) { CrashLogger.LogException("NavLoginServers_Click", ex); }
-        }
+        private void NavServerMgmt_Click(object sender, RoutedEventArgs e) =>
+            TryCatch(() => ShowSection(ServerMgmtSection, NavServerMgmt));
 
-        private void NavServerMgmt_Click(object sender, RoutedEventArgs e)
-        {
-            try { ShowSection(ServerMgmtSection, NavServerMgmt); }
-            catch (Exception ex) { CrashLogger.LogException("NavServerMgmt_Click", ex); }
-        }
+        private void NavOfficial_Click(object sender, RoutedEventArgs e) =>
+            TryCatch(() => ShowSection(OfficialSection, NavOfficial));
 
-        private void NavAbout_Click(object sender, RoutedEventArgs e)
-        {
-            try { ShowSection(AboutSection, NavAbout); }
-            catch (Exception ex) { CrashLogger.LogException("NavAbout_Click", ex); }
-        }
+        private void NavStorage_Click(object sender, RoutedEventArgs e) =>
+            TryCatch(() => ShowSection(StorageSection, NavStorage));
+
+        private void NavAbout_Click(object sender, RoutedEventArgs e) =>
+            TryCatch(() => ShowSection(AboutSection, NavAbout));
 
         private async void BackdropComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
-            {
-                if (BackdropComboBox.SelectedIndex >= 0)
-                {
-                    await ViewModel.SaveBackdropAsync(BackdropComboBox.SelectedIndex);
-                }
-            }
-            catch (Exception ex)
-            {
-                CrashLogger.LogException("BackdropComboBox_SelectionChanged", ex);
-            }
+            try { if (BackdropComboBox.SelectedIndex >= 0) await ViewModel.SaveBackdropAsync(BackdropComboBox.SelectedIndex); }
+            catch (Exception ex) { CrashLogger.LogException("BackdropComboBox_SelectionChanged", ex); }
         }
 
         private async void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -118,42 +111,80 @@ namespace Talkift.Client.Views
                 {
                     await ViewModel.SaveLanguageAsync(LanguageComboBox.SelectedIndex);
                     ApplyLocalization();
-
                     StatusInfoBar.Message = LanguageService.GetString("LanguageChanged");
                     StatusInfoBar.IsOpen = true;
                 }
             }
-            catch (Exception ex)
-            {
-                CrashLogger.LogException("LanguageComboBox_SelectionChanged", ex);
-            }
+            catch (Exception ex) { CrashLogger.LogException("LanguageComboBox_SelectionChanged", ex); }
         }
 
-        private async void AutoCheckToggle_Toggled(object sender, RoutedEventArgs e)
+        private async void OpacitySlider_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
             try
             {
-                await ViewModel.SaveAutoCheckAsync(AutoCheckToggle.IsOn);
+                var opacity = e.NewValue / 100.0;
+                OpacityValueText.Text = $"{(int)e.NewValue}%";
+                await ViewModel.SaveOpacityAsync(opacity);
             }
-            catch (Exception ex)
-            {
-                CrashLogger.LogException("AutoCheckToggle_Toggled", ex);
-            }
+            catch (Exception ex) { CrashLogger.LogException("OpacitySlider_ValueChanged", ex); }
         }
+
+        private async void AutoCheckToggle_Toggled(object sender, RoutedEventArgs e) =>
+            TryCatch(async () => await ViewModel.SaveAutoCheckAsync(AutoCheckToggle.IsOn));
 
         private async void TimeoutNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
         {
+            try { if (args.NewValue >= 3) await ViewModel.SaveConnectionTimeoutAsync((int)args.NewValue); }
+            catch (Exception ex) { CrashLogger.LogException("TimeoutNumberBox_ValueChanged", ex); }
+        }
+
+        private async void SaveOfficialButton_Click(object sender, RoutedEventArgs e)
+        {
             try
             {
-                if (args.NewValue >= 3)
+                var server = new OfficialServer
                 {
-                    await ViewModel.SaveConnectionTimeoutAsync((int)args.NewValue);
+                    Address = OfficialAddrBox.Text?.Trim() ?? "server.talkift.com",
+                    Port = (int)OfficialPortBox.Value,
+                    SupportsEmail = OfficialEmailCheck.IsChecked == true,
+                    SupportsOffline = OfficialOfflineCheck.IsChecked == true
+                };
+                await ViewModel.SaveOfficialServerAsync(server);
+                StatusInfoBar.Message = LanguageService.GetString("SettingsSaved");
+                StatusInfoBar.IsOpen = true;
+            }
+            catch (Exception ex) { CrashLogger.LogException("SaveOfficialButton_Click", ex); }
+        }
+
+        private async void ChangeStoragePath_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var picker = new Windows.Storage.Pickers.FolderPicker();
+                picker.FileTypeFilter.Add("*);
+                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
+                WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+                var folder = await picker.PickSingleFolderAsync();
+                if (folder != null)
+                {
+                    await ViewModel.SaveStoragePathAsync(folder.Path);
+                    StoragePathValue.Text = folder.Path;
+                    StatusInfoBar.Message = LanguageService.GetString("SettingsSaved");
+                    StatusInfoBar.IsOpen = true;
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) { CrashLogger.LogException("ChangeStoragePath_Click", ex); }
+        }
+
+        private void OpenLogFolder_Click(object sender, RoutedEventArgs e)
+        {
+            try
             {
-                CrashLogger.LogException("TimeoutNumberBox_ValueChanged", ex);
+                var logPath = StorageService.LogsDir;
+                if (System.IO.Directory.Exists(logPath))
+                    Process.Start("explorer.exe", logPath);
             }
+            catch (Exception ex) { CrashLogger.LogException("OpenLogFolder_Click", ex); }
         }
 
         private void ApplyLocalization()
@@ -162,135 +193,42 @@ namespace Talkift.Client.Views
             {
                 TitleText.Text = LanguageService.GetString("Settings");
                 NavAppearanceText.Text = LanguageService.GetString("Appearance");
-                NavLoginServersText.Text = LanguageService.GetString("LoginServers");
                 NavServerMgmtText.Text = LanguageService.GetString("ServerManagement");
+                NavOfficialText.Text = "Official Server";
+                NavStorageText.Text = "Storage";
                 NavAboutText.Text = LanguageService.GetString("About");
 
                 AppearanceHeader.Text = LanguageService.GetString("Appearance");
-                AppearanceDesc.Text = "Customize the look and feel of Talkift";
+                AppearanceDesc.Text = "Customize the look and feel";
                 BackdropLabel.Text = LanguageService.GetString("Backdrop");
-                BackdropDesc.Text = "Choose the background effect for the application window";
+                OpacityLabel.Text = "Window Opacity";
                 LanguageLabel.Text = LanguageService.GetString("Language");
-                LanguageDesc.Text = "Select your preferred language for the interface";
-
-                LoginServersHeader.Text = LanguageService.GetString("LoginServers");
-                LoginServersDesc.Text = LanguageService.GetString("ManageLoginServers");
-                AddLoginServerButton.Content = LanguageService.GetString("Add");
 
                 ServerMgmtHeader.Text = LanguageService.GetString("ServerManagement");
-                ServerMgmtDesc.Text = "Configure server connection and status settings";
+                ServerMgmtDesc.Text = "Configure server connection settings";
                 AutoCheckLabel.Text = LanguageService.GetString("AutoCheckServerStatus");
                 AutoCheckDesc.Text = LanguageService.GetString("AutoCheckServerStatusDesc");
                 TimeoutLabel.Text = LanguageService.GetString("ConnectionTimeout");
                 TimeoutDesc.Text = LanguageService.GetString("ConnectionTimeoutDesc");
 
+                OfficialHeader.Text = "Official Server";
+                OfficialDesc.Text = "Configure the official Talkift server";
+
+                StorageHeader.Text = "Storage";
+                StorageDesc.Text = "Configure data and log storage paths";
+                StoragePathLabel.Text = "Data Storage Path";
+                LogPathLabel.Text = "Log Storage Path";
+
                 AboutDesc.Text = LanguageService.GetString("About");
                 CopyrightText.Text = LanguageService.GetString("Copyright");
             }
-            catch (Exception ex)
-            {
-                CrashLogger.LogException("SettingsPage.ApplyLocalization", ex);
-            }
+            catch (Exception ex) { CrashLogger.LogException("SettingsPage.ApplyLocalization", ex); }
         }
 
-        private async void AddLoginServer_Click(object sender, RoutedEventArgs e)
+        private void TryCatch(Action action)
         {
-            try
-            {
-                var nameBox = new TextBox
-                {
-                    Header = LanguageService.GetString("ServerName"),
-                    PlaceholderText = LanguageService.GetString("MyLoginServer")
-                };
-                var addressBox = new TextBox
-                {
-                    Header = LanguageService.GetString("ServerAddress"),
-                    PlaceholderText = "localhost"
-                };
-                var portBox = new NumberBox
-                {
-                    Header = LanguageService.GetString("Port"),
-                    Value = 8081,
-                    Minimum = 1,
-                    Maximum = 65535
-                };
-                var typeCombo = new ComboBox { Header = LanguageService.GetString("Type") };
-                typeCombo.Items.Add(LanguageService.GetString("Official"));
-                typeCombo.Items.Add(LanguageService.GetString("Local"));
-                typeCombo.Items.Add(LanguageService.GetString("ThirdParty"));
-                typeCombo.SelectedIndex = 0;
-
-                var panel = new StackPanel { Spacing = 12 };
-                panel.Children.Add(nameBox);
-                panel.Children.Add(addressBox);
-                panel.Children.Add(portBox);
-                panel.Children.Add(typeCombo);
-
-                var dialog = new ContentDialog
-                {
-                    Title = LanguageService.GetString("AddLoginServer"),
-                    Content = panel,
-                    PrimaryButtonText = LanguageService.GetString("Add"),
-                    CloseButtonText = LanguageService.GetString("Cancel"),
-                    DefaultButton = ContentDialogButton.Primary,
-                    XamlRoot = this.XamlRoot
-                };
-
-                var result = await dialog.ShowAsync();
-                if (result == ContentDialogResult.Primary)
-                {
-                    var serverType = typeCombo.SelectedItem?.ToString() switch
-                    {
-                        var s when s == LanguageService.GetString("Local") => LoginServerType.Local,
-                        var s when s == LanguageService.GetString("ThirdParty") => LoginServerType.ThirdParty,
-                        _ => LoginServerType.Official
-                    };
-
-                    var server = new LoginServer
-                    {
-                        Name = nameBox.Text?.Trim() ?? string.Empty,
-                        Address = addressBox.Text?.Trim() ?? string.Empty,
-                        Port = (int)portBox.Value,
-                        Type = serverType
-                    };
-
-                    await ViewModel.AddLoginServerAsync(server);
-                }
-            }
-            catch (Exception ex)
-            {
-                CrashLogger.LogException("AddLoginServer_Click", ex);
-            }
-        }
-
-        private async void DeleteLoginServer_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (sender is Button btn && btn.Tag is LoginServer server)
-                {
-                    var confirmText = string.Format(LanguageService.GetString("ConfirmDeleteServer"), server.Name);
-                    var confirm = new ContentDialog
-                    {
-                        Title = LanguageService.GetString("DeleteLoginServer"),
-                        Content = confirmText,
-                        PrimaryButtonText = LanguageService.GetString("Delete"),
-                        CloseButtonText = LanguageService.GetString("Cancel"),
-                        DefaultButton = ContentDialogButton.Close,
-                        XamlRoot = this.XamlRoot
-                    };
-
-                    var result = await confirm.ShowAsync();
-                    if (result == ContentDialogResult.Primary)
-                    {
-                        await ViewModel.RemoveLoginServerAsync(server);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                CrashLogger.LogException("DeleteLoginServer_Click", ex);
-            }
+            try { action(); }
+            catch (Exception ex) { CrashLogger.LogException("SettingsPage.TryCatch", ex); }
         }
     }
 }
