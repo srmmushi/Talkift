@@ -8,66 +8,72 @@ import (
 	"official-server/internal/storage"
 )
 
-type VerifyResponse struct {
-	Code     int    `json:"code"`
-	UUID     string `json:"uuid,omitempty"`
-	Username string `json:"username,omitempty"`
-	Email    string `json:"email,omitempty"`
-	Message  string `json:"message,omitempty"`
+func writeJSON(w http.ResponseWriter, status int, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(data)
+}
+
+func decodeBody(r *http.Request, v interface{}) error {
+	return json.NewDecoder(r.Body).Decode(v)
+}
+
+func extractUserID(r *http.Request) string {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		return ""
+	}
+	token := strings.TrimPrefix(authHeader, "Bearer ")
+	if token == authHeader {
+		return ""
+	}
+	parts := strings.SplitN(token, "|", 2)
+	if len(parts) < 1 {
+		return ""
+	}
+	return parts[0]
 }
 
 func HandleVerify(store *storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			writeJSON(w, http.StatusMethodNotAllowed, VerifyResponse{
-				Code: 1004, Message: "Method not allowed",
-			})
+			writeJSON(w, http.StatusMethodNotAllowed, map[string]interface{}{"code": 1004, "message": "Method not allowed"})
 			return
 		}
 
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
-			writeJSON(w, http.StatusUnauthorized, VerifyResponse{
-				Code: 1004, Message: "Authorization header required",
-			})
-			return
-		}
-
-		token := strings.TrimPrefix(authHeader, "Bearer ")
-		if token == authHeader {
-			writeJSON(w, http.StatusUnauthorized, VerifyResponse{
-				Code: 1004, Message: "Bearer token required",
-			})
-			return
-		}
-
-		userID := parseToken(token)
+		userID := extractUserID(r)
 		if userID == "" {
-			writeJSON(w, http.StatusUnauthorized, VerifyResponse{
-				Code: 1002, Message: "Invalid token",
-			})
+			writeJSON(w, http.StatusUnauthorized, map[string]interface{}{"code": 1002, "message": "Unauthorized"})
 			return
 		}
 
 		user, exists := store.GetUserByID(userID)
 		if !exists {
-			writeJSON(w, http.StatusUnauthorized, VerifyResponse{
-				Code: 1003, Message: "User not found",
-			})
+			writeJSON(w, http.StatusNotFound, map[string]interface{}{"code": 1003, "message": "User not found"})
 			return
 		}
 
-		writeJSON(w, http.StatusOK, VerifyResponse{
-			Code:     0,
-			UUID:     user.ID,
-			Username: user.Username,
-			Email:    user.Email,
+		writeJSON(w, http.StatusOK, map[string]interface{}{
+			"code":     0,
+			"uuid":     user.ID,
+			"username": user.Username,
+			"email":    user.Email,
 		})
 	}
 }
 
-func writeJSON(w http.ResponseWriter, status int, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
+func HandleLogout(store *storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			writeJSON(w, http.StatusMethodNotAllowed, map[string]interface{}{"code": 1004, "message": "Method not allowed"})
+			return
+		}
+
+		userID := extractUserID(r)
+		if userID != "" {
+			store.SetOnlineStatus(userID, false)
+		}
+
+		writeJSON(w, http.StatusOK, map[string]interface{}{"code": 0, "message": "Logged out"})
+	}
 }

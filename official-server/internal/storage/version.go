@@ -5,13 +5,12 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"time"
 
 	"official-server/internal/model"
 )
 
 type VersionStorage struct {
-	basePath string
+	basePath   string
 	configPath string
 }
 
@@ -91,34 +90,8 @@ func (v *VersionStorage) CreateVersion(info model.VersionInfo) error {
 	return os.WriteFile(filepath.Join(versionDir, "version.json"), data, 0644)
 }
 
-func (v *VersionStorage) CreateVersionWithNotes(version, notes string) error {
-	info := model.VersionInfo{
-		Version:      version,
-		ReleaseNotes: notes,
-		ReleaseDate:  time.Now().Format("2006-01-02"),
-		IsLatest:     true,
-	}
-	return v.CreateVersion(info)
-}
-
-func (v *VersionStorage) SavePack(version string, data []byte) error {
-	versionDir := filepath.Join(v.basePath, version)
-	if err := os.MkdirAll(versionDir, 0755); err != nil {
-		return err
-	}
-	return os.WriteFile(filepath.Join(versionDir, "pack.exe"), data, 0755)
-}
-
 func (v *VersionStorage) GetPackPath(version string) string {
 	return filepath.Join(v.basePath, version, "pack.exe")
-}
-
-func (v *VersionStorage) SaveReleaseNotes(version, notes string) error {
-	versionDir := filepath.Join(v.basePath, version)
-	if err := os.MkdirAll(versionDir, 0755); err != nil {
-		return err
-	}
-	return os.WriteFile(filepath.Join(versionDir, "version.md"), []byte(notes), 0644)
 }
 
 func (v *VersionStorage) GetReleaseNotes(version string) (string, error) {
@@ -127,6 +100,10 @@ func (v *VersionStorage) GetReleaseNotes(version string) (string, error) {
 		return "", err
 	}
 	return string(data), nil
+}
+
+func (v *VersionStorage) DeleteVersion(version string) error {
+	return os.RemoveAll(filepath.Join(v.basePath, version))
 }
 
 func (v *VersionStorage) GetChatServerConfig() (*model.ServerConfig, error) {
@@ -147,23 +124,4 @@ func (v *VersionStorage) SaveChatServerConfig(config model.ServerConfig) error {
 		return err
 	}
 	return os.WriteFile(filepath.Join(v.configPath, "chat_server.json"), data, 0644)
-}
-
-func (v *VersionStorage) DeleteVersion(version string) error {
-	versionDir := filepath.Join(v.basePath, version)
-	return os.RemoveAll(versionDir)
-}
-
-func (v *VersionStorage) GetVersionCount() int {
-	entries, err := os.ReadDir(v.basePath)
-	if err != nil {
-		return 0
-	}
-	count := 0
-	for _, entry := range entries {
-		if entry.IsDir() {
-			count++
-		}
-	}
-	return count
 }

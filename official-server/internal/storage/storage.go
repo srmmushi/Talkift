@@ -3,7 +3,10 @@ package storage
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -22,48 +25,64 @@ var (
 )
 
 type Storage struct {
-	mu       sync.RWMutex
-	users    map[string]*model.User
-	filePath string
+	mu        sync.RWMutex
+	usersDir  string
+	users     map[string]*model.User   // key: username
+	idIndex   map[string]string        // key: user_id -> username
+	emailIndex map[string]string       // key: email -> username
 }
 
-func New(filePath string) *Storage {
+func New(usersDir string) *Storage {
+	os.MkdirAll(usersDir, 0755)
 	s := &Storage{
-		users:    make(map[string]*model.User),
-		filePath: filePath,
+		usersDir:   usersDir,
+		users:      make(map[string]*model.User),
+		idIndex:    make(map[string]string),
+		emailIndex: make(map[string]string),
 	}
-	s.load()
+	s.loadAll()
 	return s
 }
 
-func (s *Storage) load() {
-	data, err := os.ReadFile(s.filePath)
+func (s *Storage) userPath(token string) string {
+	return filepath.Join(s.usersDir, token+".json")
+}
+
+func (s *Storage) loadAll() {
+	entries, err := os.ReadDir(s.usersDir)
 	if err != nil {
 		return
 	}
 
-	var users []*model.User
-	if err := json.Unmarshal(data, &users); err != nil {
-		return
-	}
+	for _, entry := range entries {
+		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".json") {
+			continue
+		}
 
-	for _, u := range users {
-		s.users[u.Username] = u
+		data, err := os.ReadFile(filepath.Join(s.usersDir, entry.Name()))
+		if err != nil {
+			continue
+		}
+
+		var user model.User
+		if err := json.Unmarshal(data, &user); err != nil {
+			continue
+		}
+
+		s.users[user.Username] = &user
+		s.idIndex[user.ID] = user.Username
+		if user.Email != "" {
+			s.emailIndex[user.Email] = user.Username
+		}
 	}
 }
 
-func (s *Storage) save() error {
-	users := make([]*model.User, 0, len(s.users))
-	for _, u := range s.users {
-		users = append(users, u)
-	}
-
-	data, err := json.MarshalIndent(users, "", "  ")
+func (s *Storage) saveUser(user *model.User) error {
+	data, err := json.MarshalIndent(user, "", "  ")
 	if err != nil {
 		return err
 	}
-
-	return os.WriteFile(s.filePath, data, 0644)
+	return os.WriteFile(s.userPath(user.ID), data, 0644)
 }
 
 func (s *Storage) CreateUser(username, password, email, registerMethod string) (*model.User, error) {
@@ -75,10 +94,8 @@ func (s *Storage) CreateUser(username, password, email, registerMethod string) (
 	}
 
 	if email != "" {
-		for _, u := range s.users {
-			if u.Email == email {
-				return nil, ErrEmailExists
-			}
+		if _, exists := s.emailIndex[email]; exists {
+			return nil, ErrEmailExists
 		}
 	}
 
@@ -101,11 +118,14 @@ func (s *Storage) CreateUser(username, password, email, registerMethod string) (
 		LastLoginAt:    time.Now(),
 	}
 
-	s.users[username] = user
-
-	if err := s.save(); err != nil {
-		delete(s.users, username)
+	if err := s.saveUser(user); err != nil {
 		return nil, err
+	}
+
+	s.users[username] = user
+	s.idIndex[user.ID] = username
+	if email != "" {
+		s.emailIndex[email] = username
 	}
 
 	return user, nil
@@ -129,7 +149,7 @@ func (s *Storage) AuthenticateUser(username, password string) (*model.User, erro
 	}
 
 	user.LastLoginAt = time.Now()
-	s.save()
+	s.saveUser(user)
 
 	return user, nil
 }
@@ -138,27 +158,30 @@ func (s *Storage) AuthenticateByEmail(email, password string) (*model.User, erro
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	for _, user := range s.users {
-		if user.Email == email {
-			if user.IsBanned {
-				return nil, ErrUserBanned
-			}
-			if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
-				return nil, ErrWrongPassword
-			}
-			user.LastLoginAt = time.Now()
-			s.save()
-			return user, nil
-		}
+	username, exists := s.emailIndex[email]
+	if !exists {
+		return nil, ErrUserNotFound
 	}
 
-	return nil, ErrUserNotFound
+	user := s.users[username]
+
+	if user.IsBanned {
+		return nil, ErrUserBanned
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+		return nil, ErrWrongPassword
+	}
+
+	user.LastLoginAt = time.Now()
+	s.saveUser(user)
+
+	return user, nil
 }
 
-func (s *Storage) GetUser(username string) (*model.User, bool) {
+func (s *Storage) GetUserByUsername(username string) (*model.User, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-
 	user, exists := s.users[username]
 	return user, exists
 }
@@ -166,127 +189,124 @@ func (s *Storage) GetUser(username string) (*model.User, bool) {
 func (s *Storage) GetUserByID(id string) (*model.User, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-
-	for _, u := range s.users {
-		if u.ID == id {
-			return u, true
-		}
+	username, exists := s.idIndex[id]
+	if !exists {
+		return nil, false
 	}
-	return nil, false
-}
-
-func (s *Storage) UserExists(username string) bool {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	_, exists := s.users[username]
-	return exists
-}
-
-func (s *Storage) EmailExists(email string) bool {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	for _, u := range s.users {
-		if u.Email == email {
-			return true
-		}
-	}
-	return false
+	return s.users[username], true
 }
 
 func (s *Storage) UpdateUser(id string, updates map[string]interface{}) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	for _, user := range s.users {
-		if user.ID == id {
-			if v, ok := updates["email"].(string); ok {
-				user.Email = v
+	username, exists := s.idIndex[id]
+	if !exists {
+		return ErrUserNotFound
+	}
+
+	user := s.users[username]
+
+	if v, ok := updates["email"].(string); ok {
+		if user.Email != v {
+			if user.Email != "" {
+				delete(s.emailIndex, user.Email)
 			}
-			if v, ok := updates["avatar"].(string); ok {
-				user.Avatar = v
+			user.Email = v
+			if v != "" {
+				s.emailIndex[v] = username
 			}
-			if v, ok := updates["bio"].(string); ok {
-				user.Bio = v
-			}
-			if v, ok := updates["status"].(string); ok {
-				user.Status = v
-			}
-			return s.save()
 		}
 	}
-	return ErrUserNotFound
+	if v, ok := updates["avatar"].(string); ok {
+		user.Avatar = v
+	}
+	if v, ok := updates["bio"].(string); ok {
+		user.Bio = v
+	}
+	if v, ok := updates["status"].(string); ok {
+		user.Status = v
+	}
+
+	return s.saveUser(user)
 }
 
 func (s *Storage) ChangePassword(id, oldPassword, newPassword string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	for _, user := range s.users {
-		if user.ID == id {
-			if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(oldPassword)); err != nil {
-				return ErrWrongPassword
-			}
-			hashed, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
-			if err != nil {
-				return err
-			}
-			user.PasswordHash = string(hashed)
-			return s.save()
-		}
+	username, exists := s.idIndex[id]
+	if !exists {
+		return ErrUserNotFound
 	}
-	return ErrUserNotFound
+
+	user := s.users[username]
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(oldPassword)); err != nil {
+		return ErrWrongPassword
+	}
+
+	hashed, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	user.PasswordHash = string(hashed)
+	return s.saveUser(user)
 }
 
 func (s *Storage) SetOnlineStatus(id string, online bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	for _, user := range s.users {
-		if user.ID == id {
-			user.IsOnline = online
-			s.save()
-			return
-		}
+	username, exists := s.idIndex[id]
+	if !exists {
+		return
 	}
+
+	s.users[username].IsOnline = online
+	s.saveUser(s.users[username])
 }
 
 func (s *Storage) BanUser(id, reason, bannedBy string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	for _, user := range s.users {
-		if user.ID == id {
-			user.IsBanned = true
-			user.BanReason = reason
-			return s.save()
-		}
+	username, exists := s.idIndex[id]
+	if !exists {
+		return ErrUserNotFound
 	}
-	return ErrUserNotFound
+
+	user := s.users[username]
+	user.IsBanned = true
+	user.BanReason = reason
+	return s.saveUser(user)
 }
 
 func (s *Storage) UnbanUser(id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	for _, user := range s.users {
-		if user.ID == id {
-			user.IsBanned = false
-			user.BanReason = ""
-			return s.save()
-		}
+	username, exists := s.idIndex[id]
+	if !exists {
+		return ErrUserNotFound
 	}
-	return ErrUserNotFound
+
+	user := s.users[username]
+	user.IsBanned = false
+	user.BanReason = ""
+	return s.saveUser(user)
 }
 
 func (s *Storage) SearchUsers(query string) []*model.User {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
+	query = strings.ToLower(query)
 	var results []*model.User
 	for _, u := range s.users {
-		if contains(u.Username, query) || contains(u.Email, query) {
+		if strings.Contains(strings.ToLower(u.Username), query) ||
+			strings.Contains(strings.ToLower(u.Email), query) {
 			results = append(results, u)
 		}
 	}
@@ -320,38 +340,9 @@ func (s *Storage) GetOnlineCount() int {
 func (s *Storage) GetTotalCount() int {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-
 	return len(s.users)
 }
 
-func contains(s, substr string) bool {
-	return len(substr) == 0 || (len(s) >= len(substr) && containsIgnoreCase(s, substr))
-}
-
-func containsIgnoreCase(s, substr string) bool {
-	s = toLower(s)
-	substr = toLower(substr)
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
-	}
-	return false
-}
-
-func toLower(s string) string {
-	b := make([]byte, len(s))
-	for i := 0; i < len(s); i++ {
-		c := s[i]
-		if c >= 'A' && c <= 'Z' {
-			c += 'a' - 'A'
-		}
-		b[i] = c
-	}
-	return string(b)
-}
-
-func SetOnlineStatusGlobal(userID string, online bool) {
-	defaultStorage := New("data/users.json")
-	defaultStorage.SetOnlineStatus(userID, online)
+func (s *Storage) GetToken(user *model.User) string {
+	return fmt.Sprintf("%s|%d", user.ID, user.CreatedAt.Unix())
 }

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"official-server/internal/config"
@@ -16,11 +15,7 @@ func HandleGetUsers(store *storage.Storage) http.HandlerFunc {
 		}
 
 		users := store.GetAllUsers()
-		writeJSON(w, http.StatusOK, map[string]interface{}{
-			"code":  0,
-			"users": users,
-			"count": len(users),
-		})
+		writeJSON(w, http.StatusOK, map[string]interface{}{"code": 0, "users": users, "count": len(users)})
 	}
 }
 
@@ -41,7 +36,7 @@ func HandleBanUser(store *storage.Storage) http.HandlerFunc {
 			UserID string `json:"user_id"`
 			Reason string `json:"reason"`
 		}
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		if err := decodeBody(r, &req); err != nil {
 			writeJSON(w, http.StatusBadRequest, map[string]interface{}{"code": 1004, "message": "Invalid request body"})
 			return
 		}
@@ -65,7 +60,7 @@ func HandleUnbanUser(store *storage.Storage) http.HandlerFunc {
 		var req struct {
 			UserID string `json:"user_id"`
 		}
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		if err := decodeBody(r, &req); err != nil {
 			writeJSON(w, http.StatusBadRequest, map[string]interface{}{"code": 1004, "message": "Invalid request body"})
 			return
 		}
@@ -92,6 +87,25 @@ func HandleGetStats(store *storage.Storage, cfg *config.Config) http.HandlerFunc
 			"online_users": store.GetOnlineCount(),
 			"server_name":  cfg.Server.Name,
 			"version":      cfg.Version.Current,
+		})
+	}
+}
+
+func HandleGetConfig(cfg *config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			writeJSON(w, http.StatusMethodNotAllowed, map[string]interface{}{"code": 1004, "message": "Method not allowed"})
+			return
+		}
+
+		writeJSON(w, http.StatusOK, map[string]interface{}{
+			"code":        0,
+			"server_name": cfg.Server.Name,
+			"unique_id":   cfg.Server.UniqueId,
+			"version":     cfg.Version.Current,
+			"chat_host":   cfg.ChatServer.Host,
+			"chat_port":   cfg.ChatServer.Port,
+			"chat_proto":  cfg.ChatServer.Protocol,
 		})
 	}
 }

@@ -37,14 +37,14 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// Auth endpoints (5)
+	// Auth
 	mux.HandleFunc("/api/register", handler.HandleRegister(store))
 	mux.HandleFunc("/api/login", handler.HandleLogin(store))
 	mux.HandleFunc("/api/login/email", handler.HandleLoginEmail(store))
 	mux.HandleFunc("/api/verify", handler.HandleVerify(store))
-	mux.HandleFunc("/api/logout", handler.HandleLogout())
+	mux.HandleFunc("/api/logout", handler.HandleLogout(store))
 
-	// User endpoints (7)
+	// User
 	mux.HandleFunc("/api/user/profile", handler.HandleGetProfile(store))
 	mux.HandleFunc("/api/user/profile/update", handler.HandleUpdateProfile(store))
 	mux.HandleFunc("/api/user/status", handler.HandleSetStatus(store))
@@ -53,20 +53,20 @@ func main() {
 	mux.HandleFunc("/api/user/avatar", handler.HandleSetAvatar(store))
 	mux.HandleFunc("/api/user/block", handler.HandleBlockUser())
 
-	// Server endpoints (4)
-	mux.HandleFunc("/api/version", handler.HandleVersion(cfg, versionStore))
+	// Server
+	mux.HandleFunc("/api/version", handler.HandleVersion(cfg))
 	mux.HandleFunc("/api/server/info", handler.HandleServerInfo(cfg, store))
 	mux.HandleFunc("/api/health", handler.HandleHealthCheck(store))
 	mux.HandleFunc("/api/ping", handler.HandlePing)
 
-	// Admin endpoints (5)
+	// Admin
 	mux.HandleFunc("/api/admin/users", handler.HandleGetUsers(store))
 	mux.HandleFunc("/api/admin/ban", handler.HandleBanUser(store))
 	mux.HandleFunc("/api/admin/unban", handler.HandleUnbanUser(store))
 	mux.HandleFunc("/api/admin/stats", handler.HandleGetStats(store, cfg))
 	mux.HandleFunc("/api/admin/config", handler.HandleGetConfig(cfg))
 
-	// Version management endpoints (6)
+	// Version management
 	mux.HandleFunc("/api/versions", handler.HandleGetVersions(versionStore))
 	mux.HandleFunc("/api/version/latest", handler.HandleGetLatestVersion(versionStore))
 	mux.HandleFunc("/api/version/create", handler.HandleCreateVersion(versionStore))
@@ -74,19 +74,19 @@ func main() {
 	mux.HandleFunc("/api/version/download", handler.HandleDownloadVersion(versionStore))
 	mux.HandleFunc("/api/version/notes", handler.HandleGetReleaseNotes(versionStore))
 
-	// Friend endpoints (4)
+	// Friend
 	mux.HandleFunc("/api/friend/request", handler.HandleSendFriendRequest(store))
 	mux.HandleFunc("/api/friend/accept", handler.HandleAcceptFriendRequest())
 	mux.HandleFunc("/api/friend/reject", handler.HandleRejectFriendRequest())
 	mux.HandleFunc("/api/friend/pending", handler.HandleGetFriendRequests())
 
-	// Notification endpoints (4)
+	// Notification
 	mux.HandleFunc("/api/notifications", handler.HandleGetNotifications())
 	mux.HandleFunc("/api/notification/read", handler.HandleMarkNotificationRead())
 	mux.HandleFunc("/api/notification/read-all", handler.HandleMarkAllNotificationsRead())
 	mux.HandleFunc("/api/notification/delete", handler.HandleDeleteNotification())
 
-	// Chat server config endpoint (1)
+	// Chat config
 	mux.HandleFunc("/api/chat/config", handler.HandleGetChatConfig(versionStore))
 
 	h := corsMiddleware(logMiddleware(mux))
@@ -115,15 +115,14 @@ func main() {
 		log.Printf("  Port:      %d (%s)", cfg.Server.Port, proto)
 		log.Printf("  Chat:      %s:%d (%s)", cfg.ChatServer.Host, cfg.ChatServer.Port, cfg.ChatServer.Protocol)
 		log.Printf("===========================================")
-		log.Printf("  API Endpoints: 46")
-		log.Printf("    Auth:        5  (/api/register, /api/login, /api/login/email, /api/verify, /api/logout)")
-		log.Printf("    User:        7  (/api/user/*)")
-		log.Printf("    Server:      4  (/api/version, /api/server/info, /api/health, /api/ping)")
-		log.Printf("    Admin:       5  (/api/admin/*)")
-		log.Printf("    Version:     6  (/api/versions, /api/version/*)")
-		log.Printf("    Friend:      4  (/api/friend/*)")
-		log.Printf("    Notification:4  (/api/notifications, /api/notification/*)")
-		log.Printf("    Chat:        1  (/api/chat/config)")
+		log.Printf("  API Endpoints: 36")
+		log.Printf("    Auth:         5")
+		log.Printf("    User:         7")
+		log.Printf("    Server:       4")
+		log.Printf("    Admin:        5")
+		log.Printf("    Version:      7")
+		log.Printf("    Friend:       4")
+		log.Printf("    Notification: 4")
 		log.Printf("===========================================")
 
 		var listenErr error
@@ -178,12 +177,7 @@ func logMiddleware(next http.Handler) http.Handler {
 		username := extractUsername(r)
 
 		log.Printf("%s %s %s %d %v %s",
-			r.Method,
-			r.URL.Path,
-			r.RemoteAddr,
-			wrapped.statusCode,
-			duration,
-			username)
+			r.Method, r.URL.Path, r.RemoteAddr, wrapped.statusCode, duration, username)
 	})
 }
 
@@ -202,7 +196,7 @@ func extractUsername(r *http.Request) string {
 	if authHeader != "" {
 		token := strings.TrimPrefix(authHeader, "Bearer ")
 		if token != authHeader && len(token) > 0 {
-			parts := strings.SplitN(token, "|", 3)
+			parts := strings.SplitN(token, "|", 2)
 			if len(parts) >= 1 {
 				return fmt.Sprintf("user=%s", parts[0])
 			}

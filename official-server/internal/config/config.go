@@ -14,8 +14,6 @@ type Config struct {
 	SSL        SSLConfig        `toml:"ssl"`
 	Log        LogConfig        `toml:"log"`
 	Version    VersionConfig    `toml:"version"`
-	RateLimit  RateLimitConfig  `toml:"rate_limit"`
-	CORS       CORSConfig       `toml:"cors"`
 }
 
 type ServerConfig struct {
@@ -44,27 +42,13 @@ type SSLConfig struct {
 }
 
 type LogConfig struct {
-	Path  string `toml:"path"`
-	Level string `toml:"level"`
+	Path string `toml:"path"`
 }
 
 type VersionConfig struct {
 	Current   string `toml:"current"`
 	MinClient string `toml:"min_client"`
 	UpdateUrl string `toml:"update_url"`
-}
-
-type RateLimitConfig struct {
-	Enabled       bool `toml:"enabled"`
-	MaxRequests   int  `toml:"max_requests"`
-	WindowSeconds int  `toml:"window_seconds"`
-}
-
-type CORSConfig struct {
-	AllowedOrigins string `toml:"allowed_origins"`
-	AllowedMethods string `toml:"allowed_methods"`
-	AllowedHeaders string `toml:"allowed_headers"`
-	MaxAge         int    `toml:"max_age"`
 }
 
 var defaultConfig = `# Talkift Official Server Configuration
@@ -81,7 +65,7 @@ port = 8080
 protocol = "ws"
 
 [storage]
-path = "data/users.json"
+path = "data/user"
 version_path = "data/version"
 config_path = "data/config"
 
@@ -92,23 +76,11 @@ key = "certs/server.key"
 
 [log]
 path = "data/logs/access.log"
-level = "info"
 
 [version]
 current = "1.0.0"
 min_client = "1.0.0"
-update_url = "https://github.com/rmmushi/Talkift/releases"
-
-[rate_limit]
-enabled = true
-max_requests = 100
-window_seconds = 60
-
-[cors]
-allowed_origins = "*"
-allowed_methods = "GET, POST, PUT, DELETE, OPTIONS"
-allowed_headers = "Content-Type, Authorization"
-max_age = 86400
+update_url = "https://github.com/srmmushi/Talkift/releases"
 `
 
 func Load() (*Config, error) {
@@ -152,7 +124,7 @@ func applyDefaults(cfg *Config) {
 		cfg.ChatServer.Protocol = "ws"
 	}
 	if cfg.Storage.Path == "" {
-		cfg.Storage.Path = "data/users.json"
+		cfg.Storage.Path = "data/user"
 	}
 	if cfg.Storage.VersionPath == "" {
 		cfg.Storage.VersionPath = "data/version"
@@ -163,29 +135,17 @@ func applyDefaults(cfg *Config) {
 	if cfg.Log.Path == "" {
 		cfg.Log.Path = "data/logs/access.log"
 	}
-	if cfg.Log.Level == "" {
-		cfg.Log.Level = "info"
-	}
 	if cfg.Version.Current == "" {
 		cfg.Version.Current = "1.0.0"
 	}
 	if cfg.Version.MinClient == "" {
 		cfg.Version.MinClient = "1.0.0"
 	}
-	if cfg.RateLimit.MaxRequests == 0 {
-		cfg.RateLimit.MaxRequests = 100
-	}
-	if cfg.RateLimit.WindowSeconds == 0 {
-		cfg.RateLimit.WindowSeconds = 60
-	}
-	if cfg.CORS.MaxAge == 0 {
-		cfg.CORS.MaxAge = 86400
-	}
 }
 
 func EnsureDirs(cfg *Config) {
 	dirs := []string{
-		filepath.Dir(cfg.Storage.Path),
+		cfg.Storage.Path,
 		cfg.Storage.VersionPath,
 		cfg.Storage.ConfigPath,
 		filepath.Dir(cfg.Log.Path),
