@@ -15,7 +15,7 @@ namespace Talkift.Client
             this.UnhandledException += OnUnhandledException;
         }
 
-        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
         {
             e.Handled = true;
             CrashLogger.LogException("Application.UnhandledException", e.Exception);

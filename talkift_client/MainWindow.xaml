@@ -58,7 +58,6 @@
                         PaneDisplayMode="Left"
                         OpenPaneLength="220"
                         CompactPaneLength="48"
-                        PaneBackground="Transparent"
                         ItemInvoked="NavView_ItemInvoked"
                         BackRequested="NavView_BackRequested"
                         Loaded="NavView_Loaded">

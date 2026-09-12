@@ -15,6 +15,7 @@ namespace Talkift.Client
     public sealed partial class MainWindow : Window
     {
         public MainViewModel ViewModel { get; } = new();
+        public Grid RootGridElement => RootGrid;
 
         public Conversation? CurrentConversation { get; set; }
         public ChatViewModel? ChatViewModel { get; set; }

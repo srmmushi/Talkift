@@ -115,9 +115,9 @@ namespace Talkift.Client.ViewModels
             Opacity = opacity;
             await BackdropService.SetOpacityAsync(opacity);
             var mainWindow = App.CurrentWindow as MainWindow;
-            if (mainWindow?.RootGrid != null)
+            if (mainWindow?.RootGridElement != null)
             {
-                BackdropService.ApplyOpacity(mainWindow.RootGrid, opacity);
+                BackdropService.ApplyOpacity(mainWindow.RootGridElement, opacity);
             }
         }
 
