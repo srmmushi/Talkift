@@ -26,44 +26,67 @@ public sealed partial class App : Application
     private ServiceProvider? _serviceProvider;
     private bool _disposed;
 
+    public App()
+    {
+        UnhandledException += (_, e) =>
+        {
+            WriteCrashLog($"[UnhandledException] {e.Message}{Environment.NewLine}{e.Exception}");
+        };
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+        {
+            WriteCrashLog($"[AppDomain] {e.ExceptionObject}");
+        };
+    }
+
+    private static void WriteCrashLog(string text)
+    {
+        try
+        {
+            var path = System.IO.Path.Combine(AppContext.BaseDirectory, "crash.log");
+            System.IO.File.AppendAllText(path, $"[{DateTime.Now:O}] {text}{Environment.NewLine}");
+        }
+        catch
+        {
+        }
+    }
+
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        var host = AppHost.Create();
-        _serviceProvider = host;
+        try
+        {
+            var host = AppHost.Create();
+            _serviceProvider = host;
 
-        ChatEngine = _serviceProvider.GetRequiredService<IChatEngine>();
-        UiEngine = _serviceProvider.GetRequiredService<IUiEngine>();
-        AuthService = _serviceProvider.GetRequiredService<IAuthService>();
-        ThemeService = _serviceProvider.GetRequiredService<IThemeService>();
-        NotificationService = _serviceProvider.GetRequiredService<INotificationService>();
-        LoggerService = _serviceProvider.GetRequiredService<ILoggerService>();
-        MessageStore = _serviceProvider.GetRequiredService<IMessageStore>();
+            ChatEngine = _serviceProvider.GetRequiredService<IChatEngine>();
+            UiEngine = _serviceProvider.GetRequiredService<IUiEngine>();
+            AuthService = _serviceProvider.GetRequiredService<IAuthService>();
+            ThemeService = _serviceProvider.GetRequiredService<IThemeService>();
+            NotificationService = _serviceProvider.GetRequiredService<INotificationService>();
+            LoggerService = _serviceProvider.GetRequiredService<ILoggerService>();
+            MessageStore = _serviceProvider.GetRequiredService<IMessageStore>();
 
-        CurrentWindow = new ShellWindow();
-        CurrentWindow.Activate();
+            CurrentWindow = new ShellWindow();
+            CurrentWindow.Activate();
+        }
+        catch (Exception ex)
+        {
+            WriteCrashLog($"[OnLaunched] {ex}");
+            throw;
+        }
     }
 
     public static void NavigateToServerList()
     {
-        CurrentWindow.DispatcherQueue.TryEnqueue(() =>
-        {
-            // Navigation handled by MainViewModel
-        });
+        (CurrentWindow as ShellWindow)?.ViewModel.NavigateTo("Login");
     }
 
     public static void NavigateToConversationList()
     {
-        CurrentWindow.DispatcherQueue.TryEnqueue(() =>
-        {
-            // Navigation handled by MainViewModel
-        });
+        (CurrentWindow as ShellWindow)?.ViewModel.NavigateTo("ConversationList");
     }
 
     public static void NavigateToChat(string? username = null)
     {
-        CurrentWindow.DispatcherQueue.TryEnqueue(() =>
-        {
-            // Navigation handled by MainViewModel
-        });
+        (CurrentWindow as ShellWindow)?.ViewModel.NavigateTo("Chat");
     }
 }

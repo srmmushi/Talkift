@@ -139,25 +139,20 @@ public sealed class UiEngine : IUiEngine
 
     public async Task NavigateToAsync(string pageKey, object? parameter = null, CancellationToken ct = default)
     {
-        await RunOnUIAsync(() =>
-        {
-            if (_frame == null) return;
-            if (!_pageRegistry.TryGetValue(pageKey, out var pageType)) return;
-
-            var transition = new EntranceThemeTransition();
-            _frame.Navigate(pageType, parameter);
-        }, ct);
+        if (_frame == null) return;
+        if (!_pageRegistry.TryGetValue(pageKey, out var pageType)) return;
+        var transition = new EntranceThemeTransition();
+        _frame.Navigate(pageType, parameter);
+        await Task.CompletedTask;
     }
 
     public async Task NavigateBackAsync(CancellationToken ct = default)
     {
-        await RunOnUIAsync(() =>
+        if (_frame?.CanGoBack == true)
         {
-            if (_frame?.CanGoBack == true)
-            {
-                _frame.GoBack(new DrillInNavigationTransitionInfo());
-            }
-        }, ct);
+            _frame.GoBack(new DrillInNavigationTransitionInfo());
+        }
+        await Task.CompletedTask;
     }
 
     public async Task RunOnUIAsync(Action action, CancellationToken ct = default)

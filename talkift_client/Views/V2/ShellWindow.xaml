@@ -38,6 +38,6 @@
             </StackPanel>
         </Grid>
 
-        <ContentControl Grid.Row="1" Content="{x:Bind ViewModel.PageContent}"/>
+        <Frame x:Name="ContentFrame" Grid.Row="1"/>
     </Grid>
 </Window>

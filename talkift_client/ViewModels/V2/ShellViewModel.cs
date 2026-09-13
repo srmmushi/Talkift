@@ -161,6 +161,12 @@ public partial class ShellViewModel : ObservableObject
         await _uiEngine.NavigateToAsync(page);
     }
 
+    public void NavigateTo(string page)
+    {
+        CurrentPage = page;
+        _ = NavigateToAsync(page);
+    }
+
     [RelayCommand]
     private async Task NavigateBackAsync()
     {

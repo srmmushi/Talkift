@@ -50,6 +50,7 @@ public interface IUiEngine : IDisposable
     Task ShowNotificationAsync(string title, string message, NotificationType type = NotificationType.Info, int durationMs = 3000, CancellationToken ct = default);
     Task NavigateToAsync(string pageKey, object? parameter = null, CancellationToken ct = default);
     Task NavigateBackAsync(CancellationToken ct = default);
+    void RegisterPage(string key, Type pageType);
     Task RunOnUIAsync(Action action, CancellationToken ct = default);
     Task<T> RunOnUIAsync<T>(Func<T> func, CancellationToken ct = default);
     void RegisterHotkey(string key, Action callback);

@@ -10,7 +10,7 @@ namespace Talkift.Client.Views.V2;
 
 public sealed partial class ShellWindow : Window
 {
-    public ShellViewModel ViewModel { get; set; } = new(null!, null!, null!, null!, null!, null!);
+    public ShellViewModel ViewModel { get; set; } = null!;
     private bool _disposed;
 
     public ShellWindow()
@@ -32,7 +32,21 @@ public sealed partial class ShellWindow : Window
                 App.NotificationService!,
                 App.LoggerService!
             );
+            var uiEngine = (UiEngine)App.UiEngine;
+            uiEngine.RegisterPage("Login", typeof(LoginPage));
+            uiEngine.RegisterPage("ConversationList", typeof(ConversationList));
+            uiEngine.RegisterPage("Chat", typeof(ChatPage));
+            uiEngine.RegisterPage("Settings", typeof(SettingsPage));
+            uiEngine.RegisterPage("Profile", typeof(ProfilePage));
+            uiEngine.RegisterPage("Contact", typeof(ContactPage));
+            uiEngine.RegisterPage("Search", typeof(SearchPanel));
+            uiEngine.RegisterPage("MessageList", typeof(MessageList));
+            uiEngine.RegisterPage("MessageInput", typeof(MessageInput));
+            _ = uiEngine.InitializeAsync(new UiEngineOptions());
             ApplyLocalization();
+            var creds = App.AuthService.LoadSavedCredentialsAsync(CancellationToken.None).GetAwaiter().GetResult();
+            var initialPage = (creds.Success && creds.Username != null) ? "ConversationList" : "Login";
+            _ = uiEngine.NavigateToAsync(initialPage);
         }
         catch (Exception ex)
         {
