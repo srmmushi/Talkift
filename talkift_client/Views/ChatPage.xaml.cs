@@ -119,8 +119,8 @@ namespace Talkift.Client.Views
             DispatcherQueue.TryEnqueue(() =>
             {
                 TypingIndicator.Show(username);
-                var timer = Microsoft.UI.Xaml.DispatcherQueue.GetForCurrentThread().CreateTimer();
-                timer.Duration = TimeSpan.FromSeconds(3);
+                var timer = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread().CreateTimer();
+                timer.Interval = TimeSpan.FromSeconds(3);
                 timer.Tick += (s, e) => { TypingIndicator.Hide(); timer.Stop(); };
                 timer.Start();
             });

@@ -4,6 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Talkift.Client.Engines;
 using Talkift.Client.Services;
 using Talkift.Client.Services.V2;
+using Talkift.Client.ViewModels.V2;
+using Talkift.Client.Views;
+using Talkift.Client.Views.Controls;
+using Talkift.Client.Views.V2;
 
 namespace Talkift.Client;
 
@@ -13,7 +17,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IChatEngine, ChatEngine>();
         services.AddSingleton<IUiEngine, UiEngine>();
-        services.AddSingleton<IAuthService, AuthService>();
+        services.AddSingleton<IAuthService, Services.V2.AuthService>();
         services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<INotificationService, NotificationService>();
         services.AddSingleton<IDialogService, DialogService>();
@@ -46,11 +50,11 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<ShellWindow>();
         services.AddTransient<LoginPage>();
-        services.AddTransient<ChatPage>();
+        services.AddTransient<Views.V2.ChatPage>();
         services.AddTransient<ConversationList>();
-        services.AddTransient<MessageListPage>();
+        services.AddTransient<Views.V2.MessageList>();
         services.AddTransient<MessageInput>();
-        services.AddTransient<SettingsPage>();
+        services.AddTransient<Views.V2.SettingsPage>();
         services.AddTransient<ProfilePage>();
         services.AddTransient<SearchPanel>();
         services.AddTransient<ContactPage>();
@@ -62,12 +66,13 @@ public static class ServiceCollectionExtensions
         services.AddTransient<MessageBubble>();
         services.AddTransient<ConversationItem>();
         services.AddTransient<AvatarControl>();
-        services.AddTransient<TypingIndicator>();
+        services.AddTransient<Views.TypingIndicator>();
+        services.AddTransient<Views.Controls.TypingIndicator>();
         services.AddTransient<ConnectionStatusBadge>();
         services.AddTransient<EmptyStateControl>();
         services.AddTransient<AttachmentPreview>();
-        services.AddTransient<EmojiPicker>();
-        services.AddTransient<ImagePreviewDialog>();
+        services.AddTransient<Views.Controls.EmojiPicker>();
+        services.AddTransient<Views.Controls.ImagePreviewDialog>();
         services.AddTransient<QuickActionToolbar>();
         services.AddTransient<PinMessagePanel>();
         services.AddTransient<MessageSearchPanel>();

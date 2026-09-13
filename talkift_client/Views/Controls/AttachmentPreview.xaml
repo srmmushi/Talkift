@@ -1,4 +1,4 @@
-<Page
+<UserControl
     x:Class="Talkift.Client.Views.Controls.AttachmentPreview"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -33,4 +33,4 @@
             <FontIcon Glyph="&#xE711;" FontSize="12"/>
         </Button>
     </Grid>
-</Page>
+</UserControl>

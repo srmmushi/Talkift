@@ -2,8 +2,7 @@
     x:Class="Talkift.Client.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Talkift.Client"
-    RequestedTheme="Default">
+    xmlns:local="using:Talkift.Client">
 
     <Application.Resources>
         <ResourceDictionary>

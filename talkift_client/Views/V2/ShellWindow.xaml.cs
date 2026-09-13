@@ -10,17 +10,18 @@ namespace Talkift.Client.Views.V2;
 
 public sealed partial class ShellWindow : Window
 {
-    public ShellViewModel ViewModel { get; } = new(null!, null!, null!, null!, null!, null!);
+    public ShellViewModel ViewModel { get; set; } = new(null!, null!, null!, null!, null!, null!);
     private bool _disposed;
 
     public ShellWindow()
     {
         this.InitializeComponent();
-        this.Loaded += ShellWindow_Loaded;
-    }
+        this.Closed += ShellWindow_Closed;
 
-    private void ShellWindow_Loaded(object sender, RoutedEventArgs e)
-    {
+        ExtendsContentIntoTitleBar = true;
+        SetTitleBar(TitleBar);
+        AppWindow.Resize(new Windows.Graphics.SizeInt32(1200, 800));
+
         try
         {
             ViewModel = new ShellViewModel(
@@ -31,13 +32,11 @@ public sealed partial class ShellWindow : Window
                 App.NotificationService!,
                 App.LoggerService!
             );
-
-            DataContext = ViewModel;
             ApplyLocalization();
         }
         catch (Exception ex)
         {
-            CrashLogger.LogException("ShellWindow_Loaded", ex);
+            CrashLogger.LogException("ShellWindow_ctor", ex);
         }
     }
 
@@ -63,13 +62,12 @@ public sealed partial class ShellWindow : Window
         }
     }
 
-    protected override void OnClosed()
+    private void ShellWindow_Closed(object sender, Microsoft.UI.Xaml.WindowEventArgs args)
     {
         if (!_disposed)
         {
             ViewModel.Dispose();
             _disposed = true;
         }
-        base.OnClosed();
     }
 }

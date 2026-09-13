@@ -23,7 +23,6 @@ public sealed class UiEngine : IUiEngine
     private double _currentOpacity = 1.0;
     private bool _initialized;
     private MicaController? _micaController;
-    private AcrylicController? _acrylicController;
     private SystemBackdropConfiguration? _backdropConfig;
     private readonly UISettings _uiSettings = new();
     private AppTheme _actualTheme = AppTheme.Light;
@@ -86,8 +85,6 @@ public sealed class UiEngine : IUiEngine
             {
                 _micaController?.Dispose();
                 _micaController = null;
-                _acrylicController?.Dispose();
-                _acrylicController = null;
 
                 switch (backdrop)
                 {
@@ -97,14 +94,11 @@ public sealed class UiEngine : IUiEngine
                         _backdropConfig.IsInputActive = true;
                         _backdropConfig.Theme = SystemBackdropTheme.Dark;
                         _micaController.SetSystemBackdropConfiguration(_backdropConfig);
-                        _window.SystemBackdrop = new MicaSystemBackdrop();
+                        _window.SystemBackdrop = new MicaBackdrop();
                         break;
 
                     case BackdropType.Acrylic:
-                        _window.SystemBackdrop = new AcrylicSystemBackdrop
-                        {
-                            TintColor = Microsoft.UI.ColorHelper.FromArgb(128, 32, 32, 32)
-                        };
+                        _window.SystemBackdrop = new DesktopAcrylicBackdrop();
                         break;
 
                     default:
@@ -151,7 +145,7 @@ public sealed class UiEngine : IUiEngine
             if (!_pageRegistry.TryGetValue(pageKey, out var pageType)) return;
 
             var transition = new EntranceThemeTransition();
-            _frame.Navigate(pageType, parameter, transition);
+            _frame.Navigate(pageType, parameter);
         }, ct);
     }
 
@@ -232,14 +226,7 @@ public sealed class UiEngine : IUiEngine
     public void UnregisterHotkey(string key)
     {
         _hotkeyCallbacks.Remove(key);
-        if (_hotkeys.TryGetValue(key, out var acc))
-        {
-            _frame?.DispatcherQueue?.TryEnqueue(() =>
-            {
-                try { _frame?.DispatcherQueue; } catch { }
-            });
-            _hotkeys.Remove(key);
-        }
+        _hotkeys.Remove(key);
     }
 
     private void OnActualThemeChanged(FrameworkElement sender, object args)
@@ -251,7 +238,7 @@ public sealed class UiEngine : IUiEngine
         }
     }
 
-    private void OnColorValuesChanged(UISettings sender, ColorValuesChangedEventArgs args)
+    private void OnColorValuesChanged(UISettings sender, object args)
     {
         var isDark = _uiSettings.GetColorValue(UIColorType.Background).R < 128;
         _actualTheme = isDark ? AppTheme.Dark : AppTheme.Light;
@@ -280,7 +267,6 @@ public sealed class UiEngine : IUiEngine
     public void Dispose()
     {
         _micaController?.Dispose();
-        _acrylicController?.Dispose();
         GC.SuppressFinalize(this);
     }
 }

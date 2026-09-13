@@ -13,25 +13,24 @@ public sealed class StringToColorConverter : IValueConverter
         {
             try
             {
-                if (colorString.StartsWith("#") && colorString.Length >= 7)
+                if (colorString.StartsWith("#") && colorString.Length == 7)
                 {
-                    return new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(
-                        Convert.ToByte(colorString.Substring(1, 2), 16),
-                        Convert.ToByte(colorString.Substring(3, 2), 16),
-                        Convert.ToByte(colorString.Substring(5, 2), 16)));
+                    return new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(255,
+                        System.Convert.ToByte(colorString.Substring(1, 2), 16),
+                        System.Convert.ToByte(colorString.Substring(3, 2), 16),
+                        System.Convert.ToByte(colorString.Substring(5, 2), 16)));
                 }
 
                 if (colorString.StartsWith("#") && colorString.Length == 9)
                 {
                     return new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(
-                        Convert.ToByte(colorString.Substring(7, 2), 16),
-                        Convert.ToByte(colorString.Substring(1, 2), 16),
-                        Convert.ToByte(colorString.Substring(3, 2), 16),
-                        Convert.ToByte(colorString.Substring(5, 2), 16)));
+                        System.Convert.ToByte(colorString.Substring(7, 2), 16),
+                        System.Convert.ToByte(colorString.Substring(1, 2), 16),
+                        System.Convert.ToByte(colorString.Substring(3, 2), 16),
+                        System.Convert.ToByte(colorString.Substring(5, 2), 16)));
                 }
 
-                return new SolidColorBrush((Microsoft.UI.Color)typeof(Microsoft.UI)
-                    .GetProperty(colorString)?.GetValue(null) ?? Microsoft.UI.Colors.Gray);
+                return new SolidColorBrush(Microsoft.UI.Colors.Gray);
             }
             catch
             {

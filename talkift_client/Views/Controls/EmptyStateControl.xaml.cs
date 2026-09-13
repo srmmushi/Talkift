@@ -1,6 +1,7 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Talkift.Client.Services;
 
 namespace Talkift.Client.Views.Controls;
 

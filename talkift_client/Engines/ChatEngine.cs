@@ -53,8 +53,6 @@ public sealed class ChatEngine : IChatEngine
 
     public async Task ConnectAsync(ChatEngineOptions options, CancellationToken ct = default)
     {
-        ObjectDisposedException.ThrowIf(_cts?.IsDisposed == true, this);
-
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _intentionalDisconnect = false;
         _reconnectAttempts = 0;

@@ -1,13 +1,14 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Talkift.Client.Services;
 using Talkift.Client.ViewModels.V2;
 
 namespace Talkift.Client.Views.V2;
 
 public sealed partial class SettingsPage : Page
 {
-    public SettingsViewModel ViewModel { get; } = new(null!, null!, null!, null!, null!, null!);
+    public SettingsViewModel ViewModel { get; set; } = new(null!, null!, null!, null!, null!, null!);
 
     public SettingsPage()
     {

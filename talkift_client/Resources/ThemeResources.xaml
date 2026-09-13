@@ -9,14 +9,6 @@
         <ResourceDictionary Source="Styles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
-    <!-- System Backdrop Configuration -->
-    <muxc:ExperimentalWindowBackdrop x:Key="MicaBackdrop"
-                                      DisplayPolicy="Always"
-                                      Policy="Mica"/>
-    <muxc:ExperimentalWindowBackdrop x:Key="AcrylicBackdrop"
-                                      DisplayPolicy="Always"
-                                      Policy="Mica"/>
-
     <!-- Theme-specific Resources -->
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
@@ -46,66 +38,6 @@
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
-    <!-- Shadow Effects -->
-    <muxc:DropShadow x:Key="ThemeShadow">
-        <muxc:DropShadow.Color>
-            <Color A="40" R="0" G="0" B="0"/>
-        </muxc:DropShadow.Color>
-        <muxc:DropShadow.BlurRadius>
-            12
-        </muxc:DropShadow.BlurRadius>
-        <muxc:DropShadow.OffsetX>
-            0
-        </muxc:DropShadow.OffsetX>
-        <muxc:DropShadow.OffsetY>
-            4
-        </muxc:DropShadow.OffsetY>
-    </muxc:DropShadow>
-
-    <muxc:DropShadow x:Key="CardShadow">
-        <muxc:DropShadow.Color>
-            <Color A="20" R="0" G="0" B="0"/>
-        </muxc:DropShadow.Color>
-        <muxc:DropShadow.BlurRadius>
-            8
-        </muxc:DropShadow.BlurRadius>
-        <muxc:DropShadow.OffsetX>
-            0
-        </muxc:DropShadow.OffsetX>
-        <muxc:DropShadow.OffsetY>
-            2
-        </muxc:DropShadow.OffsetY>
-    </muxc:DropShadow>
-
-    <muxc:DropShadow x:Key="MessageShadow">
-        <muxc:DropShadow.Color>
-            <Color A="15" R="0" G="0" B="0"/>
-        </muxc:DropShadow.Color>
-        <muxc:DropShadow.BlurRadius>
-            4
-        </muxc:DropShadow.BlurRadius>
-        <muxc:DropShadow.OffsetX>
-            0
-        </muxc:DropShadow.OffsetX>
-        <muxc:DropShadow.OffsetY>
-            1
-        </muxc:DropShadow.OffsetY>
-    </muxc:DropShadow>
-
-    <!-- Connected Animation Configuration -->
-    <muxc:ConnectedAnimation x:Key="ConnectedItemAnimation"
-                             Duration="0:0:0.35"
-                             EasingMode="EaseOut">
-        <muxc:ConnectedAnimation.Direction>
-            <muxc:ConnectedAnimationDirection From="Left" To="Right"/>
-        </muxc:ConnectedAnimation.Direction>
-    </muxc:ConnectedAnimation>
-
-    <!-- Custom Transition -->
-    <muxc:DrillInNavigationTransitionInfo x:Key="DrillInTransition"/>
-    <muxc:EntranceThemeTransition x:Key="EntranceTransition"/>
-    <muxc:PaneNavigationTransitionInfo x:Key="PaneNavigationTransition"/>
-
     <!-- Opacity Animations -->
     <x:Double x:Key="AnimationDurationFast">0.1</x:Double>
     <x:Double x:Key="AnimationDurationNormal">0.3</x:Double>
@@ -123,13 +55,6 @@
     <CornerRadius x:Key="ExtraLargeCornerRadius">16</CornerRadius>
     <CornerRadius x:Key="FullCornerRadius">20</CornerRadius>
     <CornerRadius x:Key="CircleCornerRadius">9999</CornerRadius>
-
-    <!-- Grid Splitter Style -->
-    <Style x:Key="GridSplitterStyle" TargetType="muxc:GridSplitter">
-        <Setter Property="Width" Value="4"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="PointerOverBackground" Value="{ThemeResource AccentFillColorSecondaryBrush}"/>
-    </Style>
 
     <!-- ScrollBar Style -->
     <Style x:Key="CustomScrollBarStyle" TargetType="ScrollBar">

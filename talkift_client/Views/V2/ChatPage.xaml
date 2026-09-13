@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:Talkift.Client.Models.V2"
     xmlns:controls="using:Talkift.Client.Views.Controls"
+    xmlns:views="using:Talkift.Client.Views"
     mc:Ignorable="d"
     Background="Transparent">
 
@@ -16,16 +17,15 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <controls:ChatHeaderCtrl x:Name="ChatHeaderCtrl" Grid.Row="0"/>
+        <views:ChatHeader x:Name="ChatHeaderCtrl" Grid.Row="0"/>
 
-        <controls:PinMessagePanel x:Name="PinPanel" Grid.Row="1" VerticalAlignment="Top" Margin="16,4"/>
+        <views:PinMessagePanel x:Name="PinPanel" Grid.Row="1" VerticalAlignment="Top" Margin="16,4"/>
 
         <ListView Grid.Row="1" x:Name="MessagesList" Padding="16,8"
                   SelectionMode="None" ItemsSource="{x:Bind ViewModel.Messages}"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   ScrollViewer.VerticalScrollBarVisibility="Auto"
-                  ScrollViewer.IsDeferredScrollingEnabled="False"
-                  ItemsUpdatingScrollMode="KeepLastItemInView">
+                  ScrollViewer.IsDeferredScrollingEnabled="False">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -39,10 +39,10 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <controls:TypingIndicatorCtrl x:Name="TypingIndicator" Grid.Row="2"
+        <controls:TypingIndicator x:Name="TypingIndicator" Grid.Row="2"
                                         Visibility="Collapsed" Margin="16,0"/>
 
-        <controls:ReplyBarCtrl x:Name="ReplyBar" Grid.Row="2" VerticalAlignment="Bottom"/>
+        <views:ReplyBar x:Name="ReplyBar" Grid.Row="2" VerticalAlignment="Bottom"/>
 
         <Grid Grid.Row="2" Padding="16,8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -52,7 +52,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <controls:QuickActionToolbar x:Name="QuickToolbar" Grid.Row="0"/>
+            <views:QuickActionToolbar x:Name="QuickToolbar" Grid.Row="0"/>
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
@@ -66,8 +66,7 @@
                          CornerRadius="20" Padding="12,8"
                          KeyDown="MessageInput_KeyDown"
                          TextChanged="MessageInput_TextChanged"
-                         AcceptsReturn="True"
-                         MaxLines="6"/>
+                         AcceptsReturn="True"/>
 
                 <Button Grid.Column="1" x:Name="SendButton"
                         Style="{StaticResource AccentButtonStyle}"

@@ -13,22 +13,10 @@ public static class AppHost
     {
         var services = new ServiceCollection();
 
-        AddTalkiftServices(services);
-        AddViewModels(services);
-        AddPages(services);
-        AddControls(services);
-
-        return services.BuildServiceProvider();
-    }
-
-    public static ServiceProvider Create(ServiceCollection additionalServices)
-    {
-        var services = new ServiceCollection();
-        AddTalkiftServices(services);
-        additionalServices(services);
-        AddViewModels(services);
-        AddPages(services);
-        AddControls(services);
+        services.AddTalkiftServices();
+        services.AddViewModels();
+        services.AddPages();
+        services.AddControls();
 
         return services.BuildServiceProvider();
     }

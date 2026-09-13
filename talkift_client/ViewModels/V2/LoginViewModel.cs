@@ -62,6 +62,9 @@ public partial class LoginViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _loginMethod = "local";
 
+    [ObservableProperty]
+    private bool _isLoggedIn;
+
     public LoginViewModel(
         IAuthService authService,
         IChatEngine chatEngine,
@@ -87,7 +90,7 @@ public partial class LoginViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task LoginAsync()
+    public async Task LoginAsync()
     {
         if (string.IsNullOrWhiteSpace(_username) && !IsOfflineLogin)
         {
@@ -111,6 +114,7 @@ public partial class LoginViewModel : ObservableObject, IDisposable
                 var result = await _authService.OfflineLoginAsync(_username, _cts.Token);
                 if (result.Success)
                 {
+                    IsLoggedIn = true;
                     _isLoading = false;
                 }
                 else
@@ -125,6 +129,7 @@ public partial class LoginViewModel : ObservableObject, IDisposable
                     _serverAddress, _serverPort, _email, _password, _cts.Token);
                 if (result.Success)
                 {
+                    IsLoggedIn = true;
                     _isLoading = false;
                 }
                 else
@@ -139,6 +144,7 @@ public partial class LoginViewModel : ObservableObject, IDisposable
                     _serverAddress, _serverPort, _username, _password, _cts.Token);
                 if (result.Success)
                 {
+                    IsLoggedIn = true;
                     _isLoading = false;
                 }
                 else
@@ -157,7 +163,7 @@ public partial class LoginViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task RegisterAsync()
+    public async Task RegisterAsync()
     {
         if (string.IsNullOrWhiteSpace(_username))
         {
@@ -189,6 +195,7 @@ public partial class LoginViewModel : ObservableObject, IDisposable
                 _serverAddress, _serverPort, _username, _email, _password, _cts.Token);
             if (result.Success)
             {
+                IsLoggedIn = true;
                 _isLoading = false;
             }
             else
@@ -219,13 +226,17 @@ public partial class LoginViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task LoadOfflineAsync()
+    public async Task LoadOfflineAsync()
     {
         _isOfflineLogin = true;
         var result = await _authService.OfflineLoginAsync(_username, _cts.Token);
         if (!result.Success)
         {
             ErrorText = result.Error ?? "Offline login failed";
+        }
+        else
+        {
+            IsLoggedIn = true;
         }
     }
 

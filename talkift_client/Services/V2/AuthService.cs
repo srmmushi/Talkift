@@ -215,7 +215,7 @@ public sealed class AuthService : IAuthService
     {
         var credPath = System.IO.Path.Combine(StorageService.DataDir, "credential.json");
         if (System.IO.File.Exists(credPath))
-            await System.IO.File.DeleteAsync(credPath, ct);
+            System.IO.File.Delete(credPath);
     }
 
     private async Task<AuthResult> PostLoginAsync(string serverAddress, int port, string endpoint, object payload, string method, CancellationToken ct)

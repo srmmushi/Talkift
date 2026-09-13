@@ -64,7 +64,7 @@ public partial class ContactViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task LoadContactsAsync()
+    public async Task LoadContactsAsync()
     {
         try
         {

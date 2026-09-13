@@ -42,10 +42,14 @@
                         <TextBlock Grid.Column="1" Text="{Binding}"
                                    VerticalAlignment="Center" Margin="10,0,0,0"
                                    FontSize="13"/>
-                        <MenuFlyout Grid.Column="2">
-                            <MenuFlyoutItem Text="Mute" Tag="mute"/>
-                            <MenuFlyoutItem Text="Remove" Tag="remove" Foreground="Red"/>
-                        </MenuFlyout>
+                        <Button Grid.Column="2" Background="Transparent" Padding="0">
+                            <Button.Flyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Mute" Tag="mute"/>
+                                    <MenuFlyoutItem Text="Remove" Tag="remove" Foreground="Red"/>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

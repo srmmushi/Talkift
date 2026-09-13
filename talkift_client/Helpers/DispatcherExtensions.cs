@@ -93,6 +93,6 @@ public static class DispatcherExtensions
             return;
         }
 
-        dispatcherQueue.TryEnqueue(action);
+        dispatcherQueue.TryEnqueue(() => action());
     }
 }

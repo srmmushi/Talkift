@@ -56,6 +56,7 @@ public sealed class ConversationUpdatedEventArgs : EventArgs
     public List<string> Members { get; init; } = new();
     public string? LastMessage { get; init; }
     public long? LastMessageTimestamp { get; init; }
+    public bool IsMine { get; init; }
 }
 
 public sealed class JoinRequestEventArgs : EventArgs

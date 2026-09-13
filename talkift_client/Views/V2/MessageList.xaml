@@ -12,8 +12,7 @@
         <ListView x:Name="MessageListView" Padding="16,8"
                   SelectionMode="None"
                   ItemsSource="{x:Bind ViewModel.FilteredMessages}"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                  ItemsUpdatingScrollMode="KeepLastItemInView">
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:ChatMessageModel">
                     <Border Padding="4,2">

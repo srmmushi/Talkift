@@ -44,7 +44,7 @@ public partial class MessageInputViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private void Send()
+    public void Send()
     {
         if (!CanSend || string.IsNullOrWhiteSpace(Text)) return;
         CanSend = false;

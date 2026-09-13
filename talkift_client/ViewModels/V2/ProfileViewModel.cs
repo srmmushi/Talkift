@@ -68,7 +68,7 @@ public partial class ProfileViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task UpdateProfileAsync()
+    public async Task UpdateProfileAsync()
     {
         try
         {
@@ -89,7 +89,7 @@ public partial class ProfileViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private void CancelEdit()
+    public void CancelEdit()
     {
         IsEditMode = false;
         StatusMessage = string.Empty;
@@ -102,7 +102,7 @@ public partial class ProfileViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task ChangeStatusAsync(string status)
+    public async Task ChangeStatusAsync(string status)
     {
         Profile.Status = status;
         await _chatEngine.SendTypingAsync(

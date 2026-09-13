@@ -30,6 +30,9 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
     private bool _enableAcrylic;
 
     [ObservableProperty]
+    private bool _isDarkMode = true;
+
+    [ObservableProperty]
     private bool _enableAnimations = true;
 
     [ObservableProperty]
@@ -87,20 +90,21 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
 
     public async Task InitializeAsync()
     {
-        _opacity = await _themeService.LoadThemeAsync().GetAwaiter().GetResult() switch
+        var preference = await _themeService.LoadThemeAsync();
+        _opacity = preference switch
         {
-            Models.V2.ThemePreference.Dark => 1.0,
+            Talkift.Client.Services.ThemePreference.Dark => 1.0,
             _ => 1.0
         };
     }
 
     [RelayCommand]
-    private async Task SaveAsync()
+    public async Task SaveAsync()
     {
         try
         {
             await _themeService.SaveThemeAsync(
-                _enableMica ? Models.V2.ThemePreference.System : Models.V2.ThemePreference.Light);
+                _enableMica ? Talkift.Client.Services.ThemePreference.System : Talkift.Client.Services.ThemePreference.Light);
             StatusMessage = "Settings saved";
         }
         catch (Exception ex)
@@ -111,7 +115,7 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task SaveOfficialServerAsync()
+    public async Task SaveOfficialServerAsync()
     {
         try
         {
@@ -125,13 +129,13 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task ChangeStoragePathAsync()
+    public async Task ChangeStoragePathAsync()
     {
         StatusMessage = "Storage path changed";
     }
 
     [RelayCommand]
-    private async Task ChangeLogPathAsync()
+    public async Task ChangeLogPathAsync()
     {
         StatusMessage = "Log path changed";
     }

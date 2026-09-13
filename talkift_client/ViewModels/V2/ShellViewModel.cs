@@ -69,6 +69,9 @@ public partial class ShellViewModel : ObservableObject
     [ObservableProperty]
     private string _statusMessage = string.Empty;
 
+    [ObservableProperty]
+    private object? _pageContent;
+
     public ShellViewModel(
         IChatEngine chatEngine,
         IUiEngine uiEngine,
@@ -99,8 +102,8 @@ public partial class ShellViewModel : ObservableObject
             _isLoading = true;
 
             var theme = await _themeService.LoadThemeAsync();
-            _isDarkMode = theme == Models.V2.ThemePreference.Dark ||
-                         (theme == Models.V2.ThemePreference.System && _isDarkMode);
+            _isDarkMode = theme == Talkift.Client.Services.ThemePreference.Dark ||
+                         (theme == Talkift.Client.Services.ThemePreference.System && _isDarkMode);
 
             var creds = await _authService.LoadSavedCredentialsAsync();
             if (creds.Success && creds.Username != null)
@@ -168,8 +171,8 @@ public partial class ShellViewModel : ObservableObject
     private async Task ToggleThemeAsync()
     {
         var newTheme = IsDarkMode
-            ? Models.V2.ThemePreference.Light
-            : Models.V2.ThemePreference.Dark;
+            ? Talkift.Client.Services.ThemePreference.Light
+            : Talkift.Client.Services.ThemePreference.Dark;
         await _themeService.SaveThemeAsync(newTheme);
     }
 

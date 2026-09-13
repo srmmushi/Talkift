@@ -47,7 +47,7 @@
                         <TextBlock Text="Bio" FontSize="14" FontWeight="SemiBold"/>
                         <TextBox x:Name="BioBox" Text="{x:Bind ViewModel.Bio, Mode=TwoWay}"
                                  PlaceholderText="Tell us about yourself" CornerRadius="4"
-                                 Padding="8,4" MaxLines="3"/>
+                                 Padding="8,4"/>
                     </StackPanel>
 
                     <StackPanel Spacing="8">
