@@ -16,6 +16,7 @@ public sealed partial class ShellWindow : Window
     public ShellWindow()
     {
         this.InitializeComponent();
+        App.CurrentWindow = this;
         this.Closed += ShellWindow_Closed;
 
         ExtendsContentIntoTitleBar = true;
