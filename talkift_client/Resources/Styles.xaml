@@ -11,15 +11,9 @@
     </ResourceDictionary.MergedDictionaries>
 
     <!-- Easing Functions -->
-    <EasingFunctionBase x:Key="EasingFunctionNormal" EasingMode="EaseOut">
-        <CubicEase/>
-    </EasingFunctionBase>
-    <EasingFunctionBase x:Key="EasingFunctionBack" EasingMode="EaseOut">
-        <BackEase EasingMode="EaseOut"/>
-    </EasingFunctionBase>
-    <EasingFunctionBase x:Key="EasingFunctionSpring" EasingMode="EaseOut">
-        <SpringEase/>
-    </EasingFunctionBase>
+    <CubicEase x:Key="EasingFunctionNormal" EasingMode="EaseOut"/>
+    <BackEase x:Key="EasingFunctionBack" EasingMode="EaseOut"/>
+    <ElasticEase x:Key="EasingFunctionSpring" EasingMode="EaseOut"/>
 
     <!-- IconButtonStyle -->
     <Style x:Key="IconButtonStyle" TargetType="Button">
@@ -190,14 +184,11 @@
     <Style x:Key="MessageListStyle" TargetType="ListView">
         <Setter Property="SelectionMode" Value="None"/>
         <Setter Property="ItemContainerTransitions">
-            <TransitionCollection>
-                <EntranceThemeTransition/>
-            </TransitionCollection>
-        </Setter>
-        <Setter Property="ItemTemplateTransitions">
-            <TransitionCollection>
-                <ContentThemeTransition/>
-            </TransitionCollection>
+            <Setter.Value>
+                <TransitionCollection>
+                    <EntranceThemeTransition/>
+                </TransitionCollection>
+            </Setter.Value>
         </Setter>
     </Style>
 
@@ -206,30 +197,6 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="CornerRadius" Value="8"/>
         <Setter Property="Padding" Value="12,8"/>
-        <Setter Property="PointerOverBackground" Value="{ThemeResource SubtleFillColorSecondaryBrush}"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Border">
-                    <Border Background="{TemplateBinding Background}"
-                            CornerRadius="{TemplateBinding CornerRadius}"
-                            Padding="{TemplateBinding Padding}">
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal"/>
-                                <VisualState x:Name="PointerOver">
-                                    <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentBorder" Storyboard.TargetProperty="Background">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SubtleFillColorSecondaryBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                        <Border x:Name="ContentBorder" Background="Transparent"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
     </Style>
 
     <!-- TextBlock Styles -->

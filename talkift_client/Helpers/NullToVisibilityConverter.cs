@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 
 namespace Talkift.Client.Helpers;

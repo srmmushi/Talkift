@@ -1,13 +1,15 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Talkift.Client.Services;
 using Talkift.Client.ViewModels.V2;
 
 namespace Talkift.Client.Views.V2;
 
 public sealed partial class SearchPanel : Page
 {
-    public SearchViewModel ViewModel { get; } = new(null!, null!, null!);
+    public SearchViewModel ViewModel { get; set; } = new(null!, null!, null!);
 
     public SearchPanel()
     {
@@ -45,7 +47,7 @@ public sealed partial class SearchPanel : Page
     {
         if (string.IsNullOrWhiteSpace(SearchInput.Text))
         {
-            _ = ViewModel.ClearSearch();
+            ViewModel.ClearSearch();
             ResultCountText.Text = string.Empty;
         }
     }

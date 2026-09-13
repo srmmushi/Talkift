@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
 using Talkift.Client.Engines;
+using Talkift.Client.Helpers;
 using Talkift.Client.Models.V2;
 using Talkift.Client.Services;
 
@@ -60,7 +61,7 @@ public partial class SearchViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task SearchAsync()
+    public async Task SearchAsync()
     {
         if (string.IsNullOrWhiteSpace(Query)) return;
 
@@ -77,7 +78,7 @@ public partial class SearchViewModel : ObservableObject, IDisposable
             {
                 if (msg.Content.Contains(Query, _isCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                 {
-                    Results.Add(msg);
+                    Results.Add(msg.ToChatMessage());
                 }
             }
 
@@ -94,7 +95,7 @@ public partial class SearchViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private void ClearSearch()
+    public void ClearSearch()
     {
         Query = string.Empty;
         Results.Clear();
@@ -102,7 +103,7 @@ public partial class SearchViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task FilterByTypeAsync(string type)
+    public async Task FilterByTypeAsync(string type)
     {
         _filterType = type;
         var filtered = Results.Where(m => m.Type.ToLower() == type.ToLower()).ToList();

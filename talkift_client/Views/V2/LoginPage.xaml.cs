@@ -8,7 +8,7 @@ namespace Talkift.Client.Views.V2;
 
 public sealed partial class LoginPage : Page
 {
-    public LoginViewModel ViewModel { get; } = new(null!, null!, null!, null!);
+    public LoginViewModel ViewModel { get; set; } = new(null!, null!, null!, null!);
 
     public LoginPage()
     {

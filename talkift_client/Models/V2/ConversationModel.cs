@@ -49,6 +49,9 @@ public sealed class ConversationModel
     public bool HasUnread => UnreadCount > 0;
 
     [JsonIgnore]
+    public string DisplayUnreadCount => UnreadCount > 0 ? UnreadCount.ToString() : string.Empty;
+
+    [JsonIgnore]
     public string DisplaySubtitle
     {
         get

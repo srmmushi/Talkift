@@ -8,6 +8,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
 using Talkift.Client.Engines;
+using Talkift.Client.Helpers;
+using Talkift.Client.Models;
 using Talkift.Client.Models.V2;
 using Talkift.Client.Services;
 
@@ -65,7 +67,7 @@ public partial class ConversationListViewModel : ObservableObject, IDisposable
         _isLoading = true;
         try
         {
-            await _chatEngine.InitializeAsync(
+            await _chatEngine.ConnectAsync(
                 new ChatEngineOptions { ServerAddress = server.Address, ServerPort = server.Port, UserId = userId },
                 _cts.Token);
 
@@ -149,8 +151,8 @@ public partial class ConversationListViewModel : ObservableObject, IDisposable
         var oldest = Messages.Count > 0 ? Messages[0].Id : null;
         var more = await _messageStore.GetMessagesAsync(
             _selectedConversation.Id, limit: 20, before: oldest, ct: _cts.Token);
-        foreach (var msg in more)
-            Messages.Insert(0, msg);
+        foreach (var entry in more)
+            Messages.Insert(0, entry.ToChatMessage());
     }
 
     [RelayCommand]
@@ -165,7 +167,9 @@ public partial class ConversationListViewModel : ObservableObject, IDisposable
     public ObservableCollection<ChatMessageModel> Messages =>
         SelectedConversation != null
             ? new ObservableCollection<ChatMessageModel>(
-                MessagesStore.GetMessagesSync(SelectedConversation.Id))
+                _messageStore.GetMessagesAsync(SelectedConversation.Id, limit: 50)
+                    .GetAwaiter().GetResult()
+                    .Select(e => e.ToChatMessage()))
             : new ObservableCollection<ChatMessageModel>();
 
     public void Dispose()

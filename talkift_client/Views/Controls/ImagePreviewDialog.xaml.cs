@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Talkift.Client.Services;
 
 namespace Talkift.Client.Views.Controls;
 

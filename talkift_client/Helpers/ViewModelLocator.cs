@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Talkift.Client.ViewModels.V2;
+using Talkift.Client.Views;
+using Talkift.Client.Views.V2;
 
 namespace Talkift.Client;
 
@@ -12,11 +15,11 @@ public static class ViewModelLocator
     {
         Register<ShellWindow, ShellViewModel>();
         Register<LoginPage, LoginViewModel>();
-        Register<ChatPage, ChatPageViewModel>();
+        Register<Views.V2.ChatPage, ChatPageViewModel>();
         Register<ConversationList, ConversationListViewModel>();
-        Register<MessageListPage, MessageListViewModel>();
+        Register<Views.V2.MessageList, MessageListViewModel>();
         Register<MessageInput, MessageInputViewModel>();
-        Register<SettingsPage, SettingsViewModel>();
+        Register<Views.V2.SettingsPage, SettingsViewModel>();
         Register<ProfilePage, ProfileViewModel>();
         Register<SearchPanel, SearchViewModel>();
         Register<ContactPage, ContactViewModel>();
@@ -29,7 +32,7 @@ public static class ViewModelLocator
         _mappings[typeof(TView)] = typeof(TViewModel);
     }
 
-    public static TViewModel GetViewModel<TView>(TView view) where TView : class
+    public static TViewModel GetViewModel<TView, TViewModel>(TView view) where TView : class
     {
         var viewType = typeof(TView);
         if (_mappings.TryGetValue(viewType, out var vmType) && _viewModels.TryGetValue(vmType, out var vm))
@@ -39,7 +42,7 @@ public static class ViewModelLocator
         throw new KeyNotFoundException($"No ViewModel registered for {viewType.Name}");
     }
 
-    public static TViewModel GetOrCreateViewModel<TView>() where TView : class
+    public static TViewModel GetOrCreateViewModel<TView, TViewModel>() where TView : class
     {
         var vmType = _mappings[typeof(TView)];
         if (_viewModels.TryGetValue(vmType, out var vm) && vm is TViewModel typedVm)

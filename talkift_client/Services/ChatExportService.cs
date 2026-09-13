@@ -17,8 +17,8 @@ namespace Talkift.Client.Services
 
             foreach (var msg in messages)
             {
-                var time = msg.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm");
-                sb.AppendLine($"[{time}] {msg.Sender}: {msg.Content}");
+                var time = DateTimeOffset.FromUnixTimeSeconds(msg.Timestamp).LocalDateTime.ToString("yyyy-MM-dd HH:mm");
+                sb.AppendLine($"[{time}] {msg.SenderName}: {msg.Content}");
             }
 
             await File.WriteAllTextAsync(filePath, sb.ToString(), Encoding.UTF8);
@@ -31,9 +31,9 @@ namespace Talkift.Client.Services
 
             foreach (var msg in messages)
             {
-                var time = msg.Timestamp.ToString("yyyy-MM-dd HH:mm:ss");
+                var time = DateTimeOffset.FromUnixTimeSeconds(msg.Timestamp).ToString("yyyy-MM-dd HH:mm:ss");
                 var content = msg.Content?.Replace("\"", "\"\"") ?? "";
-                sb.AppendLine($"\"{time}\",\"{msg.Sender}\",\"{content}\"");
+                sb.AppendLine($"\"{time}\",\"{msg.SenderName}\",\"{content}\"");
             }
 
             await File.WriteAllTextAsync(filePath, sb.ToString(), Encoding.UTF8);
@@ -47,7 +47,7 @@ namespace Talkift.Client.Services
             {
                 var msg = messages[i];
                 var comma = i < messages.Count - 1 ? "," : "";
-                sb.AppendLine($"  {{\"time\":\"{msg.Timestamp:O}\",\"sender\":\"{msg.Sender}\",\"content\":\"{msg.Content?.Replace("\"", "\\\"")}\"}}{comma}");
+                sb.AppendLine($"  {{\"time\":\"{DateTimeOffset.FromUnixTimeSeconds(msg.Timestamp):O}\",\"sender\":\"{msg.SenderName}\",\"content\":\"{msg.Content?.Replace("\"", "\\\"")}\"}}{comma}");
             }
             sb.AppendLine("]");
 

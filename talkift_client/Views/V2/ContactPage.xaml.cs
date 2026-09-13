@@ -1,13 +1,14 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Talkift.Client.Services;
 using Talkift.Client.ViewModels.V2;
 
 namespace Talkift.Client.Views.V2;
 
 public sealed partial class ContactPage : Page
 {
-    public ContactViewModel ViewModel { get; } = new(null!, null!, null!);
+    public ContactViewModel ViewModel { get; set; } = new(null!, null!, null!);
 
     public ContactPage()
     {

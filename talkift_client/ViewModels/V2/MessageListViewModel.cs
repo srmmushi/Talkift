@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
 using Talkift.Client.Engines;
+using Talkift.Client.Helpers;
 using Talkift.Client.Models.V2;
 using Talkift.Client.Services;
 
@@ -71,8 +72,8 @@ public partial class MessageListViewModel : ObservableObject
         {
             var msgs = await _messageStore.GetMessagesAsync(conversationId, limit: 50, before: before, ct: _cts.Token);
             Messages.Clear();
-            foreach (var msg in msgs)
-                Messages.Add(msg);
+            foreach (var entry in msgs)
+                Messages.Add(entry.ToChatMessage());
 
             _isLoading = false;
             _isEmpty = Messages.Count == 0;
@@ -121,8 +122,8 @@ public partial class MessageListViewModel : ObservableObject
         if (Messages.Count == 0) return;
         var oldestId = Messages[0].Id;
         var more = await _messageStore.GetMessagesAsync(_conversationId, limit: 20, before: oldestId, ct: _cts.Token);
-        foreach (var msg in more)
-            Messages.Insert(0, msg);
+        foreach (var entry in more)
+            Messages.Insert(0, entry.ToChatMessage());
     }
 
     [RelayCommand]

@@ -1,9 +1,13 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Talkift.Client.Engines;
+using Talkift.Client.Models.V2;
 using Talkift.Client.Services;
 using Talkift.Client.Services.V2;
 using Talkift.Client.ViewModels.V2;
+using Talkift.Client.Views.V2;
 
 namespace Talkift.Client;
 
@@ -25,7 +29,7 @@ public sealed partial class App : Application
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         var host = AppHost.Create();
-        _serviceProvider = host.Services;
+        _serviceProvider = host;
 
         ChatEngine = _serviceProvider.GetRequiredService<IChatEngine>();
         UiEngine = _serviceProvider.GetRequiredService<IUiEngine>();
@@ -39,13 +43,7 @@ public sealed partial class App : Application
         CurrentWindow.Activate();
     }
 
-    public static T GetRequiredService<T>() where T : class
-    {
-        return (T)CurrentWindow.Resources["ServiceContainer"] ??
-               throw new InvalidOperationException($"Service {typeof(T).Name} not found");
-    }
-
-    public void NavigateToServerList()
+    public static void NavigateToServerList()
     {
         CurrentWindow.DispatcherQueue.TryEnqueue(() =>
         {
@@ -53,7 +51,7 @@ public sealed partial class App : Application
         });
     }
 
-    public void NavigateToConversationList()
+    public static void NavigateToConversationList()
     {
         CurrentWindow.DispatcherQueue.TryEnqueue(() =>
         {
@@ -61,27 +59,11 @@ public sealed partial class App : Application
         });
     }
 
-    public void NavigateToChat(ConversationModel? conversation = null)
+    public static void NavigateToChat(string? username = null)
     {
         CurrentWindow.DispatcherQueue.TryEnqueue(() =>
         {
             // Navigation handled by MainViewModel
         });
-    }
-
-    protected override void OnSuspending(object sender, SuspendingEventArgs args)
-    {
-        if (_disposed) return;
-        ChatEngine.DisconnectAsync().GetAwaiter().GetResult();
-        LoggerService.FlushAsync().GetAwaiter().GetResult();
-        _disposed = true;
-        base.OnSuspending(sender, args);
-    }
-
-    protected override void OnExit()
-    {
-        ChatEngine?.Dispose();
-        LoggerService?.FlushAsync().GetAwaiter().GetResult();
-        base.OnExit();
     }
 }

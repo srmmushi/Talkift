@@ -11,7 +11,7 @@ public static class RelayCommandExtensions
         return new RelayCommand<T?>(action ?? throw new ArgumentNullException(nameof(action)));
     }
 
-    public static RelayCommand<T?> ToAsyncRelayCommand<T>(this Func<T?, Task> asyncAction) where T : class
+    public static AsyncRelayCommand<T?> ToAsyncRelayCommand<T>(this Func<T?, Task> asyncAction) where T : class
     {
         return new AsyncRelayCommand<T?>(asyncAction ?? throw new ArgumentNullException(nameof(asyncAction)));
     }
@@ -21,7 +21,7 @@ public static class RelayCommandExtensions
         return new RelayCommand(action ?? throw new ArgumentNullException(nameof(action)));
     }
 
-    public static RelayCommand ToAsyncRelayCommand(this Func<Task> asyncAction)
+    public static AsyncRelayCommand ToAsyncRelayCommand(this Func<Task> asyncAction)
     {
         return new AsyncRelayCommand(asyncAction ?? throw new ArgumentNullException(nameof(asyncAction)));
     }

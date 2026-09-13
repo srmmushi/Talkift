@@ -148,7 +148,7 @@ public sealed partial class EmojiPicker : UserControl
         ("\U0001F467", "closed_lock_with_key"),
         ("\U0001F468", "nut_and_bolt"),
         ("\U0001F469", "hammer"),
-        ("\U0001F46A", "cursor",),
+        ("\U0001F46A", "cursor"),
         ("\U0001F46B", "hash"), ("\U0001F46C", "low_brightness"),
         ("\U0001F46D", "high_brightness"),
         ("\U0001F46E", "electric_plug"),

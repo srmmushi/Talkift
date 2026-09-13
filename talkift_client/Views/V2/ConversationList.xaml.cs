@@ -1,13 +1,14 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Talkift.Client.Services;
 using Talkift.Client.ViewModels.V2;
 
 namespace Talkift.Client.Views.V2;
 
 public sealed partial class ConversationList : Page
 {
-    public ConversationListViewModel ViewModel { get; } = new(null!, null!, null!, null!);
+    public ConversationListViewModel ViewModel { get; set; } = new(null!, null!, null!, null!);
 
     public ConversationList()
     {
@@ -27,7 +28,7 @@ public sealed partial class ConversationList : Page
             );
             DataContext = ViewModel;
             _ = ViewModel.InitializeAsync(
-                new Models.V2.Server { Address = "47.113.216.177", Port = 8002 },
+                new Models.Server { Address = "47.113.216.177", Port = 8002 },
                 "current_user", "User");
         }
         catch (Exception ex)

@@ -47,8 +47,7 @@ namespace Talkift.Client.Views
 
         private void SkipButton_Click(object sender, RoutedEventArgs e)
         {
-            var app = (App)Application.Current;
-            app.LaunchMainWindow();
+            App.NavigateToServerList();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

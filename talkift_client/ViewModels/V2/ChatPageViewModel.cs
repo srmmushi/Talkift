@@ -8,6 +8,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
 using Talkift.Client.Engines;
+using Talkift.Client.Helpers;
+using Talkift.Client.Models;
 using Talkift.Client.Models.V2;
 using Talkift.Client.Services;
 
@@ -113,8 +115,9 @@ public partial class ChatPageViewModel : ObservableObject, IDisposable
         ConnectionStatus = _chatEngine.State.ToString();
 
         var history = await _messageStore.GetMessagesAsync(conversation.Id, limit: 50, ct: _cts.Token);
-        foreach (var msg in history)
+        foreach (var entry in history)
         {
+            var msg = entry.ToChatMessage();
             msg.IsMine = msg.SenderId == userId;
             Messages.Add(msg);
         }
@@ -169,7 +172,7 @@ public partial class ChatPageViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task SendMessageAsync()
+    public async Task SendMessageAsync()
     {
         if (string.IsNullOrWhiteSpace(MessageText) || _currentConversation == null)
             return;
@@ -221,14 +224,13 @@ public partial class ChatPageViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private void CancelReply()
+    public void CancelReply()
     {
         _replyToMessageId = string.Empty;
         _replyToSenderName = string.Empty;
         _isReplyBarVisible = false;
     }
 
-    [RelayCommand]
     private void ShowReply(string messageId, string senderName)
     {
         _replyToMessageId = messageId;
@@ -237,7 +239,7 @@ public partial class ChatPageViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task SendReactionAsync(string emoji)
+    public async Task SendReactionAsync(string emoji)
     {
         if (_currentConversation == null || string.IsNullOrEmpty(_replyToMessageId))
             return;
@@ -264,7 +266,7 @@ public partial class ChatPageViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private async Task SearchMessagesAsync(string query)
+    public async Task SearchMessagesAsync(string query)
     {
         if (_currentConversation == null) return;
         var results = Messages.Where(m => m.Content.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();

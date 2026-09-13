@@ -33,7 +33,7 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:ChatMessage">
                     <Grid Padding="0,3" HorizontalAlignment="Stretch">
-                        <Grid.Flyout>
+                        <Grid.ContextFlyout>
                             <MenuFlyout>
                                 <MenuFlyoutItem Text="Copy" Click="MsgCtx_Copy"/>
                                 <MenuFlyoutItem Text="Reply" Click="MsgCtx_Reply"/>
@@ -41,7 +41,7 @@
                                 <MenuFlyoutSeparator/>
                                 <MenuFlyoutItem Text="Delete" Click="MsgCtx_Delete" Foreground="Red"/>
                             </MenuFlyout>
-                        </Grid.Flyout>
+                        </Grid.ContextFlyout>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
@@ -183,9 +183,13 @@
             </Grid>
         </Grid>
 
-        <Flyout x:Name="EmojiFlyout">
-            <views:EmojiPicker x:Name="EmojiPicker"/>
-        </Flyout>
+        <Button x:Name="EmojiFlyoutOwner" Visibility="Collapsed">
+            <Button.Flyout>
+                <Flyout x:Name="EmojiFlyout">
+                    <views:EmojiPicker x:Name="EmojiPicker"/>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
 
         <views:MessageReactionBar x:Name="ReactionBar" Grid.Row="1"
                                   HorizontalAlignment="Center" VerticalAlignment="Bottom"
