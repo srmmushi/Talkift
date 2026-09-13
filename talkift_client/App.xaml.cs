@@ -24,38 +24,29 @@ public sealed partial class App : Application
     public static Window CurrentWindow { get; private set; } = null!;
 
     private ServiceProvider? _serviceProvider;
-    private bool _disposed;
 
     public App()
     {
         UnhandledException += (_, e) =>
         {
-            WriteCrashLog($"[UnhandledException] {e.Message}{Environment.NewLine}{e.Exception}");
+            CrashLogger.LogException("App.UnhandledException", e.Exception);
+            e.Handled = true;
         };
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
         {
-            WriteCrashLog($"[AppDomain] {e.ExceptionObject}");
+            if (e.ExceptionObject is Exception ex)
+                CrashLogger.LogException("AppDomain.UnhandledException", ex);
         };
-    }
-
-    private static void WriteCrashLog(string text)
-    {
-        try
-        {
-            var path = System.IO.Path.Combine(AppContext.BaseDirectory, "crash.log");
-            System.IO.File.AppendAllText(path, $"[{DateTime.Now:O}] {text}{Environment.NewLine}");
-        }
-        catch
-        {
-        }
     }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         try
         {
+            CrashLogger.LogMessage("OnLaunched: creating AppHost...");
             var host = AppHost.Create();
             _serviceProvider = host;
+            CrashLogger.LogMessage("OnLaunched: AppHost created");
 
             ChatEngine = _serviceProvider.GetRequiredService<IChatEngine>();
             UiEngine = _serviceProvider.GetRequiredService<IUiEngine>();
@@ -64,13 +55,16 @@ public sealed partial class App : Application
             NotificationService = _serviceProvider.GetRequiredService<INotificationService>();
             LoggerService = _serviceProvider.GetRequiredService<ILoggerService>();
             MessageStore = _serviceProvider.GetRequiredService<IMessageStore>();
+            CrashLogger.LogMessage("OnLaunched: services resolved");
 
             CurrentWindow = new ShellWindow();
+            CrashLogger.LogMessage("OnLaunched: ShellWindow created");
             CurrentWindow.Activate();
+            CrashLogger.LogMessage("OnLaunched: ShellWindow activated");
         }
         catch (Exception ex)
         {
-            WriteCrashLog($"[OnLaunched] {ex}");
+            CrashLogger.LogException("OnLaunched", ex);
             throw;
         }
     }

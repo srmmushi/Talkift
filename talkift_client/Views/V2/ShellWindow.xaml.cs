@@ -24,6 +24,7 @@ public sealed partial class ShellWindow : Window
 
         try
         {
+            CrashLogger.LogMessage("ShellWindow: creating ViewModel...");
             ViewModel = new ShellViewModel(
                 App.ChatEngine!,
                 App.UiEngine!,
@@ -32,6 +33,8 @@ public sealed partial class ShellWindow : Window
                 App.NotificationService!,
                 App.LoggerService!
             );
+            CrashLogger.LogMessage("ShellWindow: ViewModel created");
+
             var uiEngine = (UiEngine)App.UiEngine;
             uiEngine.RegisterPage("Login", typeof(LoginPage));
             uiEngine.RegisterPage("ConversationList", typeof(ConversationList));
@@ -42,11 +45,18 @@ public sealed partial class ShellWindow : Window
             uiEngine.RegisterPage("Search", typeof(SearchPanel));
             uiEngine.RegisterPage("MessageList", typeof(MessageList));
             uiEngine.RegisterPage("MessageInput", typeof(MessageInput));
+            CrashLogger.LogMessage("ShellWindow: pages registered");
+
             _ = uiEngine.InitializeAsync(new UiEngineOptions());
+            CrashLogger.LogMessage("ShellWindow: UiEngine initialized");
+
             ApplyLocalization();
+
             var creds = App.AuthService.LoadSavedCredentialsAsync(CancellationToken.None).GetAwaiter().GetResult();
             var initialPage = (creds.Success && creds.Username != null) ? "ConversationList" : "Login";
+            CrashLogger.LogMessage($"ShellWindow: navigating to {initialPage}");
             _ = uiEngine.NavigateToAsync(initialPage);
+            CrashLogger.LogMessage("ShellWindow: navigation initiated");
         }
         catch (Exception ex)
         {

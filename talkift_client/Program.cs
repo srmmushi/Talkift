@@ -14,24 +14,22 @@ namespace Talkift.Client
         [DllImport("kernel32.dll")]
         private static extern IntPtr GetConsoleWindow();
 
-        [DllImport("kernel32.dll")]
-        private static extern bool FreeConsole();
+        private static bool _debugMode;
 
         [STAThread]
         static void Main(string[] args)
         {
-            bool debugMode = false;
             foreach (var arg in args)
             {
                 if (arg.Equals("--debug", StringComparison.OrdinalIgnoreCase) ||
                     arg.Equals("-d", StringComparison.OrdinalIgnoreCase))
                 {
-                    debugMode = true;
+                    _debugMode = true;
                     break;
                 }
             }
 
-            if (debugMode)
+            if (_debugMode)
             {
                 AllocConsole();
                 Console.Title = "Talkift Debug Console";
@@ -43,17 +41,39 @@ namespace Talkift.Client
                 Console.ResetColor();
             }
 
-            CrashLogger.Initialize(debugMode);
+            CrashLogger.Initialize(_debugMode);
             CrashLogger.LogMessage("Application starting...");
 
-            WinRT.ComWrappersSupport.InitializeComWrappers();
-            Application.Start((p) =>
+            try
             {
-                var context = new DispatcherQueueSynchronizationContext(
-                    DispatcherQueue.GetForCurrentThread());
-                SynchronizationContext.SetSynchronizationContext(context);
-                new App();
-            });
+                WinRT.ComWrappersSupport.InitializeComWrappers();
+                CrashLogger.LogMessage("ComWrappers initialized");
+
+                Application.Start((p) =>
+                {
+                    CrashLogger.LogMessage("Application.Start callback invoked");
+                    var context = new DispatcherQueueSynchronizationContext(
+                        DispatcherQueue.GetForCurrentThread());
+                    SynchronizationContext.SetSynchronizationContext(context);
+                    new App();
+                });
+            }
+            catch (Exception ex)
+            {
+                CrashLogger.LogException("Program.Main", ex);
+            }
+            finally
+            {
+                if (_debugMode)
+                {
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("Application has exited. Press any key to close this window...");
+                    Console.ResetColor();
+                    try { Console.ReadKey(true); }
+                    catch { }
+                }
+            }
         }
     }
 }

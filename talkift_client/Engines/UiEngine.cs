@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Talkift.Client.Services;
 using Windows.UI.ViewManagement;
 
 namespace Talkift.Client.Engines;
@@ -39,10 +40,19 @@ public sealed class UiEngine : IUiEngine
         if (_initialized) return Task.CompletedTask;
         _initialized = true;
 
+        CrashLogger.LogMessage("UiEngine: InitializeAsync start");
         _window = App.CurrentWindow;
-        _frame = FindFrame(_window);
 
-        if (_window?.Content is FrameworkElement root)
+        if (_window == null)
+        {
+            CrashLogger.LogError("UiEngine: App.CurrentWindow is null");
+            return Task.CompletedTask;
+        }
+
+        _frame = FindFrame(_window);
+        CrashLogger.LogMessage($"UiEngine: FindFrame result = {_frame?.GetType().Name ?? "null"}");
+
+        if (_frame != null && _window.Content is FrameworkElement root)
         {
             root.ActualThemeChanged += OnActualThemeChanged;
             _uiSettings.ColorValuesChanged += OnColorValuesChanged;
@@ -52,6 +62,7 @@ public sealed class UiEngine : IUiEngine
         _ = SetBackdropAsync(options.UseMica ? BackdropType.Mica : options.UseAcrylic ? BackdropType.Acrylic : BackdropType.None, ct);
         _ = SetOpacityAsync(options.DefaultOpacity, ct);
 
+        CrashLogger.LogMessage("UiEngine: InitializeAsync done");
         return Task.CompletedTask;
     }
 
@@ -169,10 +180,29 @@ public sealed class UiEngine : IUiEngine
 
     public async Task NavigateToAsync(string pageKey, object? parameter = null, CancellationToken ct = default)
     {
-        if (_frame == null) return;
-        if (!_pageRegistry.TryGetValue(pageKey, out var pageType)) return;
+        CrashLogger.LogMessage($"UiEngine: NavigateToAsync '{pageKey}'");
+
+        if (_frame == null)
+        {
+            CrashLogger.LogError("UiEngine: NavigateToAsync _frame is null, attempting re-find");
+            _frame = FindFrame(_window);
+            if (_frame == null)
+            {
+                CrashLogger.LogError("UiEngine: NavigateToAsync _frame still null after re-find, aborting");
+                return;
+            }
+        }
+
+        if (!_pageRegistry.TryGetValue(pageKey, out var pageType))
+        {
+            CrashLogger.LogError($"UiEngine: NavigateToAsync page '{pageKey}' not registered");
+            return;
+        }
+
+        CrashLogger.LogMessage($"UiEngine: navigating to {pageType.Name}");
         var transition = new EntranceThemeTransition();
         _frame.Navigate(pageType, parameter);
+        CrashLogger.LogMessage($"UiEngine: navigation to '{pageKey}' done");
         await Task.CompletedTask;
     }
 
@@ -271,21 +301,26 @@ public sealed class UiEngine : IUiEngine
 
     private static Frame? FindFrame(Window? window)
     {
-        if (window?.Content is Frame f) return f;
-        if (window?.Content is Microsoft.UI.Xaml.Controls.NavigationView nav)
+        if (window == null) return null;
+
+        CrashLogger.LogMessage($"UiEngine.FindFrame: Content type = {window.Content?.GetType().Name ?? "null"}");
+
+        if (window.Content is Frame f) return f;
+
+        if (window.Content is FrameworkElement fe)
         {
-            foreach (var child in nav.Descendants())
+            CrashLogger.LogMessage($"UiEngine.FindFrame: searching visual tree from {fe.GetType().Name}");
+            foreach (var child in fe.Descendants())
             {
-                if (child is Frame frame) return frame;
+                if (child is Frame frame)
+                {
+                    CrashLogger.LogMessage($"UiEngine.FindFrame: found Frame at depth");
+                    return frame;
+                }
             }
         }
-        if (window?.Content is Grid grid)
-        {
-            foreach (var child in grid.Descendants())
-            {
-                if (child is Frame frame) return frame;
-            }
-        }
+
+        CrashLogger.LogError("UiEngine.FindFrame: no Frame found in visual tree");
         return null;
     }
 
