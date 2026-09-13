@@ -2,6 +2,7 @@ using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Talkift.Client.Config;
 using Talkift.Client.Services;
 using Talkift.Client.ViewModels.V2;
 
@@ -37,7 +38,7 @@ public sealed partial class ChatPage : Page
             if (conv != null)
             {
                 _ = ViewModel.InitializeAsync(
-                    new Models.Server { Address = "47.113.216.177", Port = 8002 },
+                    new Models.Server { Address = ServerConfig.DefaultServerAddress, Port = ServerConfig.DefaultChatPort },
                     conv, "current_user");
             }
 

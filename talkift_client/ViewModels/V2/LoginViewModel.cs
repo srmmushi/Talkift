@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
+using Talkift.Client.Config;
 using Talkift.Client.Engines;
 using Talkift.Client.Services;
 using Talkift.Client.Models.V2;
@@ -48,10 +49,10 @@ public partial class LoginViewModel : ObservableObject, IDisposable
     private bool _isOfflineLogin;
 
     [ObservableProperty]
-    private string _serverAddress = "47.113.216.177";
+    private string _serverAddress = ServerConfig.DefaultServerAddress;
 
     [ObservableProperty]
-    private int _serverPort = 8002;
+    private int _serverPort = ServerConfig.DefaultChatPort;
 
     [ObservableProperty]
     private string? _savedUsername;

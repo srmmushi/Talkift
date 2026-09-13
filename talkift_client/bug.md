@@ -433,16 +433,45 @@ public static void NavigateToChat(string? username = null) => (CurrentWindow as 
 
 ## Remaining Issues
 
-1. **SetThemeAsync/SetBackdropAsync/SetOpacityAsync** in UiEngine still use `RunOnUIAsync` which can deadlock if called from UI thread. They're fire-and-forget currently but could deadlock internally.
+1. ~~**SetThemeAsync/SetBackdropAsync/SetOpacityAsync** in UiEngine still use `RunOnUIAsync` which can deadlock if called from UI thread.~~ **FIXED:** Added `HasThreadAccess` check to execute directly when already on UI thread.
 
 2. **MVVMTK0045 AOT warnings** — ChatViewModel, ConversationListViewModel, MainViewModel use `[ObservableProperty]` fields that are not AOT-compatible. Should use `partial` properties.
 
-3. **ShellViewModel.InitializeAsync** in constructor uses `GetAwaiter().GetResult()` — blocks UI thread unnecessarily.
+3. ~~**ShellViewModel.InitializeAsync** in constructor uses `GetAwaiter().GetResult()` — blocks UI thread unnecessarily.~~ **FIXED:** Changed to fire-and-forget with `_ = InitializeAsync()`.
 
 4. **Pages create ViewModels in Loaded event** using `App.*` statics instead of DI. This is fragile if statics aren't ready.
 
 5. **No V2 ServerList page** — app starts at Login page, but server selection UI doesn't exist in V2.
 
-6. **ConversationListViewModel.InitializeAsync** hardcodes server `47.113.216.177:8002` — no server selection in V2.
+6. ~~**ConversationListViewModel.InitializeAsync** hardcodes server `47.113.216.177:8002` — no server selection in V2.~~ **FIXED:** Created `Config/ServerConfig.cs` and updated all files to use centralized configuration.
 
 7. **crash.log** debugging output in `AppContext.BaseDirectory` — verify it points to the correct deploy folder.
+
+---
+
+## Additional Fixes Applied
+
+### Created Config/ServerConfig.cs
+Centralized server configuration to eliminate hardcoded addresses:
+```csharp
+namespace Talkift.Client.Config;
+
+public static class ServerConfig
+{
+    public const string DefaultServerAddress = "47.113.216.177";
+    public const int DefaultChatPort = 8002;
+    public const int DefaultHttpPort = 8002;
+    public const string ServerName = "Talkift Official";
+}
+```
+
+### Updated Files to Use ServerConfig
+- `Engines/ChatEngineOptions.cs` - Default server address and port
+- `Models/Models.cs` - OfficialServer class
+- `Models/V2/ServerModels.cs` - ServerListItem.Official
+- `Services/V2/FileTransferService.cs` - Upload URL
+- `ViewModels/V2/LoginViewModel.cs` - Default server address
+- `ViewModels/V2/SettingsViewModel.cs` - Official server address
+- `Views/V2/ChatPage.xaml.cs` - Server initialization
+- `Views/V2/ConversationList.xaml.cs` - Server initialization
+- `Views/SettingsPage.xaml.cs` - Placeholder text and fallback

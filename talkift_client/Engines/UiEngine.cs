@@ -58,7 +58,8 @@ public sealed class UiEngine : IUiEngine
     public async Task SetThemeAsync(AppTheme theme, CancellationToken ct = default)
     {
         _currentTheme = theme;
-        await RunOnUIAsync(() =>
+
+        void ApplyTheme()
         {
             if (_window?.Content is FrameworkElement root)
             {
@@ -69,7 +70,16 @@ public sealed class UiEngine : IUiEngine
                     _ => ElementTheme.Default
                 };
             }
-        }, ct);
+        }
+
+        if (_window?.DispatcherQueue?.HasThreadAccess == true)
+        {
+            ApplyTheme();
+        }
+        else
+        {
+            await RunOnUIAsync(ApplyTheme, ct);
+        }
 
         ThemeChanged?.Invoke(this, theme);
     }
@@ -77,7 +87,8 @@ public sealed class UiEngine : IUiEngine
     public async Task SetBackdropAsync(BackdropType backdrop, CancellationToken ct = default)
     {
         _currentBackdrop = backdrop;
-        await RunOnUIAsync(() =>
+
+        void ApplyBackdrop()
         {
             if (_window == null) return;
 
@@ -110,19 +121,38 @@ public sealed class UiEngine : IUiEngine
             {
                 _window.SystemBackdrop = null;
             }
-        }, ct);
+        }
+
+        if (_window?.DispatcherQueue?.HasThreadAccess == true)
+        {
+            ApplyBackdrop();
+        }
+        else
+        {
+            await RunOnUIAsync(ApplyBackdrop, ct);
+        }
     }
 
     public async Task SetOpacityAsync(double opacity, CancellationToken ct = default)
     {
         _currentOpacity = Math.Clamp(opacity, 0.1, 1.0);
-        await RunOnUIAsync(() =>
+
+        void ApplyOpacity()
         {
             if (_window?.Content is FrameworkElement root && root.Parent is Grid parent)
             {
                 parent.Opacity = _currentOpacity;
             }
-        }, ct);
+        }
+
+        if (_window?.DispatcherQueue?.HasThreadAccess == true)
+        {
+            ApplyOpacity();
+        }
+        else
+        {
+            await RunOnUIAsync(ApplyOpacity, ct);
+        }
     }
 
     public async Task ShowNotificationAsync(string title, string message, NotificationType type = NotificationType.Info, int durationMs = 3000, CancellationToken ct = default)

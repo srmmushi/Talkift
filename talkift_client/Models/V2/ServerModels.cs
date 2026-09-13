@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Talkift.Client.Config;
 
 namespace Talkift.Client.Models.V2;
 
@@ -75,9 +76,9 @@ public sealed class ServerListItem
     public static ServerListItem Official => new()
     {
         Id = "official",
-        Name = "Talkift Official",
-        Address = "47.113.216.177",
-        Port = 8002,
+        Name = ServerConfig.ServerName,
+        Address = ServerConfig.DefaultServerAddress,
+        Port = ServerConfig.DefaultChatPort,
         IsOfficial = true,
         IsOnline = true
     };

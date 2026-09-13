@@ -1,13 +1,14 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Talkift.Client.Config;
 
 namespace Talkift.Client.Engines;
 
 public sealed class ChatEngineOptions
 {
-    public string ServerAddress { get; set; } = "47.113.216.177";
-    public int ServerPort { get; set; } = 8002;
+    public string ServerAddress { get; set; } = ServerConfig.DefaultServerAddress;
+    public int ServerPort { get; set; } = ServerConfig.DefaultChatPort;
     public string UserId { get; set; } = string.Empty;
     public string Token { get; set; } = string.Empty;
     public TimeSpan ReconnectDelay { get; set; } = TimeSpan.FromSeconds(2);

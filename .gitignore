@@ -45,7 +45,11 @@ logs/
 .env
 .env.local
 
+# Gateway (not uploaded)
+gateway/
 
+# Official server (not uploaded)
+official-server/
 
 # Misc leftovers
 /talkift_client/full.xml

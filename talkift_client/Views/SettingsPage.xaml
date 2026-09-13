@@ -164,7 +164,7 @@
                         </StackPanel>
 
                         <StackPanel Spacing="10">
-                            <TextBox x:Name="OfficialAddrBox" Header="Server Address" PlaceholderText="47.113.216.177"
+                            <TextBox x:Name="OfficialAddrBox" Header="Server Address" PlaceholderText="Default Server"
                                      CornerRadius="4"/>
                             <NumberBox x:Name="OfficialPortBox" Header="Port" Value="8001" Minimum="1" Maximum="65535"/>
                             <StackPanel Orientation="Horizontal" Spacing="8">

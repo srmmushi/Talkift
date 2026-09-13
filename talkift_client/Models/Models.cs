@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Talkift.Client.Config;
 
 namespace Talkift.Client.Models
 {
@@ -31,16 +32,16 @@ namespace Talkift.Client.Models
     public class OfficialServer
     {
         public string Id { get; set; } = "official";
-        public string Name { get; set; } = "Talkift Official";
-        public string Address { get; set; } = "47.113.216.177";
+        public string Name { get; set; } = ServerConfig.ServerName;
+        public string Address { get; set; } = ServerConfig.DefaultServerAddress;
         public int Port { get; set; } = 8001;
         public bool IsEnabled { get; set; } = true;
         public bool SupportsEmail { get; set; } = true;
         public bool SupportsOffline { get; set; } = true;
         public string Version { get; set; } = "1.0.0";
 
-        public static string ChatAddress => "47.113.216.177";
-        public static int ChatPort => 8002;
+        public static string ChatAddress => ServerConfig.DefaultServerAddress;
+        public static int ChatPort => ServerConfig.DefaultChatPort;
     }
 
     public enum PageType

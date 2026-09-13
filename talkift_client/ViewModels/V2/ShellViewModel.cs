@@ -92,7 +92,7 @@ public partial class ShellViewModel : ObservableObject
         _themeService.ThemeChanged += OnThemeChanged;
         _authService.LoginStateChanged += OnLoginStateChanged;
 
-        InitializeAsync().GetAwaiter().GetResult();
+        _ = InitializeAsync();
     }
 
     private async Task InitializeAsync()

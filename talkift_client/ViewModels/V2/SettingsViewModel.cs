@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
+using Talkift.Client.Config;
 using Talkift.Client.Engines;
 using Talkift.Client.Services;
 
@@ -48,10 +49,10 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
     private string _logPath = string.Empty;
 
     [ObservableProperty]
-    private string _officialServerAddress = "47.113.216.177";
+    private string _officialServerAddress = ServerConfig.DefaultServerAddress;
 
     [ObservableProperty]
-    private int _officialServerPort = 8002;
+    private int _officialServerPort = ServerConfig.DefaultChatPort;
 
     [ObservableProperty]
     private bool _supportsEmail = true;

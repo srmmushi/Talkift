@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Talkift.Client.Config;
 
 namespace Talkift.Client.Services.V2;
 
@@ -118,7 +119,7 @@ public sealed class FileTransferService : IFileTransferService
 
     public Task<string> GetUploadUrlAsync(string fileName, string conversationId, CancellationToken ct = default)
     {
-        var url = $"http://47.113.216.177:8002/api/upload?conversation_id={conversationId}&filename={Uri.EscapeDataString(fileName)}";
+        var url = $"http://{ServerConfig.DefaultServerAddress}:{ServerConfig.DefaultHttpPort}/api/upload?conversation_id={conversationId}&filename={Uri.EscapeDataString(fileName)}";
         return Task.FromResult(url);
     }
 

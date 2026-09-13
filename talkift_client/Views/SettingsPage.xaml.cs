@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Talkift.Client.Config;
 using Talkift.Client.Models;
 using Talkift.Client.Services;
 using Talkift.Client.ViewModels;
@@ -159,7 +160,7 @@ namespace Talkift.Client.Views
             {
                 var server = new OfficialServer
                 {
-                    Address = OfficialAddrBox.Text?.Trim() ?? "47.113.216.177",
+                    Address = OfficialAddrBox.Text?.Trim() ?? ServerConfig.DefaultServerAddress,
                     Port = (int)OfficialPortBox.Value,
                     SupportsEmail = OfficialEmailCheck.IsChecked == true,
                     SupportsOffline = OfficialOfflineCheck.IsChecked == true
@@ -229,7 +230,7 @@ namespace Talkift.Client.Views
                 OfficialHeader.Text = LanguageService.GetString("OfficialServer");
                 OfficialDesc.Text = LanguageService.GetString("OfficialServerDesc");
                 ((TextBlock)OfficialAddrBox.Header).Text = LanguageService.GetString("ServerAddress");
-                OfficialAddrBox.PlaceholderText = "47.113.216.177";
+                OfficialAddrBox.PlaceholderText = ServerConfig.DefaultServerAddress;
                 ((TextBlock)OfficialPortBox.Header).Text = LanguageService.GetString("Port");
                 OfficialEmailCheck.Content = LanguageService.GetString("SupportEmailLogin");
                 OfficialOfflineCheck.Content = LanguageService.GetString("SupportOfflineLogin");
