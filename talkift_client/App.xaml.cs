@@ -21,7 +21,7 @@ public sealed partial class App : Application
     public static ILoggerService LoggerService { get; private set; } = null!;
     public static IMessageStore MessageStore { get; private set; } = null!;
 
-    public static Window CurrentWindow { get; private set; } = null!;
+    public static Window CurrentWindow { get; internal set; } = null!;
 
     private ServiceProvider? _serviceProvider;
 
